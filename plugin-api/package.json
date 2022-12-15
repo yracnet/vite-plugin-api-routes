@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-api",
-  "version": "0.1.0",
-  "description": "File system base vue-router plugin for Vite",
+  "version": "0.1.2",
+  "description": "Create API routes mapping from path directory like to NextJS API Routes, but this plugin extends the funcionality for backend development using vite.",
   "keywords": [
     "vite",
     "api",
@@ -13,6 +13,9 @@
     "routing",
     "rest-api",
     "api-rest"
+  ],
+  "files": [
+    "dist"
   ],
   "type": "module",
   "license": "MIT",
