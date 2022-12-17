@@ -1,32 +1,28 @@
-import { ResolvedConfig, ViteDevServer, build, InlineConfig } from "vite";
+import { ResolvedConfig, ViteDevServer, build } from "vite";
 //@ts-ignore
 import { applyDevServer } from "./runtime/dev-server";
-import { assertPluginConfig } from "./config";
+import {
+  PluginOptions,
+  assertPluginConfig,
+  HANDLER_ID,
+  CONFIG_ID,
+  VIRTUAL_ID,
+  SERVER_ID,
+  ROUTER_ID,
+} from "./config";
 import { createRouters } from "./router";
-import { generateCodeRouter } from "./stringify";
+import { generateCodeConfig, generateCodeRouter } from "./stringify";
 import { slashRelative } from "./util";
-
-export type APIOptions = {
-  entry?: string;
-  dirs?: { dir: string; route: string }[];
-  include?: string[];
-  exclude?: string[];
-  fnVerbs?: { [k: string]: string };
-  baseRoute?: string;
-  moduleId?: string;
-  outDir?: string;
-  preBuild?: (config: InlineConfig) => InlineConfig;
-};
 
 export type BuildAPI = {
   setupServer: (server: ViteDevServer) => void;
-  resolveId: (id: string) => string | null;
+  resolveId: (id: string) => any | null;
   generateCode: (id: string) => string | null;
   writeBundle: () => void;
 };
 
 export const createBuildAPI = (
-  opts: APIOptions,
+  opts: PluginOptions,
   vite: ResolvedConfig
 ): BuildAPI => {
   const config = assertPluginConfig(opts, vite);
@@ -35,15 +31,31 @@ export const createBuildAPI = (
       applyDevServer(devServer, config);
     },
     resolveId: (id: string) => {
-      if (id === config.moduleId) {
+      if (id.startsWith(config.id)) {
+        id = id.replace(config.id, VIRTUAL_ID);
+      }
+      if (id === ROUTER_ID || id === CONFIG_ID) {
         return id;
+      } else if (id === SERVER_ID) {
+        return {
+          external: "absolute",
+          id: config.entry,
+        };
+      } else if (id === HANDLER_ID) {
+        return {
+          external: "absolute",
+          id: config.handler,
+        };
       }
       return null;
     },
     generateCode: (id) => {
-      if (id === config.moduleId) {
+      if (id === ROUTER_ID) {
         const routes = createRouters(config);
         return generateCodeRouter(routes, config);
+      } else if (id === CONFIG_ID) {
+        const routes = createRouters(config);
+        return generateCodeConfig(routes, config);
       }
       return null;
     },

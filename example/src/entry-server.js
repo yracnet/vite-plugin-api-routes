@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import { applyRouters, routerList } from "virtual:api-router";
+import { applyRouters, routerList } from "virtual:api-router:router";
 
 dotenv.config();
 const { PORT = 3000, CLIENT_DIR = "process.env.CLIENT_DIR" } = process.env;

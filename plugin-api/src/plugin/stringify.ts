@@ -8,7 +8,7 @@ export const generateCodeRouter = (routers: Router[], config: PluginConfig) => {
 
   const httpRouter = routers
     .map((it, ix) =>
-      config.httpMapper
+      config.fnMapper
         .map(
           (http) =>
             `   ["${http.method}",\t "/${it.route}",\t r${ix}.${http.fn}],`
@@ -38,5 +38,21 @@ export const applyRouters = (applyRouter) => {
   });
 };
 
+  `;
+};
+
+export const generateCodeConfig = (routers: Router[], config: PluginConfig) => {
+  const routeFiles = routers.map(({ route, file }) => ({ route, file }));
+
+  const configFull = {
+    ...config,
+    routeFiles,
+  };
+
+  return `
+
+export const config = ${JSON.stringify(configFull, null, 2)};
+
+export default config;
   `;
 };

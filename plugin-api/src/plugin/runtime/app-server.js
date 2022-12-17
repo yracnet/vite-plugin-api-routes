@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import { applyRouters, routerList } from "virtual:api-router";
+import { applyRouters, routerList } from "virtual:api-router:router";
 import { applyServer } from "./apply-server";
 
 dotenv.config();

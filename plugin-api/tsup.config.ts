@@ -15,7 +15,7 @@ export default defineConfig([
   {
     entry: ["src/process/runtime/app-server.js"],
     format: "esm",
-    external: ["virtual:api-router", "express", "dotenv"],
+    external: ["virtual:api-router:router", "express", "dotenv"],
     outDir: "dist/runtime",
     clean: true,
     sourcemap: false,

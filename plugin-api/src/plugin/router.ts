@@ -25,19 +25,19 @@ export type Router = {
 };
 
 export const createRouters = (config: PluginConfig): Router[] => {
-  let { root, routes, include, exclude } = config;
-  return routes.flatMap((parent) => {
+  let { dirs, include, exclude } = config;
+  return dirs.flatMap((parent) => {
     return fg
       .sync(include, {
         ignore: exclude,
         onlyDirectories: false,
         dot: true,
         unique: true,
-        cwd: slashJoin(root, parent.file),
+        cwd: parent.dir,
       })
       .map((file) => {
-        let route = assertRoutePath(parent.route, file);
-        file = slashJoin(root, parent.file, file);
+        let route = "/" + assertRoutePath(parent.route, file);
+        file = slashJoin(parent.dir, file);
         return {
           file,
           route,

@@ -1,20 +1,23 @@
 import express from "express";
 import polka from "polka";
+
+// import {}
 import { applyServer } from "./apply-server";
+
+export const handler = express();
 
 export const applyDevServer = async (devServer, config) => {
   devServer.middlewares.use(async (req, res, next) => {
     try {
-      const mod = await devServer.ssrLoadModule(`/@id/${config.id}:router`);
-      const apiServer = express();
-      apiServer.get("/@vite-plugin-api/routers", (req, res, next) => {
+      const mod = await devServer.ssrLoadModule(`/@id/${config.id}`);
+      handler.get("/@vite-plugin-api/routers", (req, res, next) => {
         res.send(mod.routers);
       });
-      applyServer(apiServer, mod.applyRouters);
+      applyServer(handler, mod.applyRouters);
       const server = polka({
         onNoMatch: () => next(),
       });
-      server.use(apiServer);
+      server.use(handler);
       server.handler(req, res);
     } catch (error) {
       devServer.ssrFixStacktrace(error);

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import config from "virtual:vite-plugin-api:config";
 
 function App() {
   const [list, setList] = useState([]);
   const [data, setData] = useState("");
 
   const onLoad = async () => {
-    let list = await fetch("/@vite-plugin-api").then((r) => r.json());
+    let list = await fetch("/@vite-plugin-api/routers").then((r) => r.json());
     setList(list);
   };
 
@@ -34,11 +35,17 @@ function App() {
             <a href="#reload" onClick={onLoad}>
               Reload
             </a>
-            <a href="/@id/virtual:api-router" target="_blank">
-              /@id/virtual:api-router
+            <a href="/@id/virtual:api-router:router" target="_blank">
+              /@id/virtual:api-router:router
             </a>
-            <a href="/@vite-plugin-api" target="_blank">
-              /@vite-plugin-api
+            <a href="/@id/virtual:api-router:server" target="_blank">
+              /@id/virtual:api-router:server
+            </a>
+            <a href="/@id/virtual:api-router:handler" target="_blank">
+              /@id/virtual:api-router:handler
+            </a>
+            <a href="/@vite-plugin-api/routers" target="_blank">
+              /@vite-plugin-api/routers
             </a>
           </div>
         </div>
@@ -61,9 +68,16 @@ function App() {
                 ))}
               </ul>
             </div>
-            <div className="col-8">
+            <div className="col-4">
+              <b>Response</b>
               <pre>
                 <code>{data}</code>
+              </pre>
+            </div>
+            <div className="col-4">
+              <b>Config</b>
+              <pre>
+                <code>{JSON.stringify(config, null, 2)}</code>
               </pre>
             </div>
           </div>

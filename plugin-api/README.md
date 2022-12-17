@@ -93,12 +93,12 @@ import { pluginAPI } from "vite-plugin-api";
 export default defineConfig({
   plugins: [
     pluginAPI({
-      // baseRoute?: "api",
+      // routeBase?: "api",
       // dirs?: [{ dir: "src/api"; route: "/" }],
       // include?: ["**/*.js", "**/*.ts"],
       // exclude?: ["node_modules", ".git"],
       // moduleId?: "virtual:api-router",
-      // fnVerbs?: { default: "use", GET: "get", ... },
+      // fnMapper?: { default: "use", GET: "get", ... },
       // entry?: "[node_module:lib]/app-server.js",
     }),
   ],
@@ -107,7 +107,7 @@ export default defineConfig({
 
 ### Parameters:
 
-- **baseRoute**: Base name route for all routes,
+- **routeBase**: Base name route for all routes,
   by default is **/api/**
 - **dirs**: List of directory to will be scan,
   by default is **[ { dir: 'src/api', route: '/'} ]**
@@ -116,14 +116,14 @@ export default defineConfig({
 - **moduleId**: Name the virtual module,
   by default is **["node_modules", ".git"]**
 - **entry**: It is the main file to build as server app.
-- **fnVerbs**: It is a mapping rules from exports function to server instance methods.
+- **fnMapper**: It is a mapping rules from exports function to server instance methods.
 
-## fnVerbs
+## fnMapper
 
 **Default value**
 
 ```js
-fnVerbs: {
+fnMapper: {
   default: "use",
   GET: "get",
   POST: "post",
@@ -131,7 +131,7 @@ fnVerbs: {
   PATCH: "patch",
   DELETE: "delete",
   // Overwrite
-  ...fnVerbs,
+  ...fnMapper,
 };
 ```
 
@@ -144,7 +144,7 @@ export default defineConfig({
   plugins: [
     createAPI({
       entry: "src/custom-server.js",
-      fnVerbs: {
+      fnMapper: {
         PING: "get",
         // export const PING = ()=>{...}
         // Will be mapping to express method

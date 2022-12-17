@@ -18,8 +18,10 @@ export default defineConfig({
   plugins: [
     pluginReact(),
     pluginAPI({
+      moduleId: "virtual:custom",
       outDir: "dist/server",
       // entry: "src/entry-server.js",
+      // handler: "src/handler.js",
       dirs: [
         // {
         //   dir: "./src/api/v1",

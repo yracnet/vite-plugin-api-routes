@@ -1,71 +1,87 @@
-import { APIOptions } from "./main";
-import fs from "fs";
 import { assertRoutePath } from "./router";
-import { slash, slashJoin, slashResolve } from "./util";
+import { slash, slashJoin, slashResolve, slashResolveIfExist } from "./util";
 import { InlineConfig, ResolvedConfig } from "vite";
-export const API_ROUTER = "virtual:api-router";
 
-export type RouterElement = {
-  route: string;
+export const VIRTUAL_ID = "virtual:vite-plugin-api";
+export const ROUTER_ID = `${VIRTUAL_ID}:router`;
+export const CONFIG_ID = `${VIRTUAL_ID}:config`;
+export const SERVER_ID = `${VIRTUAL_ID}:server`;
+export const HANDLER_ID = `${VIRTUAL_ID}:handler`;
+
+export type FileRouter = {
   file: string;
+  route: string;
 };
 
-export type HttpMapper = {
+export type DirRoute = {
+  dir: string;
+  route: string;
+};
+
+export type FnMapper = {
   method: string;
   fn: string;
 };
 
+export type PluginOptions = {
+  entry?: string;
+  handler?: string;
+  dirs?: DirRoute[];
+  include?: string[];
+  exclude?: string[];
+  fnMapper?: { [k: string]: string | false };
+  routeBase?: string;
+  moduleId?: string;
+  outDir?: string;
+  preBuild?: (config: InlineConfig) => InlineConfig;
+};
+
 export type PluginConfig = {
+  id: string;
   root: string;
-  baseRoute: string;
+  routeBase: string;
   entry: string;
+  handler: string;
   include: string[];
   exclude: string[];
-  routes: RouterElement[];
-  httpMapper: HttpMapper[];
-  moduleId: string;
+  dirs: DirRoute[];
+  fnMapper: FnMapper[];
   outDir: string;
   preBuild: (config: InlineConfig) => InlineConfig;
 };
 
-const entryDefault = () => {
-  return slashJoin(__dirname, "runtime/app-server.js");
+const defaultFile = (file: string) => {
+  return slashJoin(__dirname, file);
 };
 
 export const assertPluginConfig = (
-  opts: APIOptions,
+  opts: PluginOptions,
   vite: ResolvedConfig
 ): PluginConfig => {
   let {
     entry,
+    handler,
     dirs = [{ dir: "src/api", route: "" }],
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
-    fnVerbs = {},
-    baseRoute = "api",
-    moduleId = API_ROUTER,
+    fnMapper: fnMap = {},
+    routeBase = "api",
+    moduleId: id = VIRTUAL_ID,
     outDir = "dist/server",
     preBuild = (v: InlineConfig) => v,
   } = opts;
 
-  baseRoute = slash(baseRoute);
+  routeBase = "/" + slash(routeBase);
   const root = slash(vite.root);
   outDir = slashResolve(root, outDir);
-  if (entry) {
-    let file = slashResolve(root, entry);
-    if (!fs.existsSync(file)) {
-      vite.logger.warn(`The app: ${entry} not exist! we use the default entry`);
-      entry = entryDefault();
-    } else {
-      entry = file;
-    }
-  } else {
-    entry = entryDefault();
-  }
+
+  entry = slashResolveIfExist(root, entry) || defaultFile("runtime/server.js");
+  handler =
+    slashResolveIfExist(root, handler) || defaultFile("runtime/handler.js");
 
   exclude = [...exclude, "node_modules", ".git"];
 
-  fnVerbs = {
+  fnMap = {
     default: "use",
     GET: "get",
     POST: "post",
@@ -73,31 +89,33 @@ export const assertPluginConfig = (
     PATCH: "patch",
     DELETE: "delete",
     // Overwrite
-    ...fnVerbs,
+    ...fnMap,
   };
 
-  const httpMapper: HttpMapper[] = Object.entries(fnVerbs).map((it) => ({
-    fn: it[0],
-    method: it[1],
-  }));
+  const fnMapper = <FnMapper[]>Object.entries(fnMap)
+    .map(([fn, method]) => ({
+      fn,
+      method,
+    }))
+    .filter((it) => it.method);
 
-  const routes: RouterElement[] = dirs.map(({ dir: file, route }) => {
-    file = slashResolve(root, file);
-    file = file.replace(root, ".");
-    route = assertRoutePath(baseRoute, route);
-    return { route, file };
+  dirs = dirs.map(({ dir, route }) => {
+    dir = slashResolve(root, dir);
+    route = assertRoutePath(route);
+    return { route, dir };
   });
 
   return {
+    id,
     root,
     entry,
-    baseRoute,
-    routes,
+    handler,
+    routeBase,
+    dirs,
     include,
     exclude,
-    httpMapper,
-    moduleId,
     outDir,
     preBuild,
+    fnMapper,
   };
 };
