@@ -3,7 +3,7 @@ import { Router } from "./router";
 
 export const generateCodeRouter = (routers: Router[], config: PluginConfig) => {
   const importFiles = routers
-    .map((it, ix) => `import   * as r${ix} from "/${it.file}"`)
+    .map((it, ix) => `import * as r${ix} from "/${it.file}"`)
     .join("\n");
 
   const httpRouter = routers

@@ -1,4 +1,4 @@
-import { APIOptions } from "./plugin";
+import { APIOptions } from "./main";
 import fs from "fs";
 import { assertRoutePath } from "./router";
 import { slash, slashJoin, slashResolve } from "./util";
