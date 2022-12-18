@@ -31,7 +31,7 @@ src/api/:
             [userId].js    //NextJS Format
 ```
 
-The tree structure directory will be export to tree route rules:
+The directory tree will be export to router rules tree:
 
 ```bash
 GET     /api/v1
@@ -69,10 +69,11 @@ export const DELETE = (req, res, next) => {
 export const PUT = async (req, res, next) => {
   res.send("PUT REQUEST");
 };
-// Support default, GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH
+// Support default, GET, HEAD, POST, PUT, DELETE by default
+// for CONNECT, OPTIONS, TRACE, PATCH and others you need add the mapping to mapper attribute config
 ```
 
-Same the Next/Remix framework the `[userId].js` or `$userId.js` file name will be exported as request parameter `/user/:userId`.
+Same the NextJS/Remix framework the `[userId].js` or `$userId.js` file name will be exported as request parameter `/user/:userId`.
 
 ## How to use
 
@@ -94,7 +95,7 @@ export default defineConfig({
   plugins: [
     pluginAPI({
       // routeBase?: "api",
-      // dirs?: [{ dir: "src/api"; route: "/" }],
+      // dirs?: [{ dir: "src/api"; route: "" }],
       // include?: ["**/*.js", "**/*.ts"],
       // exclude?: ["node_modules", ".git"],
       // moduleId?: "virtual:vite-plugin-api",
@@ -109,9 +110,9 @@ export default defineConfig({
 ### Parameters:
 
 - **routeBase**: Base name route for all routes,
-  by default is **/api/**
+  by default is **api**
 - **dirs**: List of directory to will be scan,
-  by default is **[ { dir: 'src/api', route: '/'} ]**
+  by default is **[ { dir: 'src/api', route: ''} ]**
 - **include**: Files and directory include in scan process
 - **exclude**: Files and directory exclude in scan process
 - **moduleId**: Name the virtual module,
@@ -120,7 +121,7 @@ export default defineConfig({
 - **handler**: It is the main file to register the api, it is caller in videServer and default entry.
 - **mapper**: It is a mapping rules from exports function to server instance methods.
 
-## mapper
+## Mapper
 
 **Default value**
 
@@ -130,6 +131,7 @@ mapper: {
   GET: "get",
   POST: "post",
   PUT: "put",
+  PATCH: "patch",
   PATCH: "patch",
   DELETE: "delete",
   // Overwrite
@@ -152,11 +154,16 @@ export default defineConfig({
         // Will be mapping to express method
         // app.get('/path/dir', PING)
         OTHER_POST: "post2",
+        // export const PATCH = ()=>{...}
+        // Will not be mapping
+        PATCH: false,
       },
     }),
   ],
 });
 ```
+
+You can disabled a method setting false value. In the example ` PATCH: false`, the PATCH method be disabled.
 
 **/src/api/index.js**
 
@@ -167,13 +174,16 @@ export PING = (req, res, next)=>{
 export OTHER_POST = (req, res, next)=>{
   res.send({name:"Ping Service"});
 }
+export PATCH = (req, res, next)=>{
+  res.send({name:"Ping Service"});
+}
 ```
 
 **/src/custom-server.js** or see [entry-server.js](./../example/src/entry-server.js)
 
 ```javascript
 import express from "express";
-import { applyRouters } from "virtual:vite-plugin-api";
+import { applyRouters } from "virtual:vite-plugin-api:router";
 
 const app = express();
 
@@ -182,16 +192,29 @@ app.post2 = (req, res, next) => {
   app.post(req, res, next);
 };
 
-applyRouters((props) => {
-  const { method, path, cb } = props;
-  if (app[method]) {
-    app[method](path, cb);
-  } else {
-    console.log("App not support", method, "verbose");
+applyRouters(
+  (props) => {
+    const { source, method, path, route, cb } = props;
+    // route is a path without routeBase
+    // source is a full path file
+    if (app[method]) {
+      app[method](path, cb);
+    } else {
+      console.log("App not support", method, "verbose");
+    }
+  },
+  (cb) => (req, res, next) => {
+    res.message = "My high order component";
+    return cb(req, res, next);
   }
-});
+);
 
 app.listen(3000, () => {
   console.log("Ready at http://localhost:3000");
 });
 ```
+
+## TO DO:
+
+- Doble declaration (**GET** in _/user.ts_ and _/user/index.ts_). Handler definition is required.
+- Extends the mapper attribute for support a custom http method using a header attribute.
