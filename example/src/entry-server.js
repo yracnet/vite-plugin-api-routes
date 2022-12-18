@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import { applyRouters, routerList } from "virtual:api-router:router";
+import { applyRouters, routerList } from "virtual:vite-plugin-api:router";
 
 dotenv.config();
 const { PORT = 3000, CLIENT_DIR = "process.env.CLIENT_DIR" } = process.env;
@@ -8,13 +8,14 @@ const { PORT = 3000, CLIENT_DIR = "process.env.CLIENT_DIR" } = process.env;
 const server = express();
 server.use(express.json());
 server.use(express.static(CLIENT_DIR));
-applyRouters((method, route, callback) => {
+applyRouters((props) => {
+  const { action, method, path, cb } = props;
   if (server[method]) {
-    server[method](route, callback);
+    server[method](path, cb);
   } else {
-    server.post(route, (req, res, next) => {
-      if (req.headers["xxx-method"] === method) {
-        callback(req, res, next);
+    server.post(path, (req, res, next) => {
+      if (req.headers["xxx-action"] === action) {
+        cb(req, res, next);
       } else {
         next();
       }

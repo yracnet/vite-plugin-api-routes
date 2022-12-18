@@ -97,9 +97,10 @@ export default defineConfig({
       // dirs?: [{ dir: "src/api"; route: "/" }],
       // include?: ["**/*.js", "**/*.ts"],
       // exclude?: ["node_modules", ".git"],
-      // moduleId?: "virtual:api-router",
-      // fnMapper?: { default: "use", GET: "get", ... },
-      // entry?: "[node_module:lib]/app-server.js",
+      // moduleId?: "virtual:vite-plugin-api",
+      // mapper?: { default: "use", GET: "get", ... },
+      // entry?: "[node_module:lib]/server.js",
+      // handler?: "[node_module:lib]/handler.js",
     }),
   ],
 });
@@ -116,14 +117,15 @@ export default defineConfig({
 - **moduleId**: Name the virtual module,
   by default is **["node_modules", ".git"]**
 - **entry**: It is the main file to build as server app.
-- **fnMapper**: It is a mapping rules from exports function to server instance methods.
+- **handler**: It is the main file to register the api, it is caller in videServer and default entry.
+- **mapper**: It is a mapping rules from exports function to server instance methods.
 
-## fnMapper
+## mapper
 
 **Default value**
 
 ```js
-fnMapper: {
+mapper: {
   default: "use",
   GET: "get",
   POST: "post",
@@ -131,7 +133,7 @@ fnMapper: {
   PATCH: "patch",
   DELETE: "delete",
   // Overwrite
-  ...fnMapper,
+  ...mapper,
 };
 ```
 
@@ -144,7 +146,7 @@ export default defineConfig({
   plugins: [
     createAPI({
       entry: "src/custom-server.js",
-      fnMapper: {
+      mapper: {
         PING: "get",
         // export const PING = ()=>{...}
         // Will be mapping to express method
@@ -171,7 +173,7 @@ export OTHER_POST = (req, res, next)=>{
 
 ```javascript
 import express from "express";
-import { applyRouters } from "virtual:api-router";
+import { applyRouters } from "virtual:vite-plugin-api";
 
 const app = express();
 
@@ -180,9 +182,10 @@ app.post2 = (req, res, next) => {
   app.post(req, res, next);
 };
 
-applyRouters((method, route, callback) => {
+applyRouters((props) => {
+  const { method, path, cb } = props;
   if (app[method]) {
-    app[method](route, callback);
+    app[method](path, cb);
   } else {
     console.log("App not support", method, "verbose");
   }

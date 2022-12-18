@@ -1,28 +1,33 @@
 import express from "express";
-import polka from "polka";
-
-// import {}
-import { applyServer } from "./apply-server";
+import { routeBase, applyRouters } from "virtual:vite-plugin-api:router";
 
 export const handler = express();
 
-export const applyDevServer = async (devServer, config) => {
-  devServer.middlewares.use(async (req, res, next) => {
-    try {
-      const mod = await devServer.ssrLoadModule(`/@id/${config.id}`);
-      handler.get("/@vite-plugin-api/routers", (req, res, next) => {
-        res.send(mod.routers);
-      });
-      applyServer(handler, mod.applyRouters);
-      const server = polka({
-        onNoMatch: () => next(),
-      });
-      server.use(handler);
-      server.handler(req, res);
-    } catch (error) {
-      devServer.ssrFixStacktrace(error);
-      process.exitCode = 1;
-      next(error);
+const router = express.Router();
+handler.use(routeBase, router);
+
+applyRouters(
+  (props) => {
+    const { method, route, cb } = props;
+    if (router[method]) {
+      router[method](route, cb);
+    } else {
+      console.log(method, "Not support!");
     }
-  });
-};
+  },
+  (cb) => {
+    return async (req, res, next) => {
+      if (!res.finished) {
+        try {
+          let value = await cb(req, res, next);
+          if (value) {
+            res.send(value);
+          }
+        } catch (error) {
+          res.error = error;
+          next();
+        }
+      }
+    };
+  }
+);

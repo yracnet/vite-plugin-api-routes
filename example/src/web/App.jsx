@@ -6,13 +6,16 @@ function App() {
   const [data, setData] = useState("");
 
   const onLoad = async () => {
-    let list = await fetch("/@vite-plugin-api/routers").then((r) => r.json());
+    let list = await fetch("/api/dev").then((r) => r.json());
     setList(list);
   };
 
   const onTest = async (it) => {
-    let data = await fetch(it.route, {
+    let data = await fetch(it.path, {
       method: it.method,
+      headers: {
+        "HTTP-Action": it.action,
+      },
     })
       .then((r) => r.json())
       .catch((error) => ({ error, message: error.message }));
@@ -28,45 +31,43 @@ function App() {
       <div className="card mt-4">
         <div className="card-header d-flex justify-content-between">
           VITE-PLUGIN-API
-          <div className="badge bg-danger"> Only Development Mode</div>
+          <div className="badge bg-danger">Only Development Mode</div>
         </div>
         <div className="card-body">
           <div className="d-flex justify-content-between">
             <a href="#reload" onClick={onLoad}>
               Reload
             </a>
-            <a href="/@id/virtual:api-router:router" target="_blank">
-              /@id/virtual:api-router:router
+            <a href="/@id/virtual:vite-plugin-api:router" target="_blank">
+              /@id/virtual:vite-plugin-api:router
             </a>
-            <a href="/@id/virtual:api-router:server" target="_blank">
-              /@id/virtual:api-router:server
-            </a>
-            <a href="/@id/virtual:api-router:handler" target="_blank">
-              /@id/virtual:api-router:handler
-            </a>
-            <a href="/@vite-plugin-api/routers" target="_blank">
-              /@vite-plugin-api/routers
+            <a href="/@id/virtual:vite-plugin-api:config" target="_blank">
+              /@id/virtual:vite-plugin-api:config
             </a>
           </div>
         </div>
         <div className="card-body">
           <div className="row">
             <div className="col-4">
-              <ul className="list-group">
-                {list.map((it, ix) => (
-                  <li
-                    key={ix}
-                    className="list-group-item d-flex justify-content-between align-items-start"
-                  >
-                    <code className="ms-2 me-auto">
-                      {it.method?.toUpperCase()} {it.route}
-                    </code>
-                    <a href="#reload" onClick={(e) => onTest(it)}>
-                      Test
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <table className="table table-striped">
+                <tbody>
+                  {list.map((it, ix) => (
+                    <tr key={ix}>
+                      <th className="text-uppercase">{it.method}</th>
+                      <td>{it.path}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={(e) => onTest(it)}
+                          disabled={it.method === "use"}
+                        >
+                          Test
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div className="col-4">
               <b>Response</b>

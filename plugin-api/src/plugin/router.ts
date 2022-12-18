@@ -4,7 +4,7 @@ import { slashJoin } from "./util";
 
 type Path = string | null | undefined;
 
-export const assertRoutePath = (...paths: Path[]) => {
+export const assertFileRoute = (...paths: Path[]) => {
   return (
     paths
       .map((path) => path?.replace(/^\//, "").replace(/\/$/, ""))
@@ -19,38 +19,59 @@ export const assertRoutePath = (...paths: Path[]) => {
   );
 };
 
-export type Router = {
+export type FileRouter = {
+  name: string;
   file: string;
+  path: string;
   route: string;
 };
 
-export const createRouters = (config: PluginConfig): Router[] => {
+export const getFileRouters = (config: PluginConfig): FileRouter[] => {
   let { dirs, include, exclude } = config;
-  return dirs.flatMap((parent) => {
-    return fg
+  return dirs.flatMap((it, ix) =>
+    fg
       .sync(include, {
         ignore: exclude,
         onlyDirectories: false,
         dot: true,
         unique: true,
-        cwd: parent.dir,
+        cwd: it.dir,
       })
-      .map((file) => {
-        let route = "/" + assertRoutePath(parent.route, file);
-        file = slashJoin(parent.dir, file);
+      .sort()
+      .map((file, jx) => {
+        let route = assertFileRoute(it.route, file);
+        let path = `/${config.routeBase}/${route}`;
+        route = `/${route}`;
+        file = slashJoin(it.dir, file);
         return {
+          name: `_${ix}_${jx}`,
           file,
+          path,
           route,
         };
       })
-      .sort((a, b) => {
-        if (a.route > b.route) {
-          return 1;
-        }
-        if (a.route < b.route) {
-          return -1;
-        }
-        return 0;
-      });
-  });
+  );
+};
+
+export type MethodRouter = {
+  source: string;
+  method: string;
+  path: string;
+  route: string;
+  cb: string;
+};
+
+export const getMethodRouters = (config: PluginConfig): MethodRouter[] => {
+  return getFileRouters(config).flatMap((r) =>
+    config.mapper.map((m) => {
+      let cb = r.name + "." + m.name;
+      return {
+        source: r.file + "?fn=" + m.name,
+        method: m.method,
+        path: r.path,
+        route: r.route,
+        cb: cb,
+      };
+    })
+  );
 };

@@ -1,6 +1,4 @@
 import { ResolvedConfig, ViteDevServer, build } from "vite";
-//@ts-ignore
-import { applyDevServer } from "./runtime/dev-server";
 import {
   PluginOptions,
   assertPluginConfig,
@@ -10,9 +8,9 @@ import {
   SERVER_ID,
   ROUTER_ID,
 } from "./config";
-import { createRouters } from "./router";
 import { generateCodeConfig, generateCodeRouter } from "./stringify";
 import { slashRelative } from "./util";
+import polka from "polka";
 
 export type BuildAPI = {
   setupServer: (server: ViteDevServer) => void;
@@ -28,11 +26,29 @@ export const createBuildAPI = (
   const config = assertPluginConfig(opts, vite);
   return {
     setupServer: (devServer) => {
-      applyDevServer(devServer, config);
+      devServer.middlewares.use(async (req: any, res: any, next) => {
+        try {
+          const handlerId = `/@id/${config.moduleId}:handler`;
+          const mod = await devServer.ssrLoadModule(handlerId);
+          const server = polka({
+            onNoMatch: () => next(),
+          });
+          if (Array.isArray(mod.handler)) {
+            mod.handler.forEach((it) => server.use(it));
+          } else {
+            server.use(mod.handler);
+          }
+          server.handler(req, res);
+        } catch (error) {
+          devServer.ssrFixStacktrace(error as Error);
+          process.exitCode = 1;
+          next(error);
+        }
+      });
     },
     resolveId: (id: string) => {
-      if (id.startsWith(config.id)) {
-        id = id.replace(config.id, VIRTUAL_ID);
+      if (id.startsWith(config.moduleId)) {
+        id = id.replace(config.moduleId, VIRTUAL_ID);
       }
       if (id === ROUTER_ID || id === CONFIG_ID) {
         return id;
@@ -51,11 +67,9 @@ export const createBuildAPI = (
     },
     generateCode: (id) => {
       if (id === ROUTER_ID) {
-        const routes = createRouters(config);
-        return generateCodeRouter(routes, config);
+        return generateCodeRouter(config);
       } else if (id === CONFIG_ID) {
-        const routes = createRouters(config);
-        return generateCodeConfig(routes, config);
+        return generateCodeConfig(config);
       }
       return null;
     },

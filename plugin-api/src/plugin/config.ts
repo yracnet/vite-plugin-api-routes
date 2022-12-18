@@ -1,4 +1,4 @@
-import { assertRoutePath } from "./router";
+import { assertFileRoute } from "./router";
 import { slash, slashJoin, slashResolve, slashResolveIfExist } from "./util";
 import { InlineConfig, ResolvedConfig } from "vite";
 
@@ -8,19 +8,14 @@ export const CONFIG_ID = `${VIRTUAL_ID}:config`;
 export const SERVER_ID = `${VIRTUAL_ID}:server`;
 export const HANDLER_ID = `${VIRTUAL_ID}:handler`;
 
-export type FileRouter = {
-  file: string;
-  route: string;
-};
-
 export type DirRoute = {
   dir: string;
   route: string;
 };
 
-export type FnMapper = {
+export type Mapper = {
+  name: string;
   method: string;
-  fn: string;
 };
 
 export type PluginOptions = {
@@ -29,7 +24,7 @@ export type PluginOptions = {
   dirs?: DirRoute[];
   include?: string[];
   exclude?: string[];
-  fnMapper?: { [k: string]: string | false };
+  mapper?: { [k: string]: string | false };
   routeBase?: string;
   moduleId?: string;
   outDir?: string;
@@ -37,7 +32,7 @@ export type PluginOptions = {
 };
 
 export type PluginConfig = {
-  id: string;
+  moduleId: string;
   root: string;
   routeBase: string;
   entry: string;
@@ -45,7 +40,7 @@ export type PluginConfig = {
   include: string[];
   exclude: string[];
   dirs: DirRoute[];
-  fnMapper: FnMapper[];
+  mapper: Mapper[];
   outDir: string;
   preBuild: (config: InlineConfig) => InlineConfig;
 };
@@ -64,14 +59,14 @@ export const assertPluginConfig = (
     dirs = [{ dir: "src/api", route: "" }],
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
-    fnMapper: fnMap = {},
+    mapper: map = {},
     routeBase = "api",
-    moduleId: id = VIRTUAL_ID,
-    outDir = "dist/server",
+    moduleId = VIRTUAL_ID,
+    outDir = "dist",
     preBuild = (v: InlineConfig) => v,
   } = opts;
 
-  routeBase = "/" + slash(routeBase);
+  routeBase = slash(routeBase);
   const root = slash(vite.root);
   outDir = slashResolve(root, outDir);
 
@@ -81,7 +76,7 @@ export const assertPluginConfig = (
 
   exclude = [...exclude, "node_modules", ".git"];
 
-  fnMap = {
+  map = {
     default: "use",
     GET: "get",
     POST: "post",
@@ -89,33 +84,33 @@ export const assertPluginConfig = (
     PATCH: "patch",
     DELETE: "delete",
     // Overwrite
-    ...fnMap,
+    ...map,
   };
 
-  const fnMapper = <FnMapper[]>Object.entries(fnMap)
-    .map(([fn, method]) => ({
-      fn,
+  const mapper = <Mapper[]>Object.entries(map)
+    .filter((it) => it[1])
+    .map(([name, method]) => ({
+      name,
       method,
-    }))
-    .filter((it) => it.method);
+    }));
 
   dirs = dirs.map(({ dir, route }) => {
     dir = slashResolve(root, dir);
-    route = assertRoutePath(route);
+    route = assertFileRoute(route);
     return { route, dir };
   });
 
   return {
-    id,
+    moduleId,
     root,
     entry,
     handler,
     routeBase,
-    dirs,
     include,
     exclude,
     outDir,
     preBuild,
-    fnMapper,
+    dirs,
+    mapper,
   };
 };

@@ -23,6 +23,10 @@ export default defineConfig({
       // entry: "src/entry-server.js",
       // handler: "src/handler.js",
       dirs: [
+        {
+          dir: "./src/api/dev",
+          route: "dev",
+        },
         // {
         //   dir: "./src/api/v1",
         //   route: "v1",
@@ -32,6 +36,19 @@ export default defineConfig({
           route: "v2",
         },
       ],
+      mapper: {
+        // default: false,
+        // // GET: false,
+        // // POST: false,
+        // // PUT: false,
+        // PATCH: false,
+        // DELETE: false,
+        // HOC: "use",
+        // PING: "get",
+        // CREATE: "over",
+        // UPDATE: "over",
+        // REMOVE: "over",
+      },
     }),
     //Plugin Development
     fullReload(["**/*.ts", "**/*.js"], { root: "../plugin-api/src" }),
@@ -41,7 +58,7 @@ export default defineConfig({
         const isApiBuild = process.env.IS_API_BUILD;
         if (isApiBuild) {
           const { file } = args;
-          if (file === "virtual:api-router") {
+          if (file.startsWith("virtual:vite-plugin-api")) {
             return "api";
           } else if (/src\/api/.test(file)) {
             return file.replace("src/api", "api");
