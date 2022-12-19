@@ -13,9 +13,10 @@ export default defineConfig([
     sourcemap: false,
   },
   {
-    entry: ["src/process/runtime/server.js"],
+    entry: ["src/plugin/runtime/server.js"],
     format: "esm",
     external: [
+      "virtual:vite-plugin-api:handler",
       "virtual:vite-plugin-api:router",
       "virtual:vite-plugin-api:config",
       "express",
@@ -26,9 +27,10 @@ export default defineConfig([
     sourcemap: false,
   },
   {
-    entry: ["src/process/runtime/handler.js"],
+    entry: ["src/plugin/runtime/handler.js"],
     format: "esm",
     external: [
+      "virtual:vite-plugin-api:handler",
       "virtual:vite-plugin-api:router",
       "virtual:vite-plugin-api:config",
       "express",

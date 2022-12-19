@@ -1301,10 +1301,8 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-vite-plugin-api@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/vite-plugin-api/-/vite-plugin-api-0.1.2.tgz#cc70ae269739659de2ea0ba3993345570dfe4e25"
-  integrity sha512-XiEgDkfN7XL8nYalr3/aCXy0761wVuiMlGsK2il0v1xSwHADD4W7D77vLzA/6wQ7ToCj6HDOBqEEuBHPG5dPxA==
+"vite-plugin-api@file:../plugin-api":
+  version "0.1.4"
   dependencies:
     fast-glob "^3.2.12"
     path "^0.12.7"

@@ -6,7 +6,7 @@ function App() {
   const [data, setData] = useState("");
 
   const onLoad = async () => {
-    let list = await fetch("/api/dev").then((r) => r.json());
+    let list = await fetch("/api/dev/routers").then((r) => r.json());
     setList(list);
   };
 

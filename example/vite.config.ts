@@ -3,14 +3,14 @@ import fullReload from "vite-plugin-full-reload";
 import { chunkSplitPlugin } from "vite-plugin-chunk-split";
 import pluginReact from "@vitejs/plugin-react";
 //@ts-ignore
-import { pluginAPI } from "../plugin-api/src";
-//import { pluginAPI } from "vite-plugin-api";
+//import { pluginAPI } from "../plugin-api/src";
+import { pluginAPI } from "vite-plugin-api";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
     minify: false,
-    outDir: "dist/client",
+    outDir: "dist/public",
     rollupOptions: {
       external: ["express", "dotenv"],
     },
@@ -19,9 +19,9 @@ export default defineConfig({
     pluginReact(),
     pluginAPI({
       moduleId: "virtual:custom",
-      outDir: "dist/server",
-      // entry: "src/entry-server.js",
-      // handler: "src/handler.js",
+      outDir: "dist",
+      //entry: "src/entry-server.js",
+      //handler: "src/handler.js",
       dirs: [
         {
           dir: "./src/api/dev",
@@ -53,19 +53,20 @@ export default defineConfig({
     //Plugin Development
     fullReload(["**/*.ts", "**/*.js"], { root: "../plugin-api/src" }),
     //Remix ChunkSplit
-    chunkSplitPlugin({
-      customChunk: (args) => {
-        const isApiBuild = process.env.IS_API_BUILD;
-        if (isApiBuild) {
-          const { file } = args;
-          if (file.startsWith("virtual:vite-plugin-api")) {
-            return "api";
-          } else if (/src\/api/.test(file)) {
-            return file.replace("src/api", "api");
-          }
-        }
-        return null;
-      },
-    }),
+    // chunkSplitPlugin({
+    //   customChunk: (args) => {
+    //     const { file } = args;
+    //     console.log("customChunk---->", file);
+    //     const isApiBuild = process.env.IS_API_BUILD;
+    //     if (isApiBuild) {
+    //       if (file.startsWith("virtual:vite-plugin-api")) {
+    //         return "api";
+    //       } else if (/src\/api/.test(file)) {
+    //         return file.replace("src/api", "api");
+    //       }
+    //     }
+    //     return null;
+    //   },
+    // }),
   ],
 });

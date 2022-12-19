@@ -53,13 +53,15 @@ export const createBuildAPI = (
       if (id === ROUTER_ID || id === CONFIG_ID) {
         return id;
       } else if (id === SERVER_ID) {
+        console.log("\nresolveId:SERVER_ID ", id);
         return {
-          external: "absolute",
+          external: "relative",
           id: config.entry,
         };
       } else if (id === HANDLER_ID) {
+        console.log("\nresolveId:HANDLER_ID ", id);
         return {
-          external: "absolute",
+          external: "relative",
           id: config.handler,
         };
       }
@@ -77,26 +79,40 @@ export const createBuildAPI = (
     writeBundle: async () => {
       if (process.env.IS_API_BUILD) return;
       process.env.IS_API_BUILD = "true";
-      const { entry, root, outDir } = config;
+      const { root, outDir } = config;
       const clientDir = slashRelative(outDir, vite.build.outDir);
       const viteServer = await config.preBuild({
         root,
         mode: vite.mode,
         publicDir: "private",
+        // resolve: {
+        //   alias: {
+        //     [SERVER_ID]: config.entry,
+        //     [HANDLER_ID]: config.handler,
+        //   },
+        // },
+        define: {
+          "import.meta.env.CLIENT_DIR": clientDir,
+        },
         build: {
           outDir,
           ssr: true,
+          // minify: true,
           assetsDir: "",
-          target: "es2015",
+          target: "es2020",
           rollupOptions: {
             input: {
-              app: entry,
+              app: config.entry,
+              handler: config.handler,
             },
             external: vite.build?.rollupOptions?.external,
+            output: {
+              format: "es",
+            },
           },
         },
-        define: {
-          "process.env.CLIENT_DIR": clientDir,
+        optimizeDeps: {
+          include: ["vite-plugin-api", "../plugin-api"],
         },
       });
       await build(viteServer);

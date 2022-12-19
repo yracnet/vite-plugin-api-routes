@@ -1,12 +1,18 @@
 import { assertFileRoute } from "./router";
-import { slash, slashJoin, slashResolve, slashResolveIfExist } from "./util";
-import { InlineConfig, ResolvedConfig } from "vite";
+import {
+  slash,
+  slashJoin,
+  slashRelative,
+  slashResolve,
+  slashResolveIfExist,
+} from "./util";
+import { InlineConfig, loadEnv, ResolvedConfig } from "vite";
 
 export const VIRTUAL_ID = "virtual:vite-plugin-api";
-export const ROUTER_ID = `${VIRTUAL_ID}:router`;
-export const CONFIG_ID = `${VIRTUAL_ID}:config`;
-export const SERVER_ID = `${VIRTUAL_ID}:server`;
-export const HANDLER_ID = `${VIRTUAL_ID}:handler`;
+export const ROUTER_ID = `virtual:vite-plugin-api:router`;
+export const CONFIG_ID = `virtual:vite-plugin-api:config`;
+export const SERVER_ID = `virtual:vite-plugin-api:server`;
+export const HANDLER_ID = `virtual:vite-plugin-api:handler`;
 
 export type DirRoute = {
   dir: string;
@@ -45,17 +51,18 @@ export type PluginConfig = {
   preBuild: (config: InlineConfig) => InlineConfig;
 };
 
-const defaultFile = (file: string) => {
-  return slashJoin(__dirname, file);
-};
+const defaultFile = (file: string, root: string) =>
+  slashRelative(root, slashJoin(__dirname, file));
 
 export const assertPluginConfig = (
   opts: PluginOptions,
   vite: ResolvedConfig
 ): PluginConfig => {
+  const root = slash(vite.root);
+
   let {
-    entry,
-    handler,
+    entry = defaultFile("runtime/server.js", root),
+    handler = defaultFile("runtime/handler.js", root),
     dirs = [{ dir: "src/api", route: "" }],
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
@@ -67,12 +74,17 @@ export const assertPluginConfig = (
   } = opts;
 
   routeBase = slash(routeBase);
-  const root = slash(vite.root);
   outDir = slashResolve(root, outDir);
-
-  entry = slashResolveIfExist(root, entry) || defaultFile("runtime/server.js");
-  handler =
-    slashResolveIfExist(root, handler) || defaultFile("runtime/handler.js");
+  const env = loadEnv(vite.mode, root, "API_");
+  Object.entries(env).forEach(([key, value]) => {
+    key = key.replace("API_", "");
+    process.env[key] = value;
+  });
+  // entry =
+  //   slashResolveIfExist(root, entry) || defaultFile("runtime/server.js", root);
+  // handler =
+  //   slashResolveIfExist(root, handler) ||
+  //   defaultFile("runtime/handler.js", root);
 
   exclude = [...exclude, "node_modules", ".git"];
 

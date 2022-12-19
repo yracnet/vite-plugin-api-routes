@@ -110,15 +110,14 @@ export default defineConfig({
 ### Parameters:
 
 - **routeBase**: Base name route for all routes,
-  by default is **api**
+  default value is **api**
 - **dirs**: List of directory to will be scan,
-  by default is **[ { dir: 'src/api', route: ''} ]**
-- **include**: Files and directory include in scan process
-- **exclude**: Files and directory exclude in scan process
+  default value is **[ { dir: 'src/api', route: ''} ]**
+- **include**: Files and directory include in scan process, default value is **["\*\*/_.js", "\*\*/_.ts"]**
+- **exclude**: Files and directory exclude in scan process, default value is **["node_modules", ".git"]**
 - **moduleId**: Name the virtual module,
-  by default is **["node_modules", ".git"]**
-- **entry**: It is the main file to build as server app.
-- **handler**: It is the main file to register the api, it is caller in videServer and default entry.
+- **entry**: It is the main file to build as server app. [See default file.](./src/plugin/runtime/server.js)
+- **handler**: It is the main file to register the api, it is caller in viteServer and default entry. [See default file.](./src/plugin/runtime/handler.js)
 - **mapper**: It is a mapping rules from exports function to server instance methods.
 
 ## Mapper
@@ -204,7 +203,7 @@ applyRouters(
     }
   },
   (cb) => (req, res, next) => {
-    res.message = "My high order component";
+    res.message = "My high order component for callback";
     return cb(req, res, next);
   }
 );
@@ -213,6 +212,10 @@ app.listen(3000, () => {
   console.log("Ready at http://localhost:3000");
 });
 ```
+
+## Env
+
+Only load to process.env the keys that start with prefix "API\_"
 
 ## TO DO:
 
