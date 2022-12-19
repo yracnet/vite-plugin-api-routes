@@ -1,6 +1,6 @@
 import fg from "fast-glob";
 import { PluginConfig } from "./config";
-import { slashJoin } from "./util";
+import { slashJoin, slashRelative } from "./util";
 
 type Path = string | null | undefined;
 
@@ -65,12 +65,15 @@ export const getMethodRouters = (config: PluginConfig): MethodRouter[] => {
   return getFileRouters(config).flatMap((r) =>
     config.mapper.map((m) => {
       let cb = r.name + "." + m.name;
+      let source = r.file + "?fn=" + m.name;
+      source = slashRelative(config.root, source);
+
       return {
-        source: r.file + "?fn=" + m.name,
+        source,
         method: m.method,
         path: r.path,
         route: r.route,
-        cb: cb,
+        cb,
       };
     })
   );

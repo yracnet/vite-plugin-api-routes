@@ -15,19 +15,17 @@ applyRouters(
       console.log(method, "Not support!");
     }
   },
-  (cb) => {
-    return async (req, res, next) => {
-      if (!res.finished) {
-        try {
-          let value = await cb(req, res, next);
-          if (value) {
-            res.send(value);
-          }
-        } catch (error) {
-          res.error = error;
-          next();
+  (cb) => async (req, res, next) => {
+    // Prevent double method registed
+    if (!res.finished) {
+      try {
+        let value = await cb(req, res, next);
+        if (value) {
+          res.send(value);
         }
+      } catch (error) {
+        next(error);
       }
-    };
+    }
   }
 );

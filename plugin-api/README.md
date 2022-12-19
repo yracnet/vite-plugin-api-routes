@@ -202,9 +202,13 @@ applyRouters(
       console.log("App not support", method, "verbose");
     }
   },
-  (cb) => (req, res, next) => {
-    res.message = "My high order component for callback";
-    return cb(req, res, next);
+  (cb) => async (req, res, next) => {
+    try {
+      res.message = "My high order component for callback";
+      await cb(req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 

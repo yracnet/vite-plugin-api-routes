@@ -10,7 +10,7 @@ import { pluginAPI } from "vite-plugin-api";
 export default defineConfig({
   build: {
     minify: false,
-    outDir: "dist/public",
+    outDir: "dist/client",
     rollupOptions: {
       external: ["express", "dotenv"],
     },
@@ -19,7 +19,8 @@ export default defineConfig({
     pluginReact(),
     pluginAPI({
       moduleId: "virtual:custom",
-      outDir: "dist",
+      outDir: "dist/server",
+      minify: false,
       //entry: "src/entry-server.js",
       //handler: "src/handler.js",
       dirs: [
@@ -53,20 +54,19 @@ export default defineConfig({
     //Plugin Development
     fullReload(["**/*.ts", "**/*.js"], { root: "../plugin-api/src" }),
     //Remix ChunkSplit
-    // chunkSplitPlugin({
-    //   customChunk: (args) => {
-    //     const { file } = args;
-    //     console.log("customChunk---->", file);
-    //     const isApiBuild = process.env.IS_API_BUILD;
-    //     if (isApiBuild) {
-    //       if (file.startsWith("virtual:vite-plugin-api")) {
-    //         return "api";
-    //       } else if (/src\/api/.test(file)) {
-    //         return file.replace("src/api", "api");
-    //       }
-    //     }
-    //     return null;
-    //   },
-    // }),
+    chunkSplitPlugin({
+      customChunk: (args) => {
+        const { file } = args;
+        const isApiBuild = process.env.IS_API_BUILD;
+        if (isApiBuild) {
+          if (file.startsWith("virtual:vite-plugin-api")) {
+            return "api";
+          } else if (/src\/api/.test(file)) {
+            return file.replace("src/api", "api");
+          }
+        }
+        return null;
+      },
+    }),
   ],
 });

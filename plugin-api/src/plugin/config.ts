@@ -34,6 +34,7 @@ export type PluginOptions = {
   routeBase?: string;
   moduleId?: string;
   outDir?: string;
+  minify?: boolean;
   preBuild?: (config: InlineConfig) => InlineConfig;
 };
 
@@ -48,11 +49,11 @@ export type PluginConfig = {
   dirs: DirRoute[];
   mapper: Mapper[];
   outDir: string;
+  minify: boolean;
   preBuild: (config: InlineConfig) => InlineConfig;
 };
 
-const defaultFile = (file: string, root: string) =>
-  slashRelative(root, slashJoin(__dirname, file));
+const defaultFile = (file: string) => slashJoin(__dirname, file);
 
 export const assertPluginConfig = (
   opts: PluginOptions,
@@ -61,15 +62,16 @@ export const assertPluginConfig = (
   const root = slash(vite.root);
 
   let {
-    entry = defaultFile("runtime/server.js", root),
-    handler = defaultFile("runtime/handler.js", root),
+    entry = defaultFile("runtime/server.js"),
+    handler = defaultFile("runtime/handler.js"),
     dirs = [{ dir: "src/api", route: "" }],
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
     mapper: map = {},
     routeBase = "api",
     moduleId = VIRTUAL_ID,
-    outDir = "dist",
+    outDir = "dist/server",
+    minify = true,
     preBuild = (v: InlineConfig) => v,
   } = opts;
 
@@ -80,11 +82,6 @@ export const assertPluginConfig = (
     key = key.replace("API_", "");
     process.env[key] = value;
   });
-  // entry =
-  //   slashResolveIfExist(root, entry) || defaultFile("runtime/server.js", root);
-  // handler =
-  //   slashResolveIfExist(root, handler) ||
-  //   defaultFile("runtime/handler.js", root);
 
   exclude = [...exclude, "node_modules", ".git"];
 
@@ -123,6 +120,7 @@ export const assertPluginConfig = (
     outDir,
     preBuild,
     dirs,
+    minify,
     mapper,
   };
 };
