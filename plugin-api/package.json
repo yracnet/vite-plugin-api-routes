@@ -16,7 +16,8 @@
   ],
   "files": [
     "dist",
-    "client.d.ts"
+    "client.d.ts",
+    "LICENSE"
   ],
   "license": "MIT",
   "author": "Willyams Yujra <yracnet@gmail.com>",
