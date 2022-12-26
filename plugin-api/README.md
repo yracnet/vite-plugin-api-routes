@@ -217,6 +217,16 @@ app.listen(3000, () => {
 });
 ```
 
+## TypeScript
+
+For loading definition package for "virtual:vite-plugin-api:config" and virtual:vite-plugin-api:router" add:
+
+src/env.d.ts
+
+```ts
+/// <reference types="vite-plugin-api/client" />
+```
+
 ## Env
 
 Only load to process.env the keys that start with prefix "API\_"

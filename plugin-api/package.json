@@ -15,9 +15,9 @@
     "api-rest"
   ],
   "files": [
-    "dist"
+    "dist",
+    "client.d.ts"
   ],
-  "type": "module",
   "license": "MIT",
   "author": "Willyams Yujra <yracnet@gmail.com>",
   "repository": {

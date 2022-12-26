@@ -1,6 +1,4 @@
 import { defineConfig } from "tsup";
-import { getSourceCode } from "./src/plugin/util";
-const virtualDTS = getSourceCode("./src/virtual.d.ts");
 
 export default defineConfig([
   {
@@ -10,7 +8,6 @@ export default defineConfig([
     external: ["vite", "express"],
     dts: {
       resolve: true,
-      footer: virtualDTS,
     },
     clean: true,
     sourcemap: false,
