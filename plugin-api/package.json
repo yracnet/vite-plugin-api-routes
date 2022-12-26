@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-api",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Create API routes mapping from path directory like to NextJS API Routes, but this plugin extends the funcionality for backend development using vite.",
   "keywords": [
     "vite",
@@ -27,6 +27,16 @@
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    }
+  },
   "homepage": "https://github.com/yracnet/vite-plugin-api",
   "bugs": "https://github.com/yracnet/vite-plugin-api/issues",
   "scripts": {

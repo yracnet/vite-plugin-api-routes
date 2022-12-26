@@ -35,7 +35,7 @@ export const routers = internal.map((it) => {
   return { method, path, route, source };
 });
 
-export const enpoints = internal.map((it) => it.method + '\\t' + it.path);
+export const endpoints = internal.map((it) => it.method?.toUpperCase() + '\\t' + it.path);
 
 const HOC_DEFAULT = (cb) => {
   return cb;

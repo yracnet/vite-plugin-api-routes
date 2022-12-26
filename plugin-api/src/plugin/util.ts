@@ -30,3 +30,6 @@ export const slashResolveIfExist = (
   }
   return file;
 };
+
+export const getSourceCode = (file: string): string =>
+  fs.readFileSync(file, { encoding: "utf8" });
