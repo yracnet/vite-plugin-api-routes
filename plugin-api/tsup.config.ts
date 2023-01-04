@@ -14,7 +14,7 @@ export default defineConfig([
   },
   {
     entry: ["src/plugin/runtime/server.js"],
-    format: "esm",
+    format: "cjs",
     external: [
       "virtual:vite-plugin-api:handler",
       "virtual:vite-plugin-api:router",
@@ -28,7 +28,7 @@ export default defineConfig([
   },
   {
     entry: ["src/plugin/runtime/handler.js"],
-    format: "esm",
+    format: "cjs",
     external: [
       "virtual:vite-plugin-api:handler",
       "virtual:vite-plugin-api:router",

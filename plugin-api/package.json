@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-api",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Create API routes mapping from path directory like to NextJS API Routes, but this plugin extends the funcionality for backend development using vite.",
   "keywords": [
     "vite",
