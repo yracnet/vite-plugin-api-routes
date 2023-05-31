@@ -28,10 +28,12 @@ export type FileRouter = {
 
 export const getFileRouters = (config: PluginConfig): FileRouter[] => {
   let { dirs, include, exclude } = config;
-  return dirs.flatMap((it, ix) =>
-    fg
+  return dirs.flatMap((it, ix) => {
+    it.exclude = it.exclude || [];
+    const ignore = [...exclude, ...it.exclude];
+    return fg
       .sync(include, {
-        ignore: exclude,
+        ignore,
         onlyDirectories: false,
         dot: true,
         unique: true,
@@ -49,8 +51,8 @@ export const getFileRouters = (config: PluginConfig): FileRouter[] => {
           path,
           route,
         };
-      })
-  );
+      });
+  });
 };
 
 export type MethodRouter = {

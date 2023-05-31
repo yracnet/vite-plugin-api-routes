@@ -35,6 +35,7 @@ export default defineConfig({
         {
           dir: "./src/api/v2",
           route: "v2",
+          exclude: ["**/data"],
         },
       ],
       mapper: {

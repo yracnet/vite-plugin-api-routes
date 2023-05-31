@@ -1,6 +1,6 @@
 import { ResolvedConfig, ViteDevServer, build } from "vite";
 import {
-  PluginOptions,
+  UserConfig,
   assertPluginConfig,
   HANDLER_ID,
   CONFIG_ID,
@@ -20,7 +20,7 @@ export type BuildAPI = {
 };
 
 export const createBuildAPI = (
-  opts: PluginOptions,
+  opts: UserConfig,
   vite: ResolvedConfig
 ): BuildAPI => {
   const config = assertPluginConfig(opts, vite);

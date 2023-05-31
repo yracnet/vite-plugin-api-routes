@@ -1,10 +1,10 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
-import { PluginOptions } from "./plugin/config";
+import { UserConfig } from "./plugin/config";
 import { BuildAPI, createBuildAPI } from "./plugin/main";
 export { PluginConfig } from "./plugin/config";
 export { FileRouter } from "./plugin/router";
 
-export const pluginAPI = (apiOptions: PluginOptions): Plugin => {
+export const pluginAPI = (apiOptions: UserConfig): Plugin => {
   let ctx: BuildAPI;
   return {
     name: "vite-plugin-api",

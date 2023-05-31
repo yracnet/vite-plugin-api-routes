@@ -95,7 +95,7 @@ export default defineConfig({
   plugins: [
     pluginAPI({
       // routeBase?: "api",
-      // dirs?: [{ dir: "src/api"; route: "" }],
+      // dirs?: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"] }],
       // include?: ["**/*.js", "**/*.ts"],
       // exclude?: ["node_modules", ".git"],
       // moduleId?: "virtual:vite-plugin-api",
@@ -112,7 +112,7 @@ export default defineConfig({
 - **routeBase**: Base name route for all routes,
   default value is **api**
 - **dirs**: List of directory to will be scan,
-  default value is **[ { dir: 'src/api', route: ''} ]**
+  default value is **[ { dir: 'src/api', route: '', exclude: []} ]**
 - **include**: Files and directory include in scan process, default value is **["\*\*/_.js", "\*\*/_.ts"]**
 - **exclude**: Files and directory exclude in scan process, default value is **["node_modules", ".git"]**
 - **moduleId**: Name the virtual module,

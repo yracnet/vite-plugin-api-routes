@@ -17,6 +17,7 @@ export const HANDLER_ID = `virtual:vite-plugin-api:handler`;
 export type DirRoute = {
   dir: string;
   route: string;
+  exclude?: string[];
 };
 
 export type Mapper = {
@@ -24,7 +25,7 @@ export type Mapper = {
   method: string;
 };
 
-export type PluginOptions = {
+export type UserConfig = {
   entry?: string;
   handler?: string;
   dirs?: DirRoute[];
@@ -56,7 +57,7 @@ export type PluginConfig = {
 const defaultFile = (file: string) => slashJoin(__dirname, file);
 
 export const assertPluginConfig = (
-  opts: PluginOptions,
+  opts: UserConfig,
   vite: ResolvedConfig
 ): PluginConfig => {
   const root = slash(vite.root);
@@ -64,7 +65,7 @@ export const assertPluginConfig = (
   let {
     entry = defaultFile("runtime/server.js"),
     handler = defaultFile("runtime/handler.js"),
-    dirs = [{ dir: "src/api", route: "" }],
+    dirs = [{ dir: "src/api", route: "", exclude: [] }],
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
     mapper: map = {},
@@ -103,10 +104,10 @@ export const assertPluginConfig = (
       method,
     }));
 
-  dirs = dirs.map(({ dir, route }) => {
+  dirs = dirs.map(({ dir, route, exclude = [] }) => {
     dir = slashResolve(root, dir);
     route = assertFileRoute(route);
-    return { route, dir };
+    return { route, dir, exclude };
   });
 
   return {
