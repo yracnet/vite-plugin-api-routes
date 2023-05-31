@@ -1,9 +1,0 @@
-{
-  "editor.formatOnSave": true,
-  "files.exclude": {
-    "**/tsconfig.json": false,
-    "**/tsconfig.node.json": true,
-    "**/node_modules": true
-  }
-}
- 
