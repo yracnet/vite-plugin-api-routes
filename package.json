@@ -1,8 +1,8 @@
 {
   "name": "vite-plugin-api",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "type": "module",
-  "description": "Create API routes mapping from path directory like to NextJS API Routes, but this plugin extends the funcionality for backend development using vite.",
+  "description": "A Vite.js plugin that creates API routes by mapping the directory structure, similar to Next.js API Routes. This plugin enhances the functionality for backend development using Vite.",
   "keywords": [
     "vite",
     "api",
@@ -13,7 +13,13 @@
     "file-system-based",
     "routing",
     "rest-api",
-    "api-rest"
+    "api-rest",
+    "plugin",
+    "API",
+    "routes",
+    "backend",
+    "Remix",
+    "Next.js"
   ],
   "files": [
     "dist",

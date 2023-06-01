@@ -1,13 +1,13 @@
 # vite-plugin-api
 
-Create API routes from path directory like to [NextJS API Routes](https://nextjs.org/docs/api-routes/introduction), but this plugin extends the funcionality for backend development using vite.
+Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
 
 ## Motivation
 
-- I will tried to simplify the configuration project.
-- Convert the directory tree to route rules.
+- Simplify project configuration.
+- Convert the directory tree into route rules.
 
-### [For example:](./../example/src/api/)
+### Example Structure:
 
 ```bash
 > tree src/api/
@@ -31,7 +31,7 @@ src/api/:
             [userId].js    //NextJS Format
 ```
 
-The directory tree will be export to router rules tree:
+The directory tree is exported as router rules tree:
 
 ```bash
 GET     /api/v1
@@ -59,7 +59,7 @@ PUT     /api/v2/user/:userId
 DELETE  /api/v2/user/:userId
 ```
 
-Where the `src/api/v1/user/$userId.js` file export the allow request methods:
+For example, the `src/api/v1/user/$userId.js` file exports allowed request methods:
 
 ```js
 //file:src/api/v1/user/$userId.js
@@ -70,12 +70,12 @@ export const PUT = async (req, res, next) => {
   res.send("PUT REQUEST");
 };
 // Support default, GET, HEAD, POST, PUT, DELETE by default
-// for CONNECT, OPTIONS, TRACE, PATCH and others you need add the mapping to mapper attribute config
+// For CONNECT, OPTIONS, TRACE, PATCH, and others, you need to add the mapping to the mapper attribute config
 ```
 
-Same the NextJS/Remix framework the `[userId].js` or `$userId.js` file name will be exported as request parameter `/user/:userId`.
+Similarly, the `[userId].js` or `$userId.js` file name is exported as a request parameter `/user/:userId`, following the Next.js/Remix framework.
 
-## How to use
+## How to Use
 
 ### Install
 
@@ -83,9 +83,9 @@ Same the NextJS/Remix framework the `[userId].js` or `$userId.js` file name will
 yarn add vite-plugin-api
 ```
 
-### Configure
+### Configuration
 
-In [vite.config.ts](./../example/vite.config.ts)
+In `vite.config.ts`:
 
 ```js
 import { defineConfig } from "vite";
@@ -107,30 +107,27 @@ export default defineConfig({
 });
 ```
 
-### Parameters:
+### Parameters
 
-- **routeBase**: Base name route for all routes,
-  default value is **api**
-- **dirs**: List of directory to will be scan,
-  default value is **[ { dir: 'src/api', route: '', exclude: []} ]**
-- **include**: Files and directory include in scan process, default value is **["\*\*/_.js", "\*\*/_.ts"]**
-- **exclude**: Files and directory exclude in scan process, default value is **["node_modules", ".git"]**
-- **moduleId**: Name the virtual module,
-- **entry**: It is the main file to build as server app. [See default file.](./src/plugin/runtime/server.js)
-- **handler**: It is the main file to register the api, it is caller in viteServer and default entry. [See default file.](./src/plugin/runtime/handler.js)
-- **mapper**: It is a mapping rules from exports function to server instance methods.
+- **routeBase**: Base name route for all routes. The default value is **api**.
+- **dirs**: List of directories to be scanned. The default value is **[ { dir: 'src/api', route: '', exclude: []} ]**.
+- **include**: Files and directories to include in the scan process. The default value is **["\\*\\*/_.js", "\\*\\*/_.ts"]**.
+- **exclude**: Files and directories to exclude from the scan process. The default value is **["node_modules", ".git"]**.
+- **moduleId**: Name of the virtual module.
+- **entry**: The main file to build as the server app. [See default file.](./src/plugin/runtime/server.js)
+- **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./src/plugin/runtime/handler.js)
+- **mapper**: Mapping rules from exported functions to server instance methods.
 
 ## Mapper
 
-**Default value**
+**Default Value**
 
 ```js
 mapper: {
-  default: "use",
+    default: "use",
   GET: "get",
   POST: "post",
   PUT: "put",
-  PATCH: "patch",
   PATCH: "patch",
   DELETE: "delete",
   // Overwrite
@@ -150,11 +147,11 @@ export default defineConfig({
       mapper: {
         PING: "get",
         // export const PING = ()=>{...}
-        // Will be mapping to express method
+        // Will be mapped to express method
         // app.get('/path/dir', PING)
         OTHER_POST: "post2",
         // export const PATCH = ()=>{...}
-        // Will not be mapping
+        // Will not be mapped
         PATCH: false,
       },
     }),
@@ -162,19 +159,18 @@ export default defineConfig({
 });
 ```
 
-You can disabled a method setting false value. In the example ` PATCH: false`, the PATCH method be disabled.
-
+You can disable a method by setting its value to false. In the example `PATCH: false`, the PATCH method is disabled.
 **/src/api/index.js**
 
 ```javascript
 export PING = (req, res, next)=>{
-  res.send({name:"Ping Service"});
+    res.send({name:"Ping Service"});
 }
 export OTHER_POST = (req, res, next)=>{
-  res.send({name:"Ping Service"});
+    res.send({name:"Ping Service"});
 }
 export PATCH = (req, res, next)=>{
-  res.send({name:"Ping Service"});
+    res.send({name:"Ping Service"});
 }
 ```
 
@@ -183,14 +179,11 @@ export PATCH = (req, res, next)=>{
 ```javascript
 import express from "express";
 import { applyRouters } from "virtual:vite-plugin-api:router";
-
 const app = express();
-
 app.post2 = (req, res, next) => {
   console.log("Custom POST2");
   app.post(req, res, next);
 };
-
 applyRouters(
   (props) => {
     const { source, method, path, route, cb } = props;
@@ -199,7 +192,7 @@ applyRouters(
     if (app[method]) {
       app[method](path, cb);
     } else {
-      console.log("App not support", method, "verbose");
+      console.log("App does not support", method, "verbose");
     }
   },
   (cb) => async (req, res, next) => {
@@ -219,19 +212,18 @@ app.listen(3000, () => {
 
 ## TypeScript
 
-For loading definition package for "virtual:vite-plugin-api:config" and virtual:vite-plugin-api:router" add:
-
+To load the definition package for "virtual:vite-plugin-api:config" and "virtual:vite-plugin-api:router", add:
 src/env.d.ts
 
 ```ts
 /// <reference types="vite-plugin-api/client" />
 ```
 
-## Env
+## Environment Variables
 
-Only load to process.env the keys that start with prefix "API\_"
+Only keys starting with the prefix "API\_" will be loaded into `process.env`.
 
 ## TO DO:
 
-- Doble declaration (**GET** in _/user.ts_ and _/user/index.ts_). Handler definition is required.
-- Extends the mapper attribute for support a custom http method using a header attribute.
+- Duplicate declaration (**GET** in _/user.ts_ and _/user/index.ts_). Handler definition is required.
+- Extend the `mapper` attribute to support custom HTTP methods using a header attribute.
