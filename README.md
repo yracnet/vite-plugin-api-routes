@@ -2,6 +2,8 @@
 
 Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
 
+See the [tutorial](./tutorial)
+
 ## Motivation
 
 - Simplify project configuration.
