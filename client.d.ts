@@ -1,5 +1,5 @@
 declare module "virtual:vite-plugin-api:router" {
-  type Callback = () => any;
+  type Callback = (req: any, res: any, next: any) => any;
   type HOC = (cb: Callback) => Callback;
   type RouterDefinition = {
     /**
