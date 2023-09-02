@@ -1,12 +1,6 @@
+import _slash from "slash-path";
+import { InlineConfig, ResolvedConfig, loadEnv } from "vite";
 import { assertFileRoute } from "./router";
-import {
-  slash,
-  slashJoin,
-  slashRelative,
-  slashResolve,
-  slashResolveIfExist,
-} from "./util";
-import { InlineConfig, loadEnv, ResolvedConfig } from "vite";
 
 export const VIRTUAL_ID = "virtual:vite-plugin-api";
 export const ROUTER_ID = `virtual:vite-plugin-api:router`;
@@ -54,13 +48,13 @@ export type PluginConfig = {
   preBuild: (config: InlineConfig) => InlineConfig;
 };
 
-const defaultFile = (file: string) => slashJoin(__dirname, file);
+const defaultFile = (file: string) => _slash.join(__dirname, file);
 
 export const assertPluginConfig = (
   opts: UserConfig,
   vite: ResolvedConfig
 ): PluginConfig => {
-  const root = slash(vite.root);
+  const root = _slash.slash(vite.root);
 
   let {
     entry = defaultFile("runtime/server.js"),
@@ -76,8 +70,8 @@ export const assertPluginConfig = (
     preBuild = (v: InlineConfig) => v,
   } = opts;
 
-  routeBase = slash(routeBase);
-  outDir = slashResolve(root, outDir);
+  routeBase = _slash.slash(routeBase);
+  outDir = _slash.resolve(root, outDir);
   const env = loadEnv(vite.mode, root, "API_");
   Object.entries(env).forEach(([key, value]) => {
     key = key.replace("API_", "");
@@ -105,7 +99,7 @@ export const assertPluginConfig = (
     }));
 
   dirs = dirs.map(({ dir, route, exclude = [] }) => {
-    dir = slashResolve(root, dir);
+    dir = _slash.resolve(root, dir);
     route = assertFileRoute(route);
     return { route, dir, exclude };
   });

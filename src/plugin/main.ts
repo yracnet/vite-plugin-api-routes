@@ -1,16 +1,16 @@
+import polka from "polka";
+import _slash from "slash-path";
 import { ResolvedConfig, ViteDevServer, build } from "vite";
 import {
-  UserConfig,
-  assertPluginConfig,
-  HANDLER_ID,
   CONFIG_ID,
-  VIRTUAL_ID,
-  SERVER_ID,
+  HANDLER_ID,
   ROUTER_ID,
+  SERVER_ID,
+  UserConfig,
+  VIRTUAL_ID,
+  assertPluginConfig,
 } from "./config";
 import { generateCodeConfig, generateCodeRouter } from "./stringify";
-import { slashRelative } from "./util";
-import polka from "polka";
 
 export type BuildAPI = {
   setupServer: (server: ViteDevServer) => void;
@@ -67,7 +67,7 @@ export const createBuildAPI = (
       if (process.env.IS_API_BUILD) return;
       process.env.IS_API_BUILD = "true";
       const { root, outDir, minify } = config;
-      const clientDir = slashRelative(outDir, vite.build.outDir);
+      const clientDir = _slash.relative(outDir, vite.build.outDir);
       const viteServer = await config.preBuild({
         root,
         mode: vite.mode,
