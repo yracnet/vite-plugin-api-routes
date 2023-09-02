@@ -1,20 +1,21 @@
 import fg from "fast-glob";
+import slash from "slash-path";
 import { PluginConfig } from "./config";
-import { slashJoin, slashRelative } from "./util";
 
-type Path = string | null | undefined;
+type PathString = string | null | undefined;
 
-export const assertFileRoute = (...paths: Path[]) => {
+export const assertFileRoute = (...names: PathString[]) => {
   return (
-    paths
-      .map((path) => path?.replace(/^\//, "").replace(/\/$/, ""))
+    names
+      .map((name) => name?.replace(/^\//, "").replace(/\/$/, ""))
       //Remix
-      .map((path) => path?.replaceAll("$", ":"))
+      .map((name) => name?.replaceAll("$", ":"))
       //NextJS
-      .map((path) => path?.replaceAll("[", ":").replaceAll("]", ""))
-      .map((path) => path?.replace(/\.[^.]+$/, ""))
-      .map((path) => path?.replaceAll(/index$/gi, ""))
-      .filter((it) => it)
+      .map((name) => name?.replaceAll("[", ":").replaceAll("]", ""))
+      .map((name) => name?.replace(/\.[^.]+$/, ""))
+      .map((name) => name?.replaceAll(/index$/gi, ""))
+      .map((name) => name?.replaceAll(/_index$/gi, ""))
+      .filter((name) => name)
       .join("/")
   );
 };
@@ -44,7 +45,7 @@ export const getFileRouters = (config: PluginConfig): FileRouter[] => {
         let route = assertFileRoute(it.route, file);
         let path = `/${config.routeBase}/${route}`;
         route = `/${route}`;
-        file = slashJoin(it.dir, file);
+        file = slash.join(it.dir, file);
         return {
           name: `_${ix}_${jx}`,
           file,
@@ -68,7 +69,7 @@ export const getMethodRouters = (config: PluginConfig): MethodRouter[] => {
     config.mapper.map((m) => {
       let cb = r.name + "." + m.name;
       let source = r.file + "?fn=" + m.name;
-      source = slashRelative(config.root, source);
+      source = slash.relative(config.root, source);
 
       return {
         source,
