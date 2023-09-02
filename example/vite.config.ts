@@ -2,9 +2,8 @@ import pluginReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { chunkSplitPlugin } from "vite-plugin-chunk-split";
 import fullReload from "vite-plugin-full-reload";
-//@ts-ignore
-import { pluginAPI } from "../src";
-//import { pluginAPI } from "vite-plugin-api";
+//import { pluginAPI } from "../src";
+import { pluginAPI } from "vite-plugin-api";
 
 // https://vitejs.dev/config/
 export default defineConfig({
