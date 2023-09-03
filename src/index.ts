@@ -1,49 +1,80 @@
-import {
-  mergeConfig,
-  type Plugin,
-  type ResolvedConfig,
-  type ViteDevServer,
-} from "vite";
-import { UserConfig } from "./plugin/config";
-import { BuildAPI, createBuildAPI } from "./plugin/main";
-export { PluginConfig } from "./plugin/config";
-export { FileRouter } from "./plugin/router";
+import path from "slash-path";
+import { InlineConfig } from "vite";
+import { pluginImpl } from "./plugin/main";
+import { Mapper, UserConfig } from "./plugin/types";
 
-export const pluginAPI = (apiOptions: UserConfig): Plugin => {
-  let ctx: BuildAPI;
-  return {
-    name: "vite-plugin-api",
-    enforce: "pre",
-    config: (config) => {
-      return mergeConfig(config, {
-        build: {
-          rollupOptions: {
-            onwarn: (warning: any, handler: any) => {
-              if (
-                warning.code === "MISSING_EXPORT" &&
-                warning.id === "virtual:vite-plugin-api:router"
-              )
-                return;
-              handler(warning);
-            },
-          },
-        },
-      });
-    },
-    async configResolved(config: ResolvedConfig) {
-      ctx = createBuildAPI(apiOptions, config);
-    },
-    configureServer(server: ViteDevServer) {
-      ctx.setupServer(server);
-    },
-    resolveId(id: string) {
-      return ctx.resolveId(id);
-    },
-    async load(id: string) {
-      return ctx.generateCode(id);
-    },
-    async writeBundle() {
-      ctx.writeBundle();
-    },
+export const pluginAPI = (opts: UserConfig) => {
+  let {
+    moduleId = "@api",
+    cacheDir = "node_modules/.api",
+    root = process.cwd(),
+    server = path.join(cacheDir, "server.js"),
+    handler = path.join(cacheDir, "handler.js"),
+    routeBase = "api",
+    dirs = [{ dir: "src/api", route: "", exclude: [] }],
+    include = ["**/*.ts", "**/*.js"],
+    exclude = [],
+    mapper = {},
+    outDir = "dist/server",
+    minify = true,
+    preBuild = (v: InlineConfig) => v,
+  } = opts;
+
+  dirs = dirs.map((it) => {
+    it.dir = path.join(root, it.dir);
+    return it;
+  });
+
+  mapper = {
+    default: "use",
+    GET: "get",
+    PUT: "put",
+    POST: "post",
+    PATCH: "patch",
+    DELETE: "delete",
+    // Overwrite
+    ...mapper,
   };
+  routeBase = path.join("/", routeBase);
+  outDir = path.join(root, outDir);
+  cacheDir = path.join(root, cacheDir);
+  const serverFile = path.join(root, server);
+  const handlerFile = path.join(root, handler);
+  const routersFile = path.join(cacheDir, "routers.js");
+
+  const mapperList = Object.entries(mapper)
+    .filter((it) => it[1])
+    .map(([name, method]) => {
+      return <Mapper>{
+        name,
+        method,
+      };
+    });
+  const watcherList = dirs.map((it) => it.dir);
+  watcherList.push(cacheDir);
+  watcherList.push(serverFile);
+  watcherList.push(handlerFile);
+
+  return pluginImpl({
+    moduleId,
+    server,
+    handler,
+    root,
+    serverFile,
+    handlerFile,
+    routersFile,
+    routeBase,
+    dirs,
+    include,
+    exclude,
+    mapper,
+    mapperList,
+    watcherList,
+    outDir,
+    cacheDir,
+    minify,
+    preBuild,
+  });
 };
+
+export default pluginAPI;

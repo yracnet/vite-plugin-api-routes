@@ -1,71 +1,31 @@
 import pluginReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { chunkSplitPlugin } from "vite-plugin-chunk-split";
-import fullReload from "vite-plugin-full-reload";
-//import { pluginAPI } from "../src";
-import { pluginAPI } from "vite-plugin-api";
+import pluginAPI from "../src";
+//import { pluginAPI } from "vite-plugin-api";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "myapp",
   build: {
     minify: false,
-    outDir: "dist/client",
-    rollupOptions: {
-      external: ["express", "dotenv"],
-    },
+    outDir: "dist/public",
   },
   plugins: [
     pluginReact(),
     pluginAPI({
-      moduleId: "virtual:custom",
-      outDir: "dist/server",
+      //server: "src/server.ts",
       minify: false,
-      //entry: "src/entry-server.js",
-      //handler: "src/handler.js",
-      dirs: [
-        {
-          dir: "./src/api/dev",
-          route: "dev",
-        },
-        // {
-        //   dir: "./src/api/v1",
-        //   route: "v1",
-        // },
-        {
-          dir: "./src/api/v2",
-          route: "v2",
-          exclude: ["**/data"],
-        },
-      ],
-      mapper: {
-        // default: false,
-        // // GET: false,
-        // // POST: false,
-        // // PUT: false,
-        // PATCH: false,
-        // DELETE: false,
-        // HOC: "use",
-        // PING: "get",
-        // CREATE: "over",
-        // UPDATE: "over",
-        // REMOVE: "over",
-      },
     }),
-    //Plugin Development
-    fullReload(["**/*.ts", "**/*.js"], { root: "../plugin-api/src" }),
     //Remix ChunkSplit
     chunkSplitPlugin({
+      strategy: "unbundle",
       customChunk: (args) => {
         const { file } = args;
-        const isApiBuild = process.env.IS_API_BUILD;
-        if (isApiBuild) {
-          if (file.startsWith("virtual:vite-plugin-api")) {
-            return "api";
-          } else if (/src\/api/.test(file)) {
-            return file.replace("src/api", "api");
-          }
+        if (file == ".api/server.js") {
+          return null;
         }
-        return null;
+        return "routers";
       },
     }),
   ],
