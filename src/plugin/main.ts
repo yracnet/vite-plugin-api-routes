@@ -1,79 +1,81 @@
-import polka from "polka";
-import _slash from "slash-path";
-import { ResolvedConfig, ViteDevServer, build } from "vite";
-import {
-  CONFIG_ID,
-  HANDLER_ID,
-  ROUTER_ID,
-  SERVER_ID,
-  UserConfig,
-  VIRTUAL_ID,
-  assertPluginConfig,
-} from "./config";
-import { generateCodeConfig, generateCodeRouter } from "./stringify";
+import path from "slash-path";
+import { PluginOption, build } from "vite";
+import { PluginConfig } from "./types";
+import { generateReload, generateStart } from "./write";
 
-export type BuildAPI = {
-  setupServer: (server: ViteDevServer) => void;
-  resolveId: (id: string) => any | null;
-  generateCode: (id: string) => string | null;
-  writeBundle: () => void;
-};
-
-export const createBuildAPI = (
-  opts: UserConfig,
-  vite: ResolvedConfig
-): BuildAPI => {
-  const config = assertPluginConfig(opts, vite);
+export const pluginImpl = (config: PluginConfig): PluginOption => {
+  const isReload = (file: string) => {
+    file = path.slash(file);
+    return config.watcherList.find((it) => file.startsWith(it));
+  };
+  //@ts-ignore
+  let vite: ResolvedConfig = {};
   return {
-    setupServer: (devServer) => {
-      devServer.middlewares.use(async (req: any, res: any, next) => {
+    name: "vite-plugin-api",
+    enforce: "pre",
+    config: () => {
+      return {
+        resolve: {
+          alias: {
+            [`${config.moduleId}/server`]: config.serverFile,
+            [`${config.moduleId}/handler`]: config.handlerFile,
+            [`${config.moduleId}/routers`]: config.routersFile,
+          },
+        },
+      };
+    },
+    configResolved: (viteConfig) => {
+      vite = viteConfig;
+      generateStart(config, vite);
+    },
+    handleHotUpdate: async (data) => {
+      if (isReload(data.file)) {
+        return [];
+      }
+    },
+    configureServer: (devServer) => {
+      const {
+        //
+        watcher,
+        middlewares,
+        ssrLoadModule,
+        ssrFixStacktrace,
+        restart,
+      } = devServer;
+      const onReload = (file: string) => {
+        if (isReload(file)) {
+          generateReload(config, vite);
+          restart();
+        }
+      };
+      watcher.on("add", onReload);
+      watcher.on("change", onReload);
+      const baseApi = path.join(vite.base, config.routeBase);
+      middlewares.use(baseApi, async (req: any, res, next) => {
         try {
-          const mod = await devServer.ssrLoadModule(`/@id/${HANDLER_ID}`);
-          const server = polka({
-            onNoMatch: () => next(),
-          });
-          server.use(mod.handler);
-          server.handler(req, res);
+          const module = await ssrLoadModule(config.handler);
+          module.handler(req, res);
         } catch (error) {
-          devServer.ssrFixStacktrace(error as Error);
+          ssrFixStacktrace(error as Error);
           process.exitCode = 1;
           next(error);
         }
       });
     },
-    resolveId: (id: string) => {
-      if (id.startsWith(config.moduleId)) {
-        id = id.replace(config.moduleId, VIRTUAL_ID);
-      }
-      if (id === ROUTER_ID || id === CONFIG_ID) {
-        return id;
-      } else if (id === SERVER_ID) {
-        return config.entry;
-      } else if (id === HANDLER_ID) {
-        return config.handler;
-      }
-      return null;
-    },
-    generateCode: (id) => {
-      if (id === ROUTER_ID) {
-        return generateCodeRouter(config);
-      } else if (id === CONFIG_ID) {
-        return generateCodeConfig(config);
-      }
-      return null;
-    },
-
     writeBundle: async () => {
       if (process.env.IS_API_BUILD) return;
+      generateStart(config, vite);
       process.env.IS_API_BUILD = "true";
-      const { root, outDir, minify } = config;
-      const clientDir = _slash.relative(outDir, vite.build.outDir);
-      const viteServer = await config.preBuild({
+      const { root, outDir, minify, preBuild, routeBase } = config;
+      const publicDir = path.relative(outDir, vite.build.outDir);
+      const viteServer = await preBuild({
         root,
         mode: vite.mode,
         publicDir: "private",
         define: {
-          "import.meta.env.CLIENT_DIR": clientDir,
+          "import.meta.env.PUBLIC_DIR": publicDir,
+          "import.meta.env.BASE": vite.base,
+          "import.meta.env.BASE_APÎ": path.join(vite.base, routeBase),
         },
         build: {
           outDir,
@@ -84,11 +86,20 @@ export const createBuildAPI = (
           emptyOutDir: true,
           rollupOptions: {
             input: {
-              app: config.entry,
+              app: config.server,
             },
             external: vite.build?.rollupOptions?.external,
             output: {
               format: "es",
+            },
+            onwarn: (warning: any, handler: any) => {
+              if (
+                warning.code === "MISSING_EXPORT" &&
+                warning.id === config.routersFile
+              ) {
+                return;
+              }
+              handler(warning);
             },
           },
         },

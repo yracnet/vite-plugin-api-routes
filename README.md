@@ -14,51 +14,45 @@ See the [tutorial](./tutorial.md)
 ```bash
 > tree src/api/
 src/api/:
-├───v1
-│   │   auth.js
-│   │   index.js
+├───admin
 │   ├───auth
-│   │       login.js
-│   │       status.js
+│   │   ├───login.js
+│   │   └───status.js
 │   └───user
-│           $userId.js    //Remix Format
-│           index.js
-└───v2
-    │   user.js
-    ├───auth
-    │       login.js
-    │       status.js
-    └───user
-            index.js
-            [userId].js    //NextJS Format
+│       ├───index.js
+│       └───[userId]        //Remix Format
+│           ├───index.js
+│           └───detail.js
+├───site
+│   ├───article
+│   │   ├───$articleId.js   //NextJS Format
+│   │   └───new.js
+│   └───page
+│       ├───$articleId.js
+│       └───new.js
+└───index.js
 ```
 
 The directory tree is exported as router rules tree:
 
 ```bash
-GET     /api/v1
-USE     /api/v1/auth
-PUT     /api/v1/auth
-DELETE  /api/v1/auth
-GET     /api/v1/auth/login
-POST    /api/v1/auth/login
-GET     /api/v1/auth/status
-POST    /api/v1/auth/status
-GET     /api/v1/user/
-POST    /api/v1/user/
-PUT     /api/v1/user/:userId
-DELETE  /api/v1/user/:userId
-GET     /api/v2/auth/login
-POST    /api/v2/auth/login
-GET     /api/v2/auth/status
-POST    /api/v2/auth/status
-USE     /api/v2/user
-PUT     /api/v2/user
-DELETE  /api/v2/user
-GET     /api/v2/user/
-POST    /api/v2/user/
-PUT     /api/v2/user/:userId
-DELETE  /api/v2/user/:userId
+GET     /api/site/
+GET     /api/routers
+USE     /api/admin/user
+GET     /api/admin/user
+GET     /api/admin/user/
+POST    /api/admin/user/
+GET     /api/admin/auth/login
+POST    /api/admin/auth/login
+GET     /api/site/article/new
+GET     /api/admin/auth/status
+POST    /api/admin/auth/status
+GET     /api/site/page/:pageId
+GET     /api/admin/user/:userId/
+PUT     /api/admin/user/:userId/
+DELETE  /api/admin/user/:userId/
+GET     /api/site/article/:articleId
+GET     /api/admin/user/:userId/detail
 ```
 
 For example, the `src/api/v1/user/$userId.js` file exports allowed request methods:
@@ -96,14 +90,14 @@ import { pluginAPI } from "vite-plugin-api";
 export default defineConfig({
   plugins: [
     pluginAPI({
-      // routeBase?: "api",
-      // dirs?: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"] }],
-      // include?: ["**/*.js", "**/*.ts"],
-      // exclude?: ["node_modules", ".git"],
-      // moduleId?: "virtual:vite-plugin-api",
-      // mapper?: { default: "use", GET: "get", ... },
-      // entry?: "[node_module:lib]/server.js",
-      // handler?: "[node_module:lib]/handler.js",
+      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api",
+      // server: "[node_module:lib]/server.js",
+      // handler: "[node_module:lib]/handler.js",
+      // routeBase: "api",
+      // dirs: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"] }],
+      // include: ["**/*.js", "**/*.ts"],
+      // exclude: ["node_modules", ".git"],
+      // mapper: { default: "use", GET: "get", ... },
     }),
   ],
 });
@@ -111,14 +105,15 @@ export default defineConfig({
 
 ### Parameters
 
+- **moduleId**: Name of the virtual module, default @api.
+- **server**: The main file to build as the server app. [See default file.](./example/.api/server.js)
+- **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./example/.api/handler.js)
 - **routeBase**: Base name route for all routes. The default value is **api**.
 - **dirs**: List of directories to be scanned. The default value is **[ { dir: 'src/api', route: '', exclude: []} ]**.
 - **include**: Files and directories to include in the scan process. The default value is **["\\*\\*/_.js", "\\*\\*/_.ts"]**.
 - **exclude**: Files and directories to exclude from the scan process. The default value is **["node_modules", ".git"]**.
-- **moduleId**: Name of the virtual module.
-- **entry**: The main file to build as the server app. [See default file.](./src/plugin/runtime/server.js)
-- **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./src/plugin/runtime/handler.js)
 - **mapper**: Mapping rules from exported functions to server instance methods.
+- **cacheDir**: Cache Directory target to write temp files.
 
 ## Mapper
 
@@ -126,7 +121,8 @@ export default defineConfig({
 
 ```js
 mapper: {
-    default: "use",
+  //[Export Name]: [Http Verbose]
+  default: "use",
   GET: "get",
   POST: "post",
   PUT: "put",
