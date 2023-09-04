@@ -91,8 +91,8 @@ export default defineConfig({
   plugins: [
     pluginAPI({
       // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api",
-      // server: "[node_module:lib]/server.js",
-      // handler: "[node_module:lib]/handler.js",
+      // server: "node_modules/.api/server.js",
+      // handler: "node_modules/.api/handler.js",
       // routeBase: "api",
       // dirs: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"] }],
       // include: ["**/*.js", "**/*.ts"],
@@ -201,7 +201,7 @@ const { PORT = 3000, PUBLIC_DIR = "import.meta.env.PUBLIC_DIR" } = process.env;
 const server = express();
 server.use(express.json());
 server.use("import.meta.env.BASE", express.static(PUBLIC_DIR));
-server.use("import.meta.env.BASE_APÎ", handler);
+server.use("import.meta.env.BASE_API", handler);
 server.listen(PORT, () => {
   console.log(`Ready at http://localhost:${PORT}`);
   console.log(endpoints);
