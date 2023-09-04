@@ -55,10 +55,10 @@ GET     /api/site/article/:articleId
 GET     /api/admin/user/:userId/detail
 ```
 
-For example, the `src/api/v1/user/$userId.js` file exports allowed request methods:
+For example, the `src/api/admin/user/$userId.js` file exports allowed request methods:
 
 ```js
-//file:src/api/v1/user/$userId.js
+//file:src/api/admin/user/$userId.js
 export const DELETE = (req, res, next) => {
   res.send("DELETE REQUEST");
 };
@@ -91,8 +91,8 @@ export default defineConfig({
   plugins: [
     pluginAPI({
       // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api",
-      // server: "[node_module:lib]/server.js",
-      // handler: "[node_module:lib]/handler.js",
+      // server: "node_modules/.api/server.js",
+      // handler: "node_modules/.api/handler.js",
       // routeBase: "api",
       // dirs: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"] }],
       // include: ["**/*.js", "**/*.ts"],
@@ -141,7 +141,6 @@ mapper: {
 export default defineConfig({
   plugins: [
     createAPI({
-      entry: "src/custom-server.js",
       mapper: {
         PING: "get",
         // export const PING = ()=>{...}
@@ -172,54 +171,42 @@ export PATCH = (req, res, next)=>{
 }
 ```
 
-**/src/custom-server.js** or see [entry-server.js](./../example/src/entry-server.js)
+**/src/handler.js** or see [handler.js](./../example/src/handler.ts)
 
 ```javascript
 import express from "express";
-import { applyRouters } from "virtual:vite-plugin-api:router";
-const app = express();
-app.post2 = (req, res, next) => {
-  console.log("Custom POST2");
-  app.post(req, res, next);
-};
-applyRouters(
-  (props) => {
-    const { source, method, path, route, cb } = props;
-    // route is a path without routeBase
-    // source is a full path file
-    if (app[method]) {
-      app[method](path, cb);
-    } else {
-      console.log("App does not support", method, "verbose");
-    }
-  },
-  (cb) => async (req, res, next) => {
-    try {
-      res.message = "My high order component for callback";
-      await cb(req, res, next);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+import { applyRouters } from "@api/routers";
 
-app.listen(3000, () => {
-  console.log("Ready at http://localhost:3000");
+export const handler = express();
+
+applyRouters((props) => {
+  const { method, route, path, cb } = props;
+  if (handler[method]) {
+    handler[method](route, cb);
+  } else {
+    console.log("Not Support", method, "for", route, "in", handler);
+  }
 });
 ```
 
-## TypeScript
+**/src/server.js** or see [server.js](./../example/src/server.ts)
 
-To load the definition package for "virtual:vite-plugin-api:config" and "virtual:vite-plugin-api:router", add:
-src/env.d.ts
+```javascript
+import { handler } from "@api/handler";
+import { endpoints } from "@api/routers";
 
-```ts
-/// <reference types="vite-plugin-api/client" />
+import express from "express";
+
+const { PORT = 3000, PUBLIC_DIR = "import.meta.env.PUBLIC_DIR" } = process.env;
+const server = express();
+server.use(express.json());
+server.use("import.meta.env.BASE", express.static(PUBLIC_DIR));
+server.use("import.meta.env.BASE_API", handler);
+server.listen(PORT, () => {
+  console.log(`Ready at http://localhost:${PORT}`);
+  console.log(endpoints);
+});
 ```
-
-## Environment Variables
-
-Only keys starting with the prefix "API\_" will be loaded into `process.env`.
 
 ## TO DO:
 

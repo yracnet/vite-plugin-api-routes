@@ -75,7 +75,7 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
         define: {
           "import.meta.env.PUBLIC_DIR": publicDir,
           "import.meta.env.BASE": vite.base,
-          "import.meta.env.BASE_APÎ": path.join(vite.base, routeBase),
+          "import.meta.env.BASE_API": path.join(vite.base, routeBase),
         },
         build: {
           outDir,
