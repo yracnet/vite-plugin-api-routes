@@ -14,6 +14,10 @@ import { applyRouters } from "${moduleId}/routers";
 
 export const handler = express();
 
+// Add JSON-Parsing
+handler.use(express.json());
+handler.use(express.urlencoded({ extended: true }));
+
 applyRouters(
   (props) => {
     const { method, route, path, cb } = props;

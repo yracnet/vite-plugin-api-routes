@@ -11,5 +11,6 @@ export default defineConfig([
     },
     clean: true,
     sourcemap: false,
+    minify: true,
   },
 ]);
