@@ -77,7 +77,25 @@ export const PUT = async (req, res, next) => {
 
 Similarly, the file names `[userId].js` or `$userId.js` will be exported as request parameters, such as `/user/:userId`, following the Next.js/Remix framework.
 
-### Step 5: Run the Server
+### Step 5: Add middlewares
+
+For every route you can export a `MIDDLEWARES` array. This can be used for authentication purposes or any other sort of middleware that you need.
+
+```js
+//file:src/api/v1/user/$userId.js
+
+import authMiddleware from '...';
+// or
+function authMiddleware(req, res, next) => {
+  // ...
+}
+
+export const MIDDLEWARES = [
+  authMiddleware
+];
+```
+
+### Step 6: Run the Server
 
 Now, you can start the server using ViteJS, and the API routes will be automatically generated based on the directory structure and exported route rules.
 
