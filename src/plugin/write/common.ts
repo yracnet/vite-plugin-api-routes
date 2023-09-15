@@ -67,6 +67,7 @@ export type MethodRouter = {
   route: string;
   path: string;
   cb: string;
+  middlewares: string;
 };
 
 export const getMethodRouters = (config: PluginConfig): MethodRouter[] => {
@@ -82,6 +83,7 @@ export const getMethodRouters = (config: PluginConfig): MethodRouter[] => {
         path: r.path,
         route: r.route,
         cb,
+        middlewares: r.name + ".MIDDLEWARES"
       };
     })
   );

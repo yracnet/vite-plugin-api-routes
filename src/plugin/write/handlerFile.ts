@@ -20,9 +20,9 @@ handler.use(express.urlencoded({ extended: true }));
 
 applyRouters(
   (props) => {
-    const { method, route, path, cb } = props;
+    const { method, route, path, cb, middlewares } = props;
     if (handler[method]) {
-      handler[method](route, cb);
+      handler[method](route, ...(middlewares ?? []), cb);
     } else {
       console.log("Not Support", method, "for", route, "in", handler);
     }
