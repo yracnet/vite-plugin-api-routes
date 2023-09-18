@@ -7,6 +7,6 @@ export const GET = (req: Request, res: Response, next: NextFunction) => {
 }
 
 /* Any amount of middlewares */
-export const MIDDLEWARES = [
+export default [
   authMiddleware
 ]

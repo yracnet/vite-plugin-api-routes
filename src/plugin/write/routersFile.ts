@@ -20,7 +20,6 @@ export const writeRoutersFile = (
         path       : "${c.path}",
         url        : "${join(vite.base, c.path)}",
         cb         : ${c.cb},
-        middlewares: ${c.middlewares}
       }`;
     };
 

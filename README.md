@@ -68,8 +68,8 @@ export const PUT = async (req, res, next) => {
 // Support default, GET, HEAD, POST, PUT, DELETE by default
 // For CONNECT, OPTIONS, TRACE, PATCH, and others, you need to add the mapping to the mapper attribute config
 
-// If you need middlewares for a route, simply export a MIDDLEWARES array containing all middlewares
-export const MIDDLEWARES = [authMiddleware, secondMiddleware, /* ... */]; 
+// If you need middlewares for a route, simply export an array containing all middlewares as the default
+export default [authMiddleware, secondMiddleware, /* ... */]; 
 ```
 
 Similarly, the `[userId].js` or `$userId.js` file name is exported as a request parameter `/user/:userId`, following the Next.js/Remix framework.
@@ -188,9 +188,13 @@ handler.use(express.urlencoded({ extended: true }));
 
 applyRouters(
   (props) => {
-    const { method, route, path, cb, middlewares } = props;
+    const { method, route, path, cb } = props;
     if (handler[method]) {
-      handler[method](route, ...(middlewares ?? []), cb);
+      if(Array.isArray(cb)) {
+        handler[method](route, ...cb);
+      } else {
+        handler[method](route, cb);
+      }
     } else {
       console.log("Not Support", method, "for", route, "in", handler);
     }

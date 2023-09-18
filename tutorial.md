@@ -79,7 +79,7 @@ Similarly, the file names `[userId].js` or `$userId.js` will be exported as requ
 
 ### Step 5: Add middlewares
 
-For every route you can export a `MIDDLEWARES` array. This can be used for authentication purposes or any other sort of middleware that you need.
+For every route you can export an array for middlewares. This can be used for authentication purposes or any other sort of middleware that you need.
 
 ```js
 //file:src/api/v1/user/$userId.js
@@ -90,7 +90,7 @@ function authMiddleware(req, res, next) => {
   // ...
 }
 
-export const MIDDLEWARES = [
+export default [
   authMiddleware
 ];
 ```
