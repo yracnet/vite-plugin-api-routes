@@ -14,12 +14,12 @@ export const writeRoutersFile = (
     const methodRouters = getMethodRouters(config);
     const writeRouter = (c: MethodRouter) => {
       return `  ${c.cb} && {
-        source: "${c.source}",
-        method: "${c.method}",
-        route : "${c.route}",
-        path  : "${c.path}",
-        url   : "${join(vite.base, c.path)}",
-        cb    : ${c.cb},
+        source     : "${c.source}",
+        method     : "${c.method}",
+        route      : "${c.route}",
+        path       : "${c.path}",
+        url        : "${join(vite.base, c.path)}",
+        cb         : ${c.cb},
       }`;
     };
 

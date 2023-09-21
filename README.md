@@ -67,6 +67,9 @@ export const PUT = async (req, res, next) => {
 };
 // Support default, GET, HEAD, POST, PUT, DELETE by default
 // For CONNECT, OPTIONS, TRACE, PATCH, and others, you need to add the mapping to the mapper attribute config
+
+// If you need middlewares for a route, simply export an array containing all middlewares as the default
+export default [authMiddleware, secondMiddleware, /* ... */]; 
 ```
 
 Similarly, the `[userId].js` or `$userId.js` file name is exported as a request parameter `/user/:userId`, following the Next.js/Remix framework.
@@ -105,9 +108,9 @@ export default defineConfig({
 
 ### Parameters
 
-- **moduleId**: Name of the virtual module, default @api.
-- **server**: The main file to build as the server app. [See default file.](./example/.api/server.js)
-- **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./example/.api/handler.js)
+- **moduleId**: Name of the virtual module, default @api (used for imports, change if conflicts occur).
+- **server**: The main file to build as the server app. [See default file.](./example/src/custom-server-example/server.ts)
+- **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./example/src/custom-server-example/handler.ts)
 - **routeBase**: Base name route for all routes. The default value is **api**.
 - **dirs**: List of directories to be scanned. The default value is **[ { dir: 'src/api', route: '', exclude: []} ]**.
 - **include**: Files and directories to include in the scan process. The default value is **["\\*\\*/_.js", "\\*\\*/_.ts"]**.
@@ -171,30 +174,41 @@ export PATCH = (req, res, next)=>{
 }
 ```
 
-**/src/handler.js** or see [handler.js](./../example/src/handler.ts)
-
-```javascript
+**/src/handler.js** or see [handler.js](./example/src/custom-server-example/handler.ts)
+```typescript
+// @ts-nocheck
 import express from "express";
-import { applyRouters } from "@api/routers";
+import { applyRouters } from "@api/routers"; // Notice '@api', this is the moduleId!
 
 export const handler = express();
 
-applyRouters((props) => {
-  const { method, route, path, cb } = props;
-  if (handler[method]) {
-    handler[method](route, cb);
-  } else {
-    console.log("Not Support", method, "for", route, "in", handler);
+// Add JSON-Parsing
+handler.use(express.json());
+handler.use(express.urlencoded({ extended: true }));
+
+applyRouters(
+  (props) => {
+    const { method, route, path, cb } = props;
+    if (handler[method]) {
+      if(Array.isArray(cb)) {
+        handler[method](route, ...cb);
+      } else {
+        handler[method](route, cb);
+      }
+    } else {
+      console.log("Not Support", method, "for", route, "in", handler);
+    }
   }
-});
+);
 ```
 
-**/src/server.js** or see [server.js](./../example/src/server.ts)
+**/src/server.ts** or see [server.ts](./example/src/custom-server-example/server.ts)
 
-```javascript
-import { handler } from "@api/handler";
-import { endpoints } from "@api/routers";
-
+```typescript
+// @ts-ignore
+import { handler } from "@api/handler"; // Notice '@api', this is the moduleId!
+// @ts-ignore
+import { endpoints } from "@api/routers"; // Notice '@api', this is the moduleId!
 import express from "express";
 
 const { PORT = 3000, PUBLIC_DIR = "import.meta.env.PUBLIC_DIR" } = process.env;

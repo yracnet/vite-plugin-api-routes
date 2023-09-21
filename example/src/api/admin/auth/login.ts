@@ -1,11 +1,7 @@
-//@ts-ignore
+import { NextFunction, Request, Response } from "express";
 import { createResponseAsync } from "../../response.js";
 
-//@ts-ignore
-export const GET = async (req, res, next) => {
-  return createResponseAsync("v2/auth/login.ts", req, res, next);
-};
-//@ts-ignore
-export const POST = async (req, res, next) => {
-  return createResponseAsync("v2/auth/login.ts", req, res, next);
+export const POST = async (req: Request, res: Response, next: NextFunction) => {
+  res.cookie("auth", true);
+  return createResponseAsync("Logged in!", req, res, next);
 };

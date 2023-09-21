@@ -1,16 +1,6 @@
-import fs from "fs";
-import { ResolvedConfig } from "vite";
-import { PluginConfig } from "../types";
-
-export const writeHandlerFile = (
-  config: PluginConfig,
-  vite: ResolvedConfig
-) => {
-  const { cacheDir, handlerFile, moduleId } = config;
-  if (handlerFile.startsWith(cacheDir)) {
-    const code = `
+// @ts-nocheck
+import { applyRouters } from "@api/routers"; // Notice '@api', this is the moduleId!
 import express from "express";
-import { applyRouters } from "${moduleId}/routers";
 
 export const handler = express();
 
@@ -22,7 +12,7 @@ applyRouters(
   (props) => {
     const { method, route, path, cb } = props;
     if (handler[method]) {
-      if(Array.isArray(cb)) {
+      if (Array.isArray(cb)) {
         handler[method](route, ...cb);
       } else {
         handler[method](route, cb);
@@ -32,7 +22,3 @@ applyRouters(
     }
   }
 );
-`;
-    fs.writeFileSync(handlerFile, code);
-  }
-};

@@ -11,7 +11,7 @@ export const createResponse = (message, req, res, next) => {
 };
 
 export const createResponseAsync = async (message, req, res, next) => {
-  return {
+  return res.send({
     source: "async",
     version: req.version,
     copyright: req.copyright,
@@ -19,5 +19,5 @@ export const createResponseAsync = async (message, req, res, next) => {
     method: req.method,
     path: req.path,
     params: req.params,
-  };
+  });
 };
