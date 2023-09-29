@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 export const AppClient = () => {
   const [routers, setRouters] = useState([]);
   const [data, setData] = useState("");
+  const cookieData = document.cookie.split(";").map((it) => {
+    const [name, value] = it.split("=");
+    return {
+      name,
+      value,
+    };
+  });
 
   const onLoad = async () => {
     let routers = await fetch(`${import.meta.env.BASE_URL}/api/routers`).then(
@@ -12,7 +19,9 @@ export const AppClient = () => {
   };
 
   const onTest = async (it) => {
-    let data = await fetch(it.url, {
+    const id = parseInt(1000000 * Math.random());
+    const url = it.url.replace(/(:\w+)/g, id);
+    let data = await fetch(url, {
       method: it.method,
       headers: {
         "HTTP-Action": it.action,
@@ -33,6 +42,18 @@ export const AppClient = () => {
           VITE-PLUGIN-API
         </div>
         <div className="card-body">
+          <table className="table table-sm">
+            <tr>
+              <th>name</th>
+              <th>value</th>
+            </tr>
+            {cookieData.map((it) => (
+              <tr>
+                <td>{it.name}</td>
+                <td>{it.value}</td>
+              </tr>
+            ))}
+          </table>
           <div className="row">
             <div className="col-5">
               <a href="#reload" onClick={onLoad}>
@@ -42,8 +63,9 @@ export const AppClient = () => {
                 <tbody>
                   {routers
                     .filter((it) => it.method != "use")
+                    .sort((a, b) => a.url.localeCompare(b.url))
                     .map((it, ix) => (
-                      <tr key={ix}>
+                      <tr key={it.url}>
                         <th className="text-uppercase">{it.method}</th>
                         <td>{it.url}</td>
                         <td>

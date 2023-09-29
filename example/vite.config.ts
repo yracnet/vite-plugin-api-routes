@@ -14,7 +14,8 @@ export default defineConfig({
   plugins: [
     pluginReact(),
     pluginAPI({
-      //server: "src/server.ts",
+      //server: "src/custom-server-example/server.ts",
+      //handler: "src/custom-server-example/handler.ts",
       minify: false,
     }),
     //Remix ChunkSplit
@@ -22,6 +23,7 @@ export default defineConfig({
       strategy: "unbundle",
       customChunk: (args) => {
         const { file } = args;
+        // If ROOT Script
         if (file == ".api/server.js") {
           return null;
         }

@@ -6,7 +6,7 @@ import { Mapper, UserConfig } from "./plugin/types";
 export const pluginAPI = (opts: UserConfig) => {
   let {
     moduleId = "@api",
-    cacheDir = "node_modules/.api",
+    cacheDir = ".api",
     root = process.cwd(),
     server = path.join(cacheDir, "server.js"),
     handler = path.join(cacheDir, "handler.js"),

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { authMiddleware } from "../../../authMiddleware.js";
-import { createResponseAsync } from "../../response.js";
+import { authMiddleware } from "../../common/authMiddleware.js";
+import { createResponseAsync } from "../../common/response.js";
 
 export const POST = async (req: Request, res: Response, next: NextFunction) => {
   res.clearCookie("auth");

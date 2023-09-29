@@ -28,7 +28,7 @@ src/api/:
 │   │   ├───$articleId.js   //NextJS Format
 │   │   └───new.js
 │   └───page
-│       ├───$articleId.js
+│       ├───$pageId.js
 │       └───new.js
 └───index.js
 ```
@@ -69,7 +69,7 @@ export const PUT = async (req, res, next) => {
 // For CONNECT, OPTIONS, TRACE, PATCH, and others, you need to add the mapping to the mapper attribute config
 
 // If you need middlewares for a route, simply export an array containing all middlewares as the default
-export default [authMiddleware, secondMiddleware, /* ... */]; 
+export default [authMiddleware, secondMiddleware /* ... */];
 ```
 
 Similarly, the `[userId].js` or `$userId.js` file name is exported as a request parameter `/user/:userId`, following the Next.js/Remix framework.
@@ -94,8 +94,9 @@ export default defineConfig({
   plugins: [
     pluginAPI({
       // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api",
-      // server: "node_modules/.api/server.js",
-      // handler: "node_modules/.api/handler.js",
+      // cacheDir: ".api",
+      // server: "[cacheDir]/server.js",
+      // handler: "[cacheDir]/handler.js",
       // routeBase: "api",
       // dirs: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"] }],
       // include: ["**/*.js", "**/*.ts"],
@@ -145,13 +146,22 @@ export default defineConfig({
   plugins: [
     createAPI({
       mapper: {
+        /**
+         * export const PING = ()=>{...}
+         * Will be mapped to express method
+         * app.get('/path/dir', PING)
+         */
         PING: "get",
-        // export const PING = ()=>{...}
-        // Will be mapped to express method
-        // app.get('/path/dir', PING)
+        /**
+         * export const OTHER_POST = ()=>{...}
+         * Will be mapped to posible method
+         * app.post2('/path/dir', OTHER_POST)
+         */
         OTHER_POST: "post2",
-        // export const PATCH = ()=>{...}
-        // Will not be mapped
+        /**
+         * export const PATCH = ()=>{...}
+         * Will not be mapped
+         */
         PATCH: false,
       },
     }),
@@ -175,6 +185,7 @@ export PATCH = (req, res, next)=>{
 ```
 
 **/src/handler.js** or see [handler.js](./example/src/custom-server-example/handler.ts)
+
 ```typescript
 // @ts-nocheck
 import express from "express";
@@ -186,20 +197,18 @@ export const handler = express();
 handler.use(express.json());
 handler.use(express.urlencoded({ extended: true }));
 
-applyRouters(
-  (props) => {
-    const { method, route, path, cb } = props;
-    if (handler[method]) {
-      if(Array.isArray(cb)) {
-        handler[method](route, ...cb);
-      } else {
-        handler[method](route, cb);
-      }
+applyRouters((props) => {
+  const { method, route, path, cb } = props;
+  if (handler[method]) {
+    if (Array.isArray(cb)) {
+      handler[method](route, ...cb);
     } else {
-      console.log("Not Support", method, "for", route, "in", handler);
+      handler[method](route, cb);
     }
+  } else {
+    console.log("Not Support", method, "for", route, "in", handler);
   }
-);
+});
 ```
 
 **/src/server.ts** or see [server.ts](./example/src/custom-server-example/server.ts)
