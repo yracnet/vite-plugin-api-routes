@@ -63,7 +63,6 @@ export const AppClient = () => {
                 <tbody>
                   {routers
                     .filter((it) => it.method != "use")
-                    .sort((a, b) => a.url.localeCompare(b.url))
                     .map((it, ix) => (
                       <tr key={it.url}>
                         <th className="text-uppercase">{it.method}</th>
