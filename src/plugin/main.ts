@@ -45,7 +45,9 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
       const onReload = (file: string) => {
         if (isReload(file)) {
           generateReload(config, vite);
-          restart();
+          watcher.off("add", onReload);
+          watcher.off("change", onReload);
+          restart(true);
         }
       };
       watcher.on("add", onReload);
