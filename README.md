@@ -88,11 +88,11 @@ In `vite.config.ts`:
 
 ```js
 import { defineConfig } from "vite";
-import { pluginAPI } from "vite-plugin-rest-api";
+import { pluginRestAPI } from "vite-plugin-rest-api";
 
 export default defineConfig({
   plugins: [
-    pluginAPI({
+    pluginRestAPI({
       // moduleId: "@api",  // Old version change to "virtual:vite-plugin-rest-api",
       // cacheDir: ".api",
       // server: "[cacheDir]/server.js",

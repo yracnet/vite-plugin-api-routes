@@ -25,10 +25,10 @@ In your ViteJS project, open the `vite.config.ts` file and add the following cod
 
 ```js
 import { defineConfig } from "vite";
-import { pluginAPI } from "vite-plugin-rest-api";
+import { pluginRestAPI } from "vite-plugin-rest-api";
 export default defineConfig({
   plugins: [
-    pluginAPI({
+    pluginRestAPI({
       // Configuration options go here
     }),
   ],
