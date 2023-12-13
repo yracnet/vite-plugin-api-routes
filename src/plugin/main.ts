@@ -11,7 +11,7 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
   //@ts-ignore
   let vite: ResolvedConfig = {};
   return {
-    name: "vite-plugin-api",
+    name: "vite-plugin-rest-api",
     enforce: "pre",
     config: () => {
       return {

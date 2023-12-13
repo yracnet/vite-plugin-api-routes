@@ -1,4 +1,4 @@
-# vite-plugin-api
+# vite-plugin-rest-api
 
 Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
 
@@ -79,7 +79,7 @@ Similarly, the `[userId].js` or `$userId.js` file name is exported as a request 
 ### Install
 
 ```bash
-yarn add vite-plugin-api
+yarn add vite-plugin-rest-api
 ```
 
 ### Configuration
@@ -88,12 +88,12 @@ In `vite.config.ts`:
 
 ```js
 import { defineConfig } from "vite";
-import { pluginAPI } from "vite-plugin-api";
+import { pluginAPI } from "vite-plugin-rest-api";
 
 export default defineConfig({
   plugins: [
     pluginAPI({
-      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api",
+      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-rest-api",
       // cacheDir: ".api",
       // server: "[cacheDir]/server.js",
       // handler: "[cacheDir]/handler.js",

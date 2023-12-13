@@ -1,8 +1,8 @@
-## Tutorial: Enhancing API Routing in ViteJS with vite-plugin-api
+## Tutorial: Enhancing API Routing in ViteJS with vite-plugin-rest-api
 
 ### Introduction
 
-In this tutorial, we will learn how to enhance API routing in ViteJS using the "vite-plugin-api" plugin. This plugin improves visibility and project structure in Node.js and Express by mapping the directory structure to route rules.
+In this tutorial, we will learn how to enhance API routing in ViteJS using the "vite-plugin-rest-api" plugin. This plugin improves visibility and project structure in Node.js and Express by mapping the directory structure to route rules.
 
 ### Prerequisites
 
@@ -13,10 +13,10 @@ Before we begin, make sure you have the following:
 
 ### Step 1: Installation
 
-To install the "vite-plugin-api" plugin, run the following command:
+To install the "vite-plugin-rest-api" plugin, run the following command:
 
 ```bash
-yarn add vite-plugin-api
+yarn add vite-plugin-rest-api
 ```
 
 ### Step 2: Configuration
@@ -25,7 +25,7 @@ In your ViteJS project, open the `vite.config.ts` file and add the following cod
 
 ```js
 import { defineConfig } from "vite";
-import { pluginAPI } from "vite-plugin-api";
+import { pluginAPI } from "vite-plugin-rest-api";
 export default defineConfig({
   plugins: [
     pluginAPI({
@@ -101,6 +101,6 @@ Now, you can start the server using ViteJS, and the API routes will be automatic
 
 ### Conclusion
 
-Congratulations! You have successfully enhanced API routing in your ViteJS project using the "vite-plugin-api" plugin. This improves project structure and simplifies configuration, making your development process more efficient.
+Congratulations! You have successfully enhanced API routing in your ViteJS project using the "vite-plugin-rest-api" plugin. This improves project structure and simplifies configuration, making your development process more efficient.
 Remember to refer to the plugin's documentation for more advanced configuration options and customization possibilities.
 Happy coding!

@@ -1,5 +1,5 @@
 {
-  "name": "vite-plugin-api",
+  "name": "vite-plugin-rest-api",
   "version": "1.0.5",
   "type": "module",
   "description": "A Vite.js plugin that creates API routes by mapping the directory structure, similar to Next.js API Routes. This plugin enhances the functionality for backend development using Vite.",
@@ -30,13 +30,13 @@
   "author": "Willyams Yujra <yracnet@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yracnet/vite-plugin-api"
+    "url": "https://github.com/yracnet/vite-plugin-rest-api"
   },
   "main": "dist/index.js",
   "module": "dist/index.cjs",
   "types": "dist/index.d.ts",
-  "homepage": "https://github.com/yracnet/vite-plugin-api",
-  "bugs": "https://github.com/yracnet/vite-plugin-api/issues",
+  "homepage": "https://github.com/yracnet/vite-plugin-rest-api",
+  "bugs": "https://github.com/yracnet/vite-plugin-rest-api/issues",
   "scripts": {
     "build": "tsup"
   },
