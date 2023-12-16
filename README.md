@@ -161,7 +161,7 @@ mapper: {
 ```js
 export default defineConfig({
   plugins: [
-    createAPI({
+    pluginAPIRoutes({
       mapper: {
         /**
          * export const PING = ()=>{...}
