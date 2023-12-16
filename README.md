@@ -1,5 +1,14 @@
 # vite-plugin-rest-api
 
+**Project Renamed: New Repository - [vite-plugin-api-routes](https://github.com/yracnet/vite-plugin-api-routes)**
+
+Please note that this project has been renamed to "vite-plugin-api-routes" and has been moved to a new repository. The latest version and updates can now be found in the [vite-plugin-api-routes repository](https://github.com/yracnet/vite-plugin-api-routes).
+Kindly update your references and bookmarks accordingly.
+
+**Important:** This repository (vite-plugin-api) is no longer actively maintained, and all future development will take place in the [vite-plugin-api-routes repository](https://github.com/yracnet/vite-plugin-api-routes).
+
+---
+
 Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
 
 See the [tutorial](./tutorial.md)
