@@ -1,4 +1,4 @@
-# vite-plugin-api
+# vite-plugin-rest-api
 
 **Project Renamed: New Repository - [vite-plugin-api-routes](https://github.com/yracnet/vite-plugin-api-routes)**
 
@@ -88,7 +88,7 @@ Similarly, the `[userId].js` or `$userId.js` file name is exported as a request 
 ### Install
 
 ```bash
-yarn add vite-plugin-api
+yarn add vite-plugin-rest-api
 ```
 
 ### Configuration
@@ -97,12 +97,12 @@ In `vite.config.ts`:
 
 ```js
 import { defineConfig } from "vite";
-import { pluginAPI } from "vite-plugin-api";
+import { pluginRestAPI } from "vite-plugin-rest-api";
 
 export default defineConfig({
   plugins: [
-    pluginAPI({
-      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api",
+    pluginRestAPI({
+      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-rest-api",
       // cacheDir: ".api",
       // server: "[cacheDir]/server.js",
       // handler: "[cacheDir]/handler.js",

@@ -11,7 +11,7 @@
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vite-plugin-api": "file:.."
+    "vite-plugin-rest-api": "file:.."
   },
   "devDependencies": {
     "@types/express": "^4.17.15",
