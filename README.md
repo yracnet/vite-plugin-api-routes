@@ -1,11 +1,11 @@
 # vite-plugin-api
 
-**Project Renamed: New Repository - [vite-plugin-rest-api](https://github.com/yracnet/vite-plugin-rest-api)**
+**Project Renamed: New Repository - [vite-plugin-api-routes](https://github.com/yracnet/vite-plugin-api-routes)**
 
-Please note that this project has been renamed to "vite-plugin-rest-api" and has been moved to a new repository. The latest version and updates can now be found in the [vite-plugin-rest-api repository](https://github.com/yracnet/vite-plugin-rest-api).
+Please note that this project has been renamed to "vite-plugin-api-routes" and has been moved to a new repository. The latest version and updates can now be found in the [vite-plugin-api-routes repository](https://github.com/yracnet/vite-plugin-api-routes).
 Kindly update your references and bookmarks accordingly.
 
-**Important:** This repository (vite-plugin-api) is no longer actively maintained, and all future development will take place in the [vite-plugin-rest-api repository](https://github.com/yracnet/vite-plugin-rest-api).
+**Important:** This repository (vite-plugin-api) is no longer actively maintained, and all future development will take place in the [vite-plugin-api-routes repository](https://github.com/yracnet/vite-plugin-api-routes).
 
 ---
 
