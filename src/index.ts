@@ -3,7 +3,7 @@ import { InlineConfig } from "vite";
 import { pluginImpl } from "./plugin/main";
 import { Mapper, UserConfig } from "./plugin/types";
 
-export const pluginRestAPI = (opts: UserConfig = {}) => {
+export const pluginAPIRoutes = (opts: UserConfig = {}) => {
   let {
     moduleId = "@api",
     cacheDir = ".api",
@@ -77,4 +77,4 @@ export const pluginRestAPI = (opts: UserConfig = {}) => {
   });
 };
 
-export default pluginRestAPI;
+export default pluginAPIRoutes;

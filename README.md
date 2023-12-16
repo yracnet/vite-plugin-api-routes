@@ -1,13 +1,21 @@
-# vite-plugin-rest-api
+# vite-plugin-api-routes
 
-**Project Renamed: New Repository - [vite-plugin-api-routes](https://github.com/yracnet/vite-plugin-api-routes)**
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/yracnet/vite-plugin-api-routes.svg?branch=main)](https://travis-ci.org/yracnet/vite-plugin-api-routes)
 
-Please note that this project has been renamed to "vite-plugin-api-routes" and has been moved to a new repository. The latest version and updates can now be found in the [vite-plugin-api-routes repository](https://github.com/yracnet/vite-plugin-api-routes).
-Kindly update your references and bookmarks accordingly.
+## Apology for Project Renaming
 
-**Important:** This repository (vite-plugin-api) is no longer actively maintained, and all future development will take place in the [vite-plugin-api-routes repository](https://github.com/yracnet/vite-plugin-api-routes).
+🙏 **Dear Community,**
 
----
+We sincerely apologize for the recent project name changes. After careful consideration and feedback, we've settled on the name **vite-plugin-api-routes**. We understand that these changes might have caused confusion, and we appreciate your understanding.
+
+Thank you for your continued support and flexibility.
+
+Best regards,
+
+[Willyams Yujra](https://github.com/yracnet)
+
+## Vision
 
 Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
 
@@ -88,7 +96,7 @@ Similarly, the `[userId].js` or `$userId.js` file name is exported as a request 
 ### Install
 
 ```bash
-yarn add vite-plugin-rest-api
+yarn add vite-plugin-api-routes
 ```
 
 ### Configuration
@@ -97,12 +105,12 @@ In `vite.config.ts`:
 
 ```js
 import { defineConfig } from "vite";
-import { pluginRestAPI } from "vite-plugin-rest-api";
+import { pluginAPIRoutes } from "vite-plugin-api-routes";
 
 export default defineConfig({
   plugins: [
-    pluginRestAPI({
-      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-rest-api",
+    pluginAPIRoutes({
+      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api-routes",
       // cacheDir: ".api",
       // server: "[cacheDir]/server.js",
       // handler: "[cacheDir]/handler.js",

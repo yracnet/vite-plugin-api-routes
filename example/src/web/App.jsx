@@ -39,7 +39,7 @@ export const AppClient = () => {
     <div className="container">
       <div className="card mt-4">
         <div className="card-header d-flex justify-content-between">
-          VITE-PLUGIN-API
+          VITE-PLUGIN-API-ROUTES
         </div>
         <div className="card-body">
           <table className="table table-sm">

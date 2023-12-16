@@ -1,5 +1,5 @@
 {
-  "name": "vite-plugin-api",
+  "name": "vite-plugin-api-routes",
   "version": "1.0.7",
   "type": "module",
   "description": "A Vite.js plugin that creates API routes by mapping the directory structure, similar to Next.js API Routes. This plugin enhances the functionality for backend development using Vite.",
@@ -7,6 +7,9 @@
     "vite",
     "api",
     "api-router",
+    "api-routers",
+    "vite-plugin-api",
+    "vite-plugin-rest-api",
     "express",
     "express-router",
     "server",
