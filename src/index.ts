@@ -77,4 +77,8 @@ export const pluginAPIRoutes = (opts: UserConfig = {}) => {
   });
 };
 
+export const pluginAPI = pluginAPIRoutes;
+
+export const createAPI = pluginAPIRoutes;
+
 export default pluginAPIRoutes;
