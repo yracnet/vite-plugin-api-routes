@@ -41,7 +41,8 @@
   "homepage": "https://github.com/yracnet/vite-plugin-api-routes",
   "bugs": "https://github.com/yracnet/vite-plugin-api-routes/issues",
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "prepublish": "yarn build"
   },
   "dependencies": {
     "fast-glob": "^3.3.1",
