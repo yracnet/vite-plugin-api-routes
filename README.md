@@ -15,6 +15,15 @@ Best regards,
 
 [Willyams Yujra](https://github.com/yracnet)
 
+## Additional Resources
+
+For more detailed information and resources related to `vite-plugin-api-routes`, please refer to the following:
+
+- **npm Package**: [vite-plugin-api-routes](https://www.npmjs.com/package/vite-plugin-api-routes)
+- **GitHub Repository**: [yracnet/vite-plugin-api-routes](https://github.com/yracnet/vite-plugin-api-routes)
+- **Dev.to Article**: [Enhancing API Routing in Vite.js with vite-plugin-api](https://dev.to/yracnet/enhancing-api-routing-in-vitejs-with-vite-plugin-api-p39)
+- **Tutorial**: [Tutorial on vite-plugin-api-routes](./tutorial.md)
+
 ## Vision
 
 Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
