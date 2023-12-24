@@ -20,6 +20,7 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
             [`${config.moduleId}/server`]: config.serverFile,
             [`${config.moduleId}/handler`]: config.handlerFile,
             [`${config.moduleId}/routers`]: config.routersFile,
+            [`${config.moduleId}/configure`]: config.configureFile,
           },
         },
       };
@@ -33,7 +34,7 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
         return [];
       }
     },
-    configureServer: (devServer) => {
+    configureServer: async (devServer) => {
       const {
         //
         watcher,
@@ -53,16 +54,21 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
       watcher.on("add", onReload);
       watcher.on("change", onReload);
       const baseApi = path.join(vite.base, config.routeBase);
+      const configure = await ssrLoadModule(config.configure, { fixStacktrace: true });
+      //@ts-ignore
+      configure.viteServerBefore?.(devServer.middlewares, devServer, vite);
       middlewares.use(baseApi, async (req: any, res, next) => {
         try {
-          const module = await ssrLoadModule(config.handler);
-          module.handler(req, res);
+          const module = await ssrLoadModule(config.handler, { fixStacktrace: true });
+          module.handler(req, res, next);
         } catch (error) {
           ssrFixStacktrace(error as Error);
           process.exitCode = 1;
           next(error);
         }
       });
+      //@ts-ignore
+      configure.viteServerAfter?.(devServer.middlewares, devServer, vite);
     },
     writeBundle: async () => {
       if (process.env.IS_API_BUILD) return;
