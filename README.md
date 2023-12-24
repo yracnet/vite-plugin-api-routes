@@ -269,45 +269,41 @@ server.listen(PORT);
 **/src/configure.ts** or see [configure.ts](./example/src/custom-server-example/configure.ts)
 
 ```typescript
-import { NextFunction, Request, Response, } from "express";
+import express from "express";
+import { CallbackHook, StatusHook, ServerHook, HandlerHook, ViteServerHook } from "vite-plugin-api-routes/model";
 
-// WARNING: Please don't include the VITE TYPES here, because it has a problem when you build the project
-const devServerBefore = (viteServer: any, vite: any): void => {
-    console.log("devServerBefore");
+export const viteServerBefore: ViteServerHook = (server, viteServer) => {
+    console.log("VITEJS SERVER");
+    server.use(express.json());
+    server.use(express.urlencoded({ extended: true }));
 };
 
-const serverBefore = (server: Express) => {
-    console.log("serverBefore");
+export const viteServerAfter: ViteServerHook = (server, viteServer) => {
 };
 
-const serverAfter = (server: Express) => {
-    console.log("serverAfter");
-}
-
-const handlerBefore = (handler: Express) => {
-    handler.use(express.json());
-    handler.use(express.urlencoded({ extended: true }));
+export const serverBefore: ServerHook = (server) => {
+    server.use(express.json());
+    server.use(express.urlencoded({ extended: true }));
 };
 
-const handlerAfter = (server: Express) => {
-    console.log("handlerAfter");
-}
+export const serverAfter: ServerHook = (server) => {
+};
 
-type RouteModule = (req: Request, res: Response, next: NextFunction) => void;
+export const handlerBefore: HandlerHook = (handler) => {
+};
 
-const callbackBefore = (callback: RouteModule, route: any) => {
-    console.log("callbackBefore", callback);
+export const handlerAfter: HandlerHook = (server) => {
+};
+
+export const callbackBefore: CallbackHook = (callback, route) => {
     return callback;
 };
 
-export default {
-  devServerBefore,
-  serverBefore,
-  serverAfter,
-  handlerBefore,
-  handlerAfter,
-  callbackBefore,
-}
+export const serverListening: StatusHook = (server) => {
+};
+
+export const serverError: StatusHook = (server, error) => {
+};
 
 ```
 
