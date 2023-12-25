@@ -341,7 +341,13 @@ export const viteServerBefore: ViteServerHook = (server, viteServer) => {
 
 In the server file, we do not explicitly declare the basic configuration. Instead, this responsibility is delegated to the configure file, ensuring a more modular and centralized approach to server setup and initialization.
 
+## WARNING:
+
+Be cautious when configuring the `viteServerBefore` and `viteServerAfter` methods. These methods interact with viteServer, and if not configured correctly, they can lead to issues. Specifically, including a direct reference to the Vite.js library within these methods can cause problems during the build process. Although these methods themselves are not included in the final build output, any import references associated with the vitejs libraries can generate unexpected problems.
+
 ## TO DO:
 
-- Duplicate declaration (**GET** in _/user.ts_ and _/user/index.ts_). Handler definition is required.
 - Extend the `mapper` attribute to support custom HTTP methods using a header attribute.
+- Implement fs-visitor for optimize the scan files process
+- express.on("error", callback) don't works
+- Set default error handling to `server After` or `handler After`

@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-api-routes",
-  "version": "1.1.0-beta",
+  "version": "1.1.1-beta",
   "type": "module",
   "description": "A Vite.js plugin that creates API routes by mapping the directory structure, similar to Next.js API Routes. This plugin enhances the functionality for backend development using Vite.",
   "keywords": [
@@ -35,6 +35,9 @@
     "type": "git",
     "url": "https://github.com/yracnet/vite-plugin-api-routes"
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/index.cjs",
