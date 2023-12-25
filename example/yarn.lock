@@ -1358,9 +1358,10 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-"vite-plugin-api-routes@..\\vite-plugin-api-routes-v1.1.0.tgz":
-  version "1.1.0"
-  resolved "..\\vite-plugin-api-routes-v1.1.0.tgz#013c303a35d3f15bd158801b23692999d3956d0c"
+vite-plugin-api-routes@^1.1.0-beta:
+  version "1.1.0-beta"
+  resolved "https://registry.yarnpkg.com/vite-plugin-api-routes/-/vite-plugin-api-routes-1.1.0-beta.tgz#863a1388fee3dc5718dae983928691fe336b4015"
+  integrity sha512-jiREKn1bzmbnIjaLnSjpLQBYWKcoNWu+iR+6hgi0AAkqxFGUuUaOoqvPHgyd5LqU54loa1AFcGbu9SHMc9IFmw==
   dependencies:
     fast-glob "^3.3.2"
     slash-path "^0.0.1"
