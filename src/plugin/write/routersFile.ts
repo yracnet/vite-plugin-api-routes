@@ -8,7 +8,7 @@ export const writeRoutersFile = (
   config: PluginConfig,
   vite: ResolvedConfig
 ) => {
-  const { cacheDir, routersFile } = config;
+  const { moduleId, cacheDir, routersFile } = config;
   if (routersFile.startsWith(cacheDir)) {
     const fileRouters = getFileRouters(config);
     const methodRouters = getMethodRouters(config);
@@ -30,7 +30,7 @@ export const writeRoutersFile = (
     const code = `
 // Imports
 ${importFiles}
-
+import * as configure from "${moduleId}/configure";
 
 export const routeBase = "${config.routeBase}";
 
@@ -38,24 +38,22 @@ const internal  = [
 ${internalRouter}
 ].filter(it => it);
 
-export const routers = internal.map((it) => { 
-  const { method, path, route, url, source} = it;
+export const routers = internal.map((it) => {
+  const { method, path, route, url, source } = it;
   return { method, url, path, route, source };
 });
 
-export const endpoints = internal.map((it) => it.method?.toUpperCase() + '\\t' + it.url);
+export const endpoints = internal.map(
+  (it) => it.method?.toUpperCase() + "\\t" + it.url
+);
 
-const FN = (value) => value;
-
-export const applyRouters = (applyRouter, opts = {} ) => {
-  const {pre = FN, post = FN, hoc = FN} = opts;
-  pre(internal)
-    .forEach((it) => {
-    it.cb = hoc(it.cb, it);
+export const applyRouters = (applyRouter) => {
+  internal.forEach((it) => {
+    it.cb = configure.callbackBefore?.(it.cb, it) || it.cb;
     applyRouter(it);
-  });  
-  post(internal);
+  });
 };
+
 `;
     fs.writeFileSync(routersFile, code);
   }

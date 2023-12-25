@@ -1,15 +1,35 @@
 import { useEffect, useState } from "react";
 
+const useJWTCookie = () => {
+  const [jwtCookie, setJWTCookie] = useState([{}, []]);
+  useEffect(() => {
+    const cookieList = document.cookie.split(";").map((it) => {
+      const [name, value] = it.split("=");
+      return {
+        name,
+        value,
+      };
+    });
+    let jwtData = {};
+    try {
+      const [, base64Url,] = cookieList.find(it => it.name === 'token')?.value?.split('.');
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      jwtData = JSON.parse(jsonPayload);
+    } catch (error) {
+      jwtData = error;
+    }
+    setJWTCookie([jwtData, cookieList]);
+  }, [document.cookie]);
+  return jwtCookie;
+}
+
 export const AppClient = () => {
   const [routers, setRouters] = useState([]);
   const [data, setData] = useState("");
-  const cookieData = document.cookie.split(";").map((it) => {
-    const [name, value] = it.split("=");
-    return {
-      name,
-      value,
-    };
-  });
+  const [jwt, cookie] = useJWTCookie();
 
   const onLoad = async () => {
     let routers = await fetch(`${import.meta.env.BASE_URL}/api/routers`).then(
@@ -47,13 +67,20 @@ export const AppClient = () => {
               <th>name</th>
               <th>value</th>
             </tr>
-            {cookieData.map((it) => (
-              <tr>
+            {cookie.map((it, ix) => (
+              <tr key={it.name}>
                 <td>{it.name}</td>
                 <td>{it.value}</td>
               </tr>
             ))}
+            <tr>
+              <td>JWT</td>
+              <td>
+                <code>{JSON.stringify(jwt, null, 2)}</code>
+              </td>
+            </tr>
           </table>
+
           <div className="row">
             <div className="col-5">
               <a href="#reload" onClick={onLoad}>
@@ -63,8 +90,8 @@ export const AppClient = () => {
                 <tbody>
                   {routers
                     .filter((it) => it.method != "use")
-                    .map((it, ix) => (
-                      <tr key={it.url}>
+                    .map((it) => (
+                      <tr key={it.key}>
                         <th className="text-uppercase">{it.method}</th>
                         <td>{it.url}</td>
                         <td>
