@@ -7,16 +7,17 @@ export const writeHandlerFile = (
   vite: ResolvedConfig
 ) => {
   const { cacheDir, handlerFile, moduleId } = config;
-  if (handlerFile.startsWith(cacheDir)) {
-    const code = `
+  if (!handlerFile.startsWith(cacheDir)) {
+    return false;
+  }
+  const code = `
 import express from "express";
 import { applyRouters } from "${moduleId}/routers";
+import * as configure from "${moduleId}/configure";
 
 export const handler = express();
 
-// Add JSON-Parsing
-handler.use(express.json());
-handler.use(express.urlencoded({ extended: true }));
+configure.handlerBefore?.(handler);
 
 applyRouters(
   (props) => {
@@ -32,7 +33,9 @@ applyRouters(
     }
   }
 );
+
+configure.handlerAfter?.(handler);
+
 `;
-    fs.writeFileSync(handlerFile, code);
-  }
+  fs.writeFileSync(handlerFile, code);
 };

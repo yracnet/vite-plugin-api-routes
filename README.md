@@ -15,6 +15,15 @@ Best regards,
 
 [Willyams Yujra](https://github.com/yracnet)
 
+## Additional Resources
+
+For more detailed information and resources related to `vite-plugin-api-routes`, please refer to the following:
+
+- **npm Package**: [vite-plugin-api-routes](https://www.npmjs.com/package/vite-plugin-api-routes)
+- **GitHub Repository**: [yracnet/vite-plugin-api-routes](https://github.com/yracnet/vite-plugin-api-routes)
+- **Dev.to Article**: [Enhancing API Routing in Vite.js with vite-plugin-api](https://dev.to/yracnet/enhancing-api-routing-in-vitejs-with-vite-plugin-api-p39)
+- **Tutorial**: [Tutorial on vite-plugin-api-routes](./tutorial.md)
+
 ## Vision
 
 Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
@@ -114,6 +123,7 @@ export default defineConfig({
       // cacheDir: ".api",
       // server: "[cacheDir]/server.js",
       // handler: "[cacheDir]/handler.js",
+      // configure: "[cacheDir]/configure.js",
       // routeBase: "api",
       // dirs: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"] }],
       // include: ["**/*.js", "**/*.ts"],
@@ -129,6 +139,7 @@ export default defineConfig({
 - **moduleId**: Name of the virtual module, default @api (used for imports, change if conflicts occur).
 - **server**: The main file to build as the server app. [See default file.](./example/src/custom-server-example/server.ts)
 - **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./example/src/custom-server-example/handler.ts)
+- **configure**: The configureFile centralizes server configuration for both development (viteServer) and production (express). This file is invoked in various lifecycle hooks of the server. [See default file.](./example/src/custom-server-example/configure.ts)
 - **routeBase**: Base name route for all routes. The default value is **api**.
 - **dirs**: List of directories to be scanned. The default value is **[ { dir: 'src/api', route: '', exclude: []} ]**.
 - **include**: Files and directories to include in the scan process. The default value is **["\\*\\*/_.js", "\\*\\*/_.ts"]**.
@@ -190,63 +201,145 @@ You can disable a method by setting its value to false. In the example `PATCH: f
 **/src/api/index.js**
 
 ```javascript
-export PING = (req, res, next)=>{
+export const PING = (req, res, next)=>{
     res.send({name:"Ping Service"});
 }
-export OTHER_POST = (req, res, next)=>{
-    res.send({name:"Ping Service"});
+export const OTHER_POST = (req, res, next)=>{
+    res.send({name:"Other Service"});
 }
-export PATCH = (req, res, next)=>{
-    res.send({name:"Ping Service"});
+export const PATCH = (req, res, next)=>{
+    res.send({name:"Path Service"});
 }
 ```
 
 **/src/handler.js** or see [handler.js](./example/src/custom-server-example/handler.ts)
 
 ```typescript
-// @ts-nocheck
 import express from "express";
-import { applyRouters } from "@api/routers"; // Notice '@api', this is the moduleId!
+import { applyRouters } from "@api/routers";
+import * as configure from "@api/configure";
 
 export const handler = express();
 
-// Add JSON-Parsing
-handler.use(express.json());
-handler.use(express.urlencoded({ extended: true }));
+configure.handlerBefore?.(handler);
 
-applyRouters((props) => {
-  const { method, route, path, cb } = props;
-  if (handler[method]) {
-    if (Array.isArray(cb)) {
-      handler[method](route, ...cb);
+applyRouters(
+  (props) => {
+    const { method, route, path, cb } = props;
+    if (handler[method]) {
+      if(Array.isArray(cb)) {
+        handler[method](route, ...cb);
+      } else {
+        handler[method](route, cb);
+      }
     } else {
-      handler[method](route, cb);
+      console.log("Not Support", method, "for", route, "in", handler);
     }
-  } else {
-    console.log("Not Support", method, "for", route, "in", handler);
   }
-});
+);
+
+configure.handlerAfter?.(handler);
 ```
 
 **/src/server.ts** or see [server.ts](./example/src/custom-server-example/server.ts)
 
 ```typescript
-// @ts-ignore
-import { handler } from "@api/handler"; // Notice '@api', this is the moduleId!
-// @ts-ignore
-import { endpoints } from "@api/routers"; // Notice '@api', this is the moduleId!
+import { handler } from "@api/handler";
+import { endpoints } from "@api/routers";
+import * as configure from "@api/configure";
 import express from "express";
 
-const { PORT = 3000, PUBLIC_DIR = "import.meta.env.PUBLIC_DIR" } = process.env;
 const server = express();
-server.use(express.json());
+configure.serverBefore?.(server);
+const { PORT = 3000, PUBLIC_DIR = "import.meta.env.PUBLIC_DIR" } = process.env;
 server.use("import.meta.env.BASE", express.static(PUBLIC_DIR));
 server.use("import.meta.env.BASE_API", handler);
-server.listen(PORT, () => {
-  console.log(`Ready at http://localhost:${PORT}`);
-  console.log(endpoints);
+configure.serverAfter?.(server);
+server.on("error", (error) => {
+  console.error(`Error at http://localhost:${PORT}`, error);
+  configure.serverError?.(server, error);
 });
+server.on("listening", () => {
+  console.log(`Ready at http://localhost:${PORT}`);
+  configure.serverListening?.(server, endpoints);
+});
+server.listen(PORT);
 ```
+
+**/src/configure.ts** or see [configure.ts](./example/src/custom-server-example/configure.ts)
+
+```typescript
+import express from "express";
+import { CallbackHook, StatusHook, ServerHook, HandlerHook, ViteServerHook } from "vite-plugin-api-routes/model";
+
+export const viteServerBefore: ViteServerHook = (server, viteServer) => {
+    console.log("VITEJS SERVER");
+    server.use(express.json());
+    server.use(express.urlencoded({ extended: true }));
+};
+
+export const viteServerAfter: ViteServerHook = (server, viteServer) => {
+};
+
+export const serverBefore: ServerHook = (server) => {
+    server.use(express.json());
+    server.use(express.urlencoded({ extended: true }));
+};
+
+export const serverAfter: ServerHook = (server) => {
+};
+
+export const handlerBefore: HandlerHook = (handler) => {
+};
+
+export const handlerAfter: HandlerHook = (server) => {
+};
+
+export const callbackBefore: CallbackHook = (callback, route) => {
+    return callback;
+};
+
+export const serverListening: StatusHook = (server) => {
+};
+
+export const serverError: StatusHook = (server, error) => {
+};
+
+```
+
+### TypeScript Support
+
+To leverage TypeScript models within your Vite.js project, follow these steps:
+
+#### Reference the TypeScript Definitions:
+
+Add a reference to the TypeScript definitions file [moduleId]/types.d.ts within your vite-env.d.ts file.
+
+src/vite-env.d.ts
+```typescript
+/// <reference types="vite/client" />
+/// <reference types="../.api/types.d.ts" />
+```
+
+#### Utilize the TypeScript Models in Your Code:
+
+Once you've referenced the required TypeScript definitions, you can incorporate them directly into your TypeScript code.
+
+Incorporating a ViteServerHook model from vite-plugin-api-routes:
+
+```typescript
+import { ViteServerHook } from "vite-plugin-api-routes/model";
+
+export const viteServerBefore: ViteServerHook = (server, viteServer) => {
+    console.log("VITEJS SERVER");
+    // Include ViteServer Config
+};
+```
+
+
+## NOTE:
+
+In the server file, we do not explicitly declare the basic configuration. Instead, this responsibility is delegated to the configure file, ensuring a more modular and centralized approach to server setup and initialization.
 
 ## TO DO:
 

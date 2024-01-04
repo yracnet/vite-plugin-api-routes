@@ -23,3 +23,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+vite-plugin-api-routes-*.tgz

@@ -8,10 +8,14 @@
     "build": "tsc && vite build"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "dotenv-local": "^1.0.0",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vite-plugin-api-routes": "file:.."
+    "vite-plugin-api-routes": "..\\vite-plugin-api-routes-v1.1.0.tgz"
   },
   "devDependencies": {
     "@types/express": "^4.17.15",

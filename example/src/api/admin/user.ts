@@ -1,11 +1,3 @@
-//@ts-ignore
-export default (req, res, next) => {
-  req.copyright = "HOC FOR AUTH REQUEST - TS";
-  next();
-};
+import { createAllowRoles } from "../../middleware/sessionToken";
 
-//@ts-ignore
-export const GET = (req, res, next) => {
-  //res.send({ ok: true });
-  next();
-};
+export default createAllowRoles(['USER']);

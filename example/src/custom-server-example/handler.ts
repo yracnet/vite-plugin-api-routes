@@ -1,16 +1,17 @@
-// @ts-nocheck
-import { applyRouters } from "@api/routers"; // Notice '@api', this is the moduleId!
+//@ts-ignore
+import * as configure from "@api/configure";
+//@ts-ignore
+import { applyRouters } from "@api/routers";
 import express from "express";
 
-export const handler = express();
+export const handler: any = express();
 
-// Add JSON-Parsing
-handler.use(express.json());
-handler.use(express.urlencoded({ extended: true }));
+//@ts-ignore
+configure.handlerBefore?.(handler);
 
 applyRouters(
-  (props) => {
-    const { method, route, path, cb } = props;
+  (props: any) => {
+    const { method, route, cb } = props;
     if (handler[method]) {
       if (Array.isArray(cb)) {
         handler[method](route, ...cb);
@@ -22,3 +23,7 @@ applyRouters(
     }
   }
 );
+
+//@ts-ignore
+configure.handlerAfter?.(handler);
+
