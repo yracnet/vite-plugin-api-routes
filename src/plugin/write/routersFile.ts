@@ -24,7 +24,7 @@ export const writeRoutersFile = (
     };
 
     const importFiles = fileRouters
-      .map((it) => `import * as ${it.name} from "/${it.file}";`)
+      .map((it) => `import * as ${it.name} from "${moduleId}/root/${it.file}";`)
       .join("\n");
     const internalRouter = methodRouters.map((c) => writeRouter(c)).join(",\n");
     const code = `
