@@ -54,12 +54,16 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
       watcher.on("add", onReload);
       watcher.on("change", onReload);
       const baseApi = path.join(vite.base, config.routeBase);
-      const configure = await ssrLoadModule(config.configure, { fixStacktrace: true });
+      const configure = await ssrLoadModule(config.configure, {
+        fixStacktrace: true,
+      });
       //@ts-ignore
       configure.viteServerBefore?.(devServer.middlewares, devServer, vite);
       middlewares.use(baseApi, async (req: any, res, next) => {
         try {
-          const module = await ssrLoadModule(config.handler, { fixStacktrace: true });
+          const module = await ssrLoadModule(config.handler, {
+            fixStacktrace: true,
+          });
           module.handler(req, res, next);
         } catch (error) {
           ssrFixStacktrace(error as Error);
@@ -103,7 +107,7 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
             onwarn: (warning: any, handler: any) => {
               if (
                 warning.code === "MISSING_EXPORT" &&
-                warning.id === config.routersFile
+                warning.id.startsWith(config.cacheDir)
               ) {
                 return;
               }

@@ -29,10 +29,10 @@ export type FileRouter = {
 };
 
 const sortURLParams = (a: string, b: string) => {
-  a = a.replace(/\:|\$|\[/gi, 'zz');
-  b = b.replace(/\:|\$|\[/gi, 'zz');
+  a = a.replace(/\:|\$|\[/gi, "zz");
+  b = b.replace(/\:|\$|\[/gi, "zz");
   return a.localeCompare(b);
-}
+};
 
 export const getFileRouters = (config: PluginConfig): FileRouter[] => {
   let { dirs, include, exclude } = config;
@@ -55,6 +55,7 @@ export const getFileRouters = (config: PluginConfig): FileRouter[] => {
         route = path.join("/", route);
         const pathName = path.join("/", config.routeBase, route);
         file = path.join(it.dir, file);
+        file = path.relative(config.root, file);
         return {
           order: jx,
           name: `_${ix}_${jx}`,
