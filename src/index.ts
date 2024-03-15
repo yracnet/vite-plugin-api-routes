@@ -21,6 +21,7 @@ export const pluginAPIRoutes = (opts: UserConfig = {}) => {
     preBuild = (v: InlineConfig) => v,
   } = opts;
 
+  root = path.slash(root);
   dirs = dirs.map((it) => {
     it.dir = path.join(root, it.dir);
     return it;

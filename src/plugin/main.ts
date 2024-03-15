@@ -11,12 +11,13 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
   //@ts-ignore
   let vite: ResolvedConfig = {};
   return {
-    name: "vite-plugin-rest-api",
+    name: "vite-plugin-api-routes",
     enforce: "pre",
     config: () => {
       return {
         resolve: {
           alias: {
+            [`${config.moduleId}/root`]: config.root,
             [`${config.moduleId}/server`]: config.serverFile,
             [`${config.moduleId}/handler`]: config.handlerFile,
             [`${config.moduleId}/routers`]: config.routersFile,
@@ -85,9 +86,11 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
         mode: vite.mode,
         publicDir: "private",
         define: {
-          "import.meta.env.PUBLIC_DIR": publicDir,
-          "import.meta.env.BASE": vite.base,
-          "import.meta.env.BASE_API": path.join(vite.base, routeBase),
+          "API_ROUTES.BASE": JSON.stringify(vite.base),
+          "API_ROUTES.BASE_API": JSON.stringify(
+            path.join(vite.base, routeBase)
+          ),
+          "API_ROUTES.PUBLIC_DIR": JSON.stringify(publicDir),
         },
         build: {
           outDir,
