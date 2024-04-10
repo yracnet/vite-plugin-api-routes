@@ -1,4 +1,4 @@
-import { createResponse } from "../../../../common/response.js";
+import { createResponse } from "../../../../common/response";
 
 //@ts-ignore
 export const GET = (req, res, next) => {
