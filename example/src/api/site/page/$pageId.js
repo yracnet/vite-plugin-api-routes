@@ -1,4 +1,4 @@
-import { createResponse } from "../../../common/response.js";
+import { createResponse } from "../../../common/response";
 
 export const GET = (req, res, next) => {
   const { pageId } = req.params;

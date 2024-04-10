@@ -1,35 +1,62 @@
 import { useEffect, useState } from "react";
 
-const useJWTCookie = () => {
-  const [jwtCookie, setJWTCookie] = useState([{}, []]);
+type JWTCookie = {
+  jwt: any;
+  cookie: any[];
+};
+const useJWTCookie = (): [JWTCookie, () => void] => {
+  const [jwtCookie, setJWTCookie] = useState<JWTCookie>({
+    jwt: {},
+    cookie: [],
+  });
   useEffect(() => {
-    const cookieList = document.cookie.split(";").map((it) => {
+    const cookie = document.cookie.split(";").map((it) => {
       const [name, value] = it.split("=");
       return {
         name,
         value,
       };
     });
-    let jwtData = {};
+    let jwt: any = {};
     try {
-      const [, base64Url,] = cookieList.find(it => it.name === 'token')?.value?.split('.');
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      jwtData = JSON.parse(jsonPayload);
+      const [, base64Url]: any = cookie
+        .find((it) => it.name === "token")
+        ?.value?.split(".");
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
+      jwt = JSON.parse(jsonPayload);
     } catch (error) {
-      jwtData = error;
+      jwt = error;
     }
-    setJWTCookie([jwtData, cookieList]);
+    setJWTCookie({ jwt, cookie });
   }, [document.cookie]);
-  return jwtCookie;
-}
+  const cleanCookies = () => {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+    }
+    setJWTCookie({
+      jwt: {},
+      cookie: [],
+    });
+  };
+  return [jwtCookie, cleanCookies];
+};
 
 export const AppClient = () => {
-  const [routers, setRouters] = useState([]);
+  const [routers, setRouters] = useState<any[]>([]);
   const [data, setData] = useState("");
-  const [jwt, cookie] = useJWTCookie();
+  const [{ jwt, cookie }, cleanCookies] = useJWTCookie();
 
   const onLoad = async () => {
     let routers = await fetch(`${import.meta.env.BASE_URL}/api/routers`).then(
@@ -38,7 +65,8 @@ export const AppClient = () => {
     setRouters(routers);
   };
 
-  const onTest = async (it) => {
+  const onTest = async (it: any) => {
+    //@ts-ignore
     const id = parseInt(1000000 * Math.random());
     const url = it.url.replace(/(:\w+)/g, id);
     let data = await fetch(url, {
@@ -62,6 +90,9 @@ export const AppClient = () => {
           VITE-PLUGIN-API-ROUTES
         </div>
         <div className="card-body">
+          <button className="btn btn-sm btn-danger" onClick={cleanCookies}>
+            Remove cookies
+          </button>
           <table className="table table-sm">
             <tr>
               <th>name</th>

@@ -1,4 +1,11 @@
-export const createResponse = (message, req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+export const createResponse = (
+  message: string,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   res.send({
     source: "sync",
     version: req.version,
@@ -10,7 +17,12 @@ export const createResponse = (message, req, res, next) => {
   });
 };
 
-export const createResponseAsync = async (message, req, res, next) => {
+export const createResponseAsync = async (
+  message: string,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   return res.send({
     source: "async",
     version: req.version,
