@@ -15,6 +15,7 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
     enforce: "pre",
     config: () => {
       return {
+        // appType: "custom",
         resolve: {
           alias: {
             [`${config.moduleId}/root`]: config.root,
@@ -60,23 +61,23 @@ export const pluginImpl = (config: PluginConfig): PluginOption => {
       });
       //@ts-ignore
       configure.viteServerBefore?.(devServer.middlewares, devServer, vite);
-      return () => {
-        // Register Proxy After Vite Inicialize
-        middlewares.use(baseApi, async (req, res, next) => {
-          try {
-            const { handler } = await ssrLoadModule(config.handler, {
-              fixStacktrace: true,
-            });
-            handler(req, res, next);
-          } catch (error) {
-            ssrFixStacktrace(error as Error);
-            process.exitCode = 1;
-            next(error);
-          }
-        });
-        //@ts-ignore
-        configure.viteServerAfter?.(devServer.middlewares, devServer, vite);
-      };
+      // Register Proxy After Vite Inicialize
+      middlewares.use(baseApi, async (req, res, next) => {
+        try {
+          const { handler } = await ssrLoadModule(config.handler, {
+            fixStacktrace: true,
+          });
+          handler(req, res, next);
+        } catch (error) {
+          ssrFixStacktrace(error as Error);
+          process.exitCode = 1;
+          next(error);
+        }
+      });
+      //@ts-ignore
+      configure.viteServerAfter?.(devServer.middlewares, devServer, vite);
+      // return () => {
+      // };
     },
     writeBundle: async () => {
       if (process.env.IS_API_BUILD) return;
