@@ -1,0 +1,76 @@
+{
+  "name": "vite-plugin-api-routes",
+  "version": "1.1.12",
+  "type": "module",
+  "description": "A Vite.js plugin that creates API routes by mapping the directory structure, similar to Next.js API Routes. This plugin enhances the functionality for backend development using Vite.",
+  "keywords": [
+    "vite",
+    "api",
+    "api-router",
+    "api-routers",
+    "vite-plugin-api",
+    "vite-plugin-rest-api",
+    "express",
+    "express-router",
+    "server",
+    "file-system-based",
+    "routing",
+    "rest-api",
+    "api-rest",
+    "plugin",
+    "API",
+    "routes",
+    "backend",
+    "Remix",
+    "Next.js"
+  ],
+  "files": [
+    "dist",
+    "client.d.ts",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "author": "Willyams Yujra <yracnet@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yracnet/vite-plugin-api-routes"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./model": {
+      "types": "./dist/model.d.ts",
+      "import": "./dist/model.js",
+      "require": "./dist/model.cjs"
+    }
+  },
+  "homepage": "https://github.com/yracnet/vite-plugin-api-routes",
+  "bugs": "https://github.com/yracnet/vite-plugin-api-routes/issues",
+  "scripts": {
+    "build": "tsup",
+    "tar": "yarn pack",
+    "prepublish": "yarn build",
+    "prepack": "yarn build"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.2",
+    "slash-path": "^0.0.2"
+  },
+  "peerDependencies": {
+    "vite": "^2 || ^3 || ^4 || ^5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "express": "^4.21.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6"
+  }
+}

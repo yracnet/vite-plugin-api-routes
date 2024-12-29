@@ -2,7 +2,7 @@ import pluginReact from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import { pluginAPIRoutes } from "vite-plugin-api-routes";
 import { chunkSplitPlugin } from "vite-plugin-chunk-split";
-//import pluginAPIRoutes from "../src";
+//import pluginAPIRoutes from "../plugin/src";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,7 +13,7 @@ export default defineConfig({
   },
   resolve: {
     // alias: {
-    //   "vite-plugin-api-routes": "../src",
+    //   "vite-plugin-api-routes": "../plugin/src",
     //   "@api": "./.api",
     // },
   },
