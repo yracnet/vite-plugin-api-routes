@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 .api
+*.tgz
+.yarn
+.up-force
+.fetch-client
