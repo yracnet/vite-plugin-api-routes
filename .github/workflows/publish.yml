@@ -16,11 +16,11 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
-      - name: [api-routes] cd
+      - name: "[api-routes] cd"
         run: cd packages/plugin
-      - name: [api-routes] install
+      - name: "[api-routes] install"
         run: npm install
-      - name: [api-routes] publish
+      - name: "[api-routes] publish"
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPMJS_TOKEN}}
