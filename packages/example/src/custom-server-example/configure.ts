@@ -1,4 +1,5 @@
-import express from "express";
+import { ErrorHandleFunction } from "connect";
+import express, { ErrorRequestHandler } from "express";
 import {
   CallbackHook,
   ServerHook,
@@ -16,13 +17,15 @@ export const viteServerBefore: ViteServerHook = (server, viteServer) => {
 };
 
 export const viteServerAfter: ViteServerHook = (server, viteServer) => {
-  // @ts-ignore
-  server.use((err, req, res, next) => {
+  const errorHandler: ErrorHandleFunction = (err, req, res, next) => {
     if (err instanceof Error) {
-      return res.status(403).json({ error: err.message });
+      res.writeHead(403, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: err.message }));
+    } else {
+      next(err);
     }
-    next(err);
-  });
+  };
+  server.use(errorHandler);
 };
 
 // ServerHook
@@ -33,13 +36,14 @@ export const serverBefore: ServerHook = (server) => {
 };
 
 export const serverAfter: ServerHook = (server) => {
-  // @ts-ignore
-  server.use((err, req, res, next) => {
+  const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if (err instanceof Error) {
-      return res.status(403).json({ error: err.message });
+      res.status(403).json({ error: err.message });
+    } else {
+      next(err);
     }
-    next(err);
-  });
+  };
+  server.use(errorHandler);
 };
 
 // // HandlerHook

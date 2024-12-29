@@ -6,11 +6,9 @@ export default defineConfig([
     format: ["cjs", "esm"],
     outDir: "dist",
     external: ["vite", "express", "fast-glob", "slash-path"],
-    dts: {
-      resolve: true,
-    },
+    dts: true,
     clean: true,
     sourcemap: false,
-    minify: true,
+    minify: false,
   },
 ]);

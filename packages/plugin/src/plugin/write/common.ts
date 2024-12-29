@@ -28,28 +28,30 @@ export type FileRouter = {
   order: number;
 };
 
-const sortURLParams = (a: string, b: string) => {
-  a = a.replace(/\:|\$|\[/gi, "zz");
-  b = b.replace(/\:|\$|\[/gi, "zz");
-  return a.localeCompare(b);
-};
-
 export const getFileRouters = (config: PluginConfig): FileRouter[] => {
   let { dirs, include, exclude } = config;
   return dirs.flatMap((it, ix) => {
     it.exclude = it.exclude || [];
     const ignore = [...exclude, ...it.exclude];
-    return fg
-      .sync(include, {
-        ignore,
-        onlyDirectories: false,
-        dot: true,
-        unique: true,
-        cwd: it.dir,
+    const files: string[] = fg.sync(include, {
+      ignore,
+      onlyDirectories: false,
+      dot: true,
+      unique: true,
+      cwd: it.dir,
+    });
+    return files
+      .map((path: string) => {
+        const key = path
+          .replace(/\//g, "/a_")
+          .replace(/\/a_(\$|\[)/g, "/z_$1")
+          .replace(/a_index.(.*)$/, "");
+        return { path, key };
       })
       .sort((a, b) => {
-        return sortURLParams(a, b);
+        return a.key.localeCompare(b.key);
       })
+      .map((it) => it.path)
       .map((file, jx) => {
         let route = assertFileRoute(it.route, file);
         route = path.join("/", route);
@@ -58,7 +60,7 @@ export const getFileRouters = (config: PluginConfig): FileRouter[] => {
         file = path.relative(config.root, file);
         return {
           order: jx,
-          name: `_${ix}_${jx}`,
+          name: `R${ix}M${jx}`,
           file,
           path: pathName,
           route,
