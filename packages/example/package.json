@@ -13,8 +13,8 @@
     "dotenv-local": "^1.0.1",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
@@ -23,7 +23,7 @@
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "typescript": "^5.7.2",
-    "vite": "^6.0.6",
+    "vite": "^5.0.0",
     "vite-plugin-api-routes": "*",
     "vite-plugin-chunk-split": "^0.5.0"
   }
