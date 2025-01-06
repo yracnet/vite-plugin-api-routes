@@ -7,6 +7,6 @@
   "license": "MIT",
   "workspaces": [
     "packages/plugin",
-    "packages/example"
+    "packages/examples/*"
   ]
 }
