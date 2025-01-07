@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "default": "Run Build",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run App",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "npx",
+            "args": [
+                "vite",
+                "dev"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "cwd": "${workspaceFolder}/packages/examples/app",
+            "autoAttachChildProcesses": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run Build",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "npx",
+            "args": [
+                "vite",
+                "build"
+            ],
+            "env": {
+                "NODE_ENV": "production"
+            },
+            "cwd": "${workspaceFolder}/packages/examples/app",
+            "console": "integratedTerminal",
+            "autoAttachChildProcesses": true
+        }
+    ]
+}

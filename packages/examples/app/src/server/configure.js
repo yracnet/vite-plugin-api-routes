@@ -1,7 +1,5 @@
 import express from "express";
-//@ts-ignore
 
-// ViteServerHook
 export const viteServerBefore = (server, viteServer) => {
   console.log("VITEJS SERVER");
   server.use(express.json());

@@ -1,8 +1,8 @@
 import fs from "fs";
 import { join } from "slash-path";
+import { PluginConfig } from "src/model";
 import { ResolvedConfig } from "vite";
-import { PluginConfig } from "../types";
-import { MethodRouter, getFileRouters, getMethodRouters } from "./common";
+import { getFileRouters, getMethodRouters, MethodRouter } from "./common";
 
 export const writeRoutersFile = (
   config: PluginConfig,

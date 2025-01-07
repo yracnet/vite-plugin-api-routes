@@ -1,44 +1,54 @@
-import { Express, NextFunction, Request, Response } from "express";
-import { Connect } from "vite";
+import { InlineConfig } from "vite";
 
-export type RequestCallback = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void | Promise<void>;
-
-export type AnyExpress = Express & {
-  [key: string]: RequestCallback;
-};
-
-export type Handler = AnyExpress;
-
-export type Server = AnyExpress;
-
-export type Callback = RequestCallback | RequestCallback[];
-
-export type RouteInfo = {
-  source: string;
-  method: "get" | "post" | "put" | "push" | "delete" | string;
+export type DirRoute = {
+  dir: string;
   route: string;
-  path: string;
-  url: string;
+  exclude?: string[];
 };
 
-export type RouteModule = RouteInfo & {
-  cb: Callback;
+export type Mapper = {
+  name: string;
+  method: string;
 };
 
-export type ApplyRouter = (route: RouteModule) => void;
+export type PluginConfig = {
+  moduleId: string;
+  server: string;
+  handler: string;
+  configure: string;
+  serverFile: string;
+  handlerFile: string;
+  routersFile: string;
+  configureFile: string;
+  typesFile: string;
+  dirs: DirRoute[];
+  include: string[];
+  exclude: string[];
+  mapper: { [k: string]: string | false };
+  mapperList: Mapper[];
+  watcherList: string[];
+  routeBase: string;
+  root: string;
+  cacheDir: string;
+  clientOutDir: string;
+  serverOutDir: string;
+  serverMinify: boolean | "terser" | "esbuild";
+  clientMinify: boolean | "terser" | "esbuild";
+  serverBuild: (config: InlineConfig) => InlineConfig;
+  clientBuild: (config: InlineConfig) => InlineConfig;
+};
 
-export type ApplyRouters = (apply: ApplyRouter) => void;
-
-export type ViteServerHook = (server: Connect.Server, viteServer: any) => void;
-
-export type ServerHook = (server: Server) => void;
-
-export type HandlerHook = (handler: Handler) => void;
-
-export type CallbackHook = (callback: Callback, route: RouteInfo) => Callback;
-
-export type StatusHook = (server: Server, status: any) => void;
+export type UserConfig = Partial<
+  Omit<
+    PluginConfig,
+    | "serverFile"
+    | "handlerFile"
+    | "configureFile"
+    | "routersFile"
+    | "typesFile"
+    | "mapperList"
+    | "watcherList"
+    | "config"
+    | "routers"
+  >
+>;

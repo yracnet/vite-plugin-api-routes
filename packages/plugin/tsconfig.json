@@ -2,7 +2,10 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "es2017",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "allowJs": true,
     "esModuleInterop": true,
     "strict": true,
@@ -10,8 +13,31 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "baseUrl": ".",
+    "paths": {
+      "@api/configure": [
+        "src/api-server/configure.ts"
+      ],
+      "@api/handler": [
+        "src/api-server/handler.ts"
+      ],
+      "@api/routers": [
+        "src/api-server/routers.ts"
+      ],
+      "@api/server": [
+        "src/api-server/server.ts"
+      ],
+    }
   },
-  "include": ["src/**/*", "*.d.ts"],
-  "exclude": ["node_modules", "example", "dist"]
+  "include": [
+    "src/**/*",
+    "*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "example",
+    "dist",
+    ".api"
+  ]
 }

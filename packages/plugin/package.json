@@ -26,6 +26,7 @@
   ],
   "files": [
     "dist",
+    ".api",
     "client.d.ts",
     "LICENSE"
   ],
@@ -48,6 +49,26 @@
       "types": "./dist/model.d.ts",
       "import": "./dist/model.js",
       "require": "./dist/model.cjs"
+    },
+    "./api/types.js": {
+      "types": "./.api/types.d.ts",
+      "import": "./.api/types.js"
+    },
+    "./api/configure.js": {
+      "types": "./.api/configure.d.ts",
+      "import": "./.api/configure.js"
+    },
+    "./api/handler.js": {
+      "types": "./.api/handler.d.ts",
+      "import": "./.api/handler.js"
+    },
+    "./api/routers.js": {
+      "types": "./.api/routers.d.ts",
+      "import": "./.api/routers.js"
+    },
+    "./api/server.js": {
+      "types": "./.api/server.d.ts",
+      "import": "./.api/server.js"
     }
   },
   "homepage": "https://github.com/yracnet/vite-plugin-api-routes",
@@ -60,6 +81,7 @@
   },
   "dependencies": {
     "fast-glob": "^3.3.2",
+    "fs-extra": "^11.2.0",
     "slash-path": "^0.0.2"
   },
   "peerDependencies": {
@@ -67,6 +89,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.10.2",
     "express": "^4.21.2",
     "tsup": "^8.3.5",

@@ -201,15 +201,15 @@ You can disable a method by setting its value to false. In the example `PATCH: f
 **/src/api/index.js**
 
 ```javascript
-export const PING = (req, res, next)=>{
-    res.send({name:"Ping Service"});
-}
-export const OTHER_POST = (req, res, next)=>{
-    res.send({name:"Other Service"});
-}
-export const PATCH = (req, res, next)=>{
-    res.send({name:"Path Service"});
-}
+export const PING = (req, res, next) => {
+  res.send({ name: "Ping Service" });
+};
+export const OTHER_POST = (req, res, next) => {
+  res.send({ name: "Other Service" });
+};
+export const PATCH = (req, res, next) => {
+  res.send({ name: "Path Service" });
+};
 ```
 
 **/src/handler.js** or see [handler.js](./example/src/custom-server-example/handler.ts)
@@ -223,20 +223,18 @@ export const handler = express();
 
 configure.handlerBefore?.(handler);
 
-applyRouters(
-  (props) => {
-    const { method, route, path, cb } = props;
-    if (handler[method]) {
-      if(Array.isArray(cb)) {
-        handler[method](route, ...cb);
-      } else {
-        handler[method](route, cb);
-      }
+applyRouters((props) => {
+  const { method, route, path, cb } = props;
+  if (handler[method]) {
+    if (Array.isArray(cb)) {
+      handler[method](route, ...cb);
     } else {
-      console.log("Not Support", method, "for", route, "in", handler);
+      handler[method](route, cb);
     }
+  } else {
+    console.log("Not Support", method, "for", route, "in", handler);
   }
-);
+});
 
 configure.handlerAfter?.(handler);
 ```
@@ -270,41 +268,40 @@ server.listen(PORT);
 
 ```typescript
 import express from "express";
-import { CallbackHook, StatusHook, ServerHook, HandlerHook, ViteServerHook } from "vite-plugin-api-routes/model";
+import {
+  CallbackHook,
+  StatusHook,
+  ServerHook,
+  HandlerHook,
+  ViteServerHook,
+} from "vite-plugin-api-routes/model";
 
 export const viteServerBefore: ViteServerHook = (server, viteServer) => {
-    console.log("VITEJS SERVER");
-    server.use(express.json());
-    server.use(express.urlencoded({ extended: true }));
+  console.log("VITEJS SERVER");
+  server.use(express.json());
+  server.use(express.urlencoded({ extended: true }));
 };
 
-export const viteServerAfter: ViteServerHook = (server, viteServer) => {
-};
+export const viteServerAfter: ViteServerHook = (server, viteServer) => {};
 
 export const serverBefore: ServerHook = (server) => {
-    server.use(express.json());
-    server.use(express.urlencoded({ extended: true }));
+  server.use(express.json());
+  server.use(express.urlencoded({ extended: true }));
 };
 
-export const serverAfter: ServerHook = (server) => {
-};
+export const serverAfter: ServerHook = (server) => {};
 
-export const handlerBefore: HandlerHook = (handler) => {
-};
+export const handlerBefore: HandlerHook = (handler) => {};
 
-export const handlerAfter: HandlerHook = (server) => {
-};
+export const handlerAfter: HandlerHook = (server) => {};
 
 export const callbackBefore: CallbackHook = (callback, route) => {
-    return callback;
+  return callback;
 };
 
-export const serverListening: StatusHook = (server) => {
-};
+export const serverListening: StatusHook = (server) => {};
 
-export const serverError: StatusHook = (server, error) => {
-};
-
+export const serverError: StatusHook = (server, error) => {};
 ```
 
 ### TypeScript Support
@@ -316,6 +313,7 @@ To leverage TypeScript models within your Vite.js project, follow these steps:
 Add a reference to the TypeScript definitions file [moduleId]/types.d.ts within your vite-env.d.ts file.
 
 src/vite-env.d.ts
+
 ```typescript
 /// <reference types="vite/client" />
 /// <reference types="../.api/types.d.ts" />
@@ -331,11 +329,10 @@ Incorporating a ViteServerHook model from vite-plugin-api-routes:
 import { ViteServerHook } from "vite-plugin-api-routes/model";
 
 export const viteServerBefore: ViteServerHook = (server, viteServer) => {
-    console.log("VITEJS SERVER");
-    // Include ViteServer Config
+  console.log("VITEJS SERVER");
+  // Include ViteServer Config
 };
 ```
-
 
 ## NOTE:
 

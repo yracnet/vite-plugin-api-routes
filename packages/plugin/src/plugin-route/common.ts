@@ -1,6 +1,6 @@
 import fg from "fast-glob";
 import path from "slash-path";
-import { PluginConfig } from "../types";
+import { PluginConfig } from "../model";
 
 type PathString = string | null | undefined;
 
