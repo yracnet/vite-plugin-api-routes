@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-/// <reference types="../.api/types.d.ts" />
+/// <reference types="../.api/env.d.ts" />
 
 declare namespace Express {
   export interface Request {

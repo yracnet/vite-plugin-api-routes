@@ -2,24 +2,22 @@ import { UserConfig } from "./model";
 import { apiRoutesBuild } from "./plugin-build";
 import { apiRoutesRoute } from "./plugin-route";
 import { apiRoutesServe } from "./plugin-serve";
-import { assertConfig, copyAPIDirectory, getPluginDirectory } from "./utils";
+import { assertConfig, copyFilesDirectory, findDirPlugin } from "./utils";
 
 export const pluginAPIRoutes = (opts: UserConfig = {}) => {
   const apiConfig = assertConfig(opts);
-  const dirname = getPluginDirectory();
-  copyAPIDirectory(
-    dirname,
-    apiConfig.cacheDir,
-    [
-      // Files Copies
+  const apiDir = findDirPlugin(".api");
+  copyFilesDirectory(apiDir, apiConfig.cacheDir, {
+    files: [
+      //Only JS
       "configure.js",
       "handler.js",
       "server.js",
-      "types.d.ts",
+      "env.d.ts",
     ],
-    "@api",
-    apiConfig.moduleId
-  );
+    oldId: "@api",
+    newId: apiConfig.moduleId,
+  });
   return [
     //
     apiRoutesRoute(apiConfig),

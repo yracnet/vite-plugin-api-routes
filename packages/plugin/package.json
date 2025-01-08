@@ -45,44 +45,27 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./model": {
-      "types": "./dist/model.d.ts",
-      "import": "./dist/model.js",
-      "require": "./dist/model.cjs"
+    "./configure": {
+      "types": "./.api/configure.d.ts"
     },
-    "./api/types.js": {
-      "types": "./.api/types.d.ts",
-      "import": "./.api/types.js"
+    "./handler": {
+      "types": "./.api/handler.d.ts"
     },
-    "./api/configure.js": {
-      "types": "./.api/configure.d.ts",
-      "import": "./.api/configure.js"
-    },
-    "./api/handler.js": {
-      "types": "./.api/handler.d.ts",
-      "import": "./.api/handler.js"
-    },
-    "./api/routers.js": {
-      "types": "./.api/routers.d.ts",
-      "import": "./.api/routers.js"
-    },
-    "./api/server.js": {
-      "types": "./.api/server.d.ts",
-      "import": "./.api/server.js"
+    "./routers": {
+      "types": "./.api/routers.d.ts"
     }
   },
   "homepage": "https://github.com/yracnet/vite-plugin-api-routes",
   "bugs": "https://github.com/yracnet/vite-plugin-api-routes/issues",
   "scripts": {
     "build": "tsup",
-    "tar": "yarn pack",
-    "prepublish": "yarn build",
-    "prepack": "yarn build"
+    "prepublish": "yarn build"
   },
   "dependencies": {
     "fast-glob": "^3.3.2",
     "fs-extra": "^11.2.0",
-    "slash-path": "^0.0.2"
+    "slash-path": "^0.0.2",
+    "vite-plugin-builder": "^1.0.0"
   },
   "peerDependencies": {
     "vite": "^2 || ^3 || ^4 || ^5 || ^6"
@@ -94,6 +77,6 @@
     "express": "^4.21.2",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
-    "vite": "^5.0.0"
+    "vite": "^4.0.0"
   }
 }

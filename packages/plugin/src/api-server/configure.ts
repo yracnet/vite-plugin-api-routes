@@ -1,7 +1,7 @@
-import { Callback, RouteInfo } from "@api/handler";
 import { HandleFunction } from "connect";
 import express, { ErrorRequestHandler, Express, Handler } from "express";
 import { Connect } from "vite";
+import { Callback, RouteInfo } from "vite-plugin-api-routes/handler";
 
 export type ViteServerHook = (server: Connect.Server, viteServer: any) => void;
 

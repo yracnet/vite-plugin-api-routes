@@ -1,6 +1,6 @@
-import * as configure from "@api/configure";
-import { applyRouters } from "@api/routers";
 import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
+import * as configure from "vite-plugin-api-routes/configure";
+import { applyRouters } from "vite-plugin-api-routes/routers";
 
 export type Callback =
   | ErrorRequestHandler

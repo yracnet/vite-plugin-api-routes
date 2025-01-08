@@ -4,7 +4,7 @@ import {
   CallbackHook,
   ServerHook,
   ViteServerHook,
-} from "vite-plugin-api-routes/model";
+} from "vite-plugin-api-routes/configure";
 //@ts-ignore
 import cookieParser from "cookie-parser";
 

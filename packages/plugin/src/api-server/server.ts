@@ -1,7 +1,7 @@
-import * as configure from "@api/configure";
-import { handler } from "@api/handler";
-import { endpoints } from "@api/routers";
 import express from "express";
+import * as configure from "vite-plugin-api-routes/configure";
+import { handler } from "vite-plugin-api-routes/handler";
+import { endpoints } from "vite-plugin-api-routes/routers";
 
 const server = express();
 configure.serverBefore?.(server);
