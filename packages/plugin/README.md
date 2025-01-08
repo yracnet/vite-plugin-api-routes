@@ -108,6 +108,16 @@ Similarly, the `[userId].js` or `$userId.js` file name is exported as a request 
 yarn add vite-plugin-api-routes
 ```
 
+### Configure Aliases TypeScript
+
+In order to have proper access to the plugin's alias definitions, you need to include `/.api/env.d.ts` in either `src/vite-env.d.ts` or in your `tsconfig.json`.
+
+In your `src/vite-env.d.ts`, add the following line:
+
+```typescript
+/// <reference path="../.api/env.d.ts" />
+```
+
 ### Configuration
 
 In `vite.config.ts`:
@@ -119,7 +129,7 @@ import { pluginAPIRoutes } from "vite-plugin-api-routes";
 export default defineConfig({
   plugins: [
     pluginAPIRoutes({
-      // moduleId: "@api",  // Old version change to "virtual:vite-plugin-api-routes",
+      // moduleId: "@api",
       // cacheDir: ".api",
       // server: "[cacheDir]/server.js",
       // handler: "[cacheDir]/handler.js",
@@ -129,6 +139,13 @@ export default defineConfig({
       // include: ["**/*.js", "**/*.ts"],
       // exclude: ["node_modules", ".git"],
       // mapper: { default: "use", GET: "get", ... },
+      // disableBuild: false,
+      // clientOutDir = "dist/client",
+      // clientMinify = true,
+      // clientBuild = (config: InlineConfig) => config,
+      // serverOutDir = "dist",
+      // serverMinify = false,
+      // serverBuild = (config: InlineConfig) => config,
     }),
   ],
 });
@@ -146,6 +163,15 @@ export default defineConfig({
 - **exclude**: Files and directories to exclude from the scan process. The default value is **["node_modules", ".git"]**.
 - **mapper**: Mapping rules from exported functions to server instance methods.
 - **cacheDir**: Cache Directory target to write temp files.
+- **disableBuild**: Disabled the build process in the plugin, allowing other plugins, such as vite-plugin-builder, to handle the build process instead.
+- **clientOutDir**: Client out directory
+- **clientMinify**: Client minify output
+- **clientBuild**: Client prev vite configuration
+- **serverOutDir**: Server out directory
+- **serverMinify**: Server minify output
+- **serverBuild**: Server prev vite configuration
+
+> **Note:** When building the project, the server entry will be built first, before the client is compiled.
 
 ## Mapper
 
@@ -182,7 +208,7 @@ export default defineConfig({
         PING: "get",
         /**
          * export const OTHER_POST = ()=>{...}
-         * Will be mapped to posible method
+         * Will be mapped to possible method
          * app.post2('/path/dir', OTHER_POST)
          */
         OTHER_POST: "post2",
@@ -274,77 +300,16 @@ import {
   ServerHook,
   HandlerHook,
   ViteServerHook,
-} from "vite-plugin-api-routes/model";
+} from "vite-plugin-api-routes/configure";
+// import { ApplyRouter, ApplyRouters } from "vite-plugin-api-routes/routes"
+// import { Callback, RouteInfo, RouteModule } from "vite-plugin-api-routes/handler"
 
-export const viteServerBefore: ViteServerHook = (server, viteServer) => {
-  console.log("VITEJS SERVER");
-  server.use(express.json());
-  server.use(express.urlencoded({ extended: true }));
-};
-
-export const viteServerAfter: ViteServerHook = (server, viteServer) => {};
-
-export const serverBefore: ServerHook = (server) => {
-  server.use(express.json());
-  server.use(express.urlencoded({ extended: true }));
-};
-
+export const serverBefore: ServerHook = (server) => {};
 export const serverAfter: ServerHook = (server) => {};
-
-export const handlerBefore: HandlerHook = (handler) => {};
-
-export const handlerAfter: HandlerHook = (server) => {};
-
-export const callbackBefore: CallbackHook = (callback, route) => {
-  return callback;
-};
-
-export const serverListening: StatusHook = (server) => {};
-
+export const serverListening: StatusHook = (server, endpoints) => {};
 export const serverError: StatusHook = (server, error) => {};
+export const handlerBefore: HandlerHook = (handler) => {};
+export const handlerAfter: HandlerHook = (handler) => {};
+export const viteServerBefore: ViteServerHook = (server) => {};
+export const viteServerAfter: ViteServerHook = (server) => {};
 ```
-
-### TypeScript Support
-
-To leverage TypeScript models within your Vite.js project, follow these steps:
-
-#### Reference the TypeScript Definitions:
-
-Add a reference to the TypeScript definitions file [moduleId]/types.d.ts within your vite-env.d.ts file.
-
-src/vite-env.d.ts
-
-```typescript
-/// <reference types="vite/client" />
-/// <reference types="../.api/types.d.ts" />
-```
-
-#### Utilize the TypeScript Models in Your Code:
-
-Once you've referenced the required TypeScript definitions, you can incorporate them directly into your TypeScript code.
-
-Incorporating a ViteServerHook model from vite-plugin-api-routes:
-
-```typescript
-import { ViteServerHook } from "vite-plugin-api-routes/model";
-
-export const viteServerBefore: ViteServerHook = (server, viteServer) => {
-  console.log("VITEJS SERVER");
-  // Include ViteServer Config
-};
-```
-
-## NOTE:
-
-In the server file, we do not explicitly declare the basic configuration. Instead, this responsibility is delegated to the configure file, ensuring a more modular and centralized approach to server setup and initialization.
-
-## WARNING:
-
-Be cautious when configuring the `viteServerBefore` and `viteServerAfter` methods. These methods interact with viteServer, and if not configured correctly, they can lead to issues. Specifically, including a direct reference to the Vite.js library within these methods can cause problems during the build process. Although these methods themselves are not included in the final build output, any import references associated with the vitejs libraries can generate unexpected problems.
-
-## TO DO:
-
-- Extend the `mapper` attribute to support custom HTTP methods using a header attribute.
-- Implement fs-visitor for optimize the scan files process
-- express.on("error", callback) don't works
-- Set default error handling to `server After` or `handler After`

@@ -9,3 +9,5 @@ declare namespace Express {
     copyright?: string;
   }
 }
+
+declare var API_ROUTES: any;

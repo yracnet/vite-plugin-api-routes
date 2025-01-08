@@ -48,13 +48,12 @@ const doBuildServer = async (
         output: {
           format: "es",
           entryFileNames: "app.js",
-          chunkFileNames: "[name]-[hash].js",
+          chunkFileNames: "bin/[name]-[hash].js",
           assetFileNames: "assets/[name].[ext]",
           manualChunks: (id) => {
             const isApi = apiConfig.dirs.find((it) => id.includes(it.dir));
             if (isApi) {
               const file = path.join(
-                "bin",
                 apiConfig.routeBase || "",
                 isApi.route || "",
                 path.relative(isApi.dir, id)
@@ -63,7 +62,7 @@ const doBuildServer = async (
             }
             const isBin = binFiles.find((bin) => id.includes(bin));
             if (isBin) {
-              return path.join("bin", "index");
+              return "index";
             }
             if (id.includes("node_modules")) {
               const pkg = id.split("node_modules/")[1];
@@ -124,6 +123,9 @@ const doBuildClient = async (
 };
 
 export const apiRoutesBuild = (apiConfig: PluginConfig): PluginOption => {
+  if (apiConfig.disableBuild) {
+    return null;
+  }
   //@ts-ignore
   let viteConfig: ResolvedConfig = {};
   return {
@@ -131,7 +133,7 @@ export const apiRoutesBuild = (apiConfig: PluginConfig): PluginOption => {
     enforce: "pre",
     apply: "build",
     config: () => {
-      if (process.env.IS_API_BUILD) return {};
+      if (process.env.IS_API_ROUTES_BUILD) return {};
       return {
         build: {
           emptyOutDir: true,
@@ -161,10 +163,15 @@ export const apiRoutesBuild = (apiConfig: PluginConfig): PluginOption => {
       viteConfig = config;
     },
     buildStart: async () => {
-      if (process.env.IS_API_BUILD) return;
-      process.env.IS_API_BUILD = "true";
+      if (process.env.IS_API_ROUTES_BUILD) return;
+      process.env.IS_API_ROUTES_BUILD = "true";
+      viteConfig.logger.info("");
+      viteConfig.logger.info("\x1b[1m\x1b[31mSERVER BUILD\x1b[0m");
       await doBuildServer(apiConfig, viteConfig);
+      viteConfig.logger.info("");
+      viteConfig.logger.info("\x1b[1m\x1b[31mCLIENT BUILD\x1b[0m");
       await doBuildClient(apiConfig, viteConfig);
+      viteConfig.logger.info("");
     },
   };
 };

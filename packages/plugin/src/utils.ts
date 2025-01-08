@@ -17,12 +17,13 @@ export const assertConfig = (opts: UserConfig): PluginConfig => {
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
     mapper = {},
+    disableBuild = true,
     clientOutDir = "dist/client",
+    clientMinify = true,
+    clientBuild = (config: InlineConfig) => config,
     serverOutDir = "dist",
     serverMinify = false,
-    clientMinify = true,
-    clientBuild = (v: InlineConfig) => v,
-    serverBuild = (v: InlineConfig) => v,
+    serverBuild = (config: InlineConfig) => config,
   } = opts;
 
   root = path.slash(root);
@@ -82,13 +83,14 @@ export const assertConfig = (opts: UserConfig): PluginConfig => {
     mapper,
     mapperList,
     watcherList,
-    serverOutDir,
-    clientOutDir,
     cacheDir,
-    serverMinify,
+    disableBuild,
+    clientOutDir,
     clientMinify,
-    serverBuild,
     clientBuild,
+    serverOutDir,
+    serverMinify,
+    serverBuild,
   };
 };
 
@@ -108,12 +110,18 @@ export const findDirPlugin = (dirname: string, max = 5) => {
   for (var i = 0; i < max; i++) {
     dirPath = path.join(basedir, relative, dirname);
     if (fs.existsSync(dirPath)) {
-      console.log("FOUND>>>>", dirPath);
       return dirPath;
     }
     relative += "../";
   }
   throw Error(`Not found: ${dirPath}`);
+};
+
+export const cleanDirectory = (target: string) => {
+  if (fs.existsSync(target)) {
+    fs.rmSync(target, { recursive: true, force: true });
+  }
+  fs.mkdirSync(target, { recursive: true });
 };
 
 export const copyFilesDirectory = (
@@ -129,15 +137,9 @@ export const copyFilesDirectory = (
     newId: string;
   }
 ) => {
-  if (fs.existsSync(target)) {
-    fs.rmSync(target, { recursive: true, force: true });
-  }
-  fs.mkdirSync(target, { recursive: true });
-
   files.forEach((file) => {
     const sourceFilePath = path.join(origin, file);
     const targetFilePath = path.join(target, file);
-    console.log("COPY>>>>", sourceFilePath, "TO", targetFilePath);
     if (oldId !== newId) {
       let fileContent = fs.readFileSync(sourceFilePath, "utf-8");
       fileContent = fileContent.replace(new RegExp(oldId, "g"), newId);

@@ -1250,6 +1250,13 @@ dotenv-local@^1.0.1:
   dependencies:
     dotenv "^16.3.1"
 
+dotenv-local@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/dotenv-local/-/dotenv-local-1.0.2.tgz#0460be93f4c4f981137867c9df3f3e96bd2d87cf"
+  integrity sha512-5bbVEx9ceVZfhMy0oAV/LeD/H3NpSuOOaSgi2qxwXvTVlqqHIuR11fw+5RaMJzgFDXObIb6xHN9OXJI5eK8gYQ==
+  dependencies:
+    dotenv "^16.3.1"
+
 dotenv@^16.3.1, dotenv@^16.4.7:
   version "16.4.7"
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.4.7.tgz#0e20c5b82950140aa99be360a8a5f52335f53c26"

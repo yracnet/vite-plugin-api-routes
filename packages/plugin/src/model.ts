@@ -30,12 +30,13 @@ export type PluginConfig = {
   routeBase: string;
   root: string;
   cacheDir: string;
+  disableBuild: boolean;
   clientOutDir: string;
+  clientMinify: boolean | "terser" | "esbuild";
+  clientBuild: (config: InlineConfig) => InlineConfig;
   serverOutDir: string;
   serverMinify: boolean | "terser" | "esbuild";
-  clientMinify: boolean | "terser" | "esbuild";
   serverBuild: (config: InlineConfig) => InlineConfig;
-  clientBuild: (config: InlineConfig) => InlineConfig;
 };
 
 export type UserConfig = Partial<

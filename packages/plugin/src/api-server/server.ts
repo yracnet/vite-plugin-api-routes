@@ -1,3 +1,4 @@
+import { loadEnv } from "dotenv-local";
 import express from "express";
 import * as configure from "vite-plugin-api-routes/configure";
 import { handler } from "vite-plugin-api-routes/handler";
@@ -6,17 +7,19 @@ import { endpoints } from "vite-plugin-api-routes/routers";
 const server = express();
 configure.serverBefore?.(server);
 
-const {
-  HOST = "0.0.0.0",
-  PORT = "3000",
-  BASE = API_ROUTES.BASE,
-  BASE_API = API_ROUTES.BASE_API,
-} = process.env;
+const { HOST, PORT } = loadEnv({
+  envPrefix: "SERVER_",
+  removeEnvPrefix: true,
+  envInitial: {
+    SERVER_HOST: "127.0.0.1",
+    SERVER_PORT: "3000",
+  },
+});
 
-const SERVER_URL = `http://${HOST}:${PORT}${BASE}`;
+const SERVER_URL = `http://${HOST}:${PORT}${API_ROUTES.BASE}`;
 
-server.use(BASE, express.static(API_ROUTES.PUBLIC_DIR));
-server.use(BASE_API, handler);
+server.use(API_ROUTES.BASE_API, handler);
+server.use(API_ROUTES.BASE, express.static(API_ROUTES.PUBLIC_DIR));
 
 configure.serverAfter?.(server);
 
