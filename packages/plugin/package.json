@@ -36,9 +36,6 @@
     "type": "git",
     "url": "https://github.com/yracnet/vite-plugin-api-routes"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

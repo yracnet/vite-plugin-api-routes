@@ -108,17 +108,6 @@ In your `src/vite-env.d.ts`, add the following line:
 /// <reference path="../.api/env.d.ts" />
 ```
 
-#### Option 2: Add to `tsconfig.json`
-
-In your `tsconfig.json`, add the path reference under the `compilerOptions`:
-
-```json
-{
-  "compilerOptions": {
-    "types": ["vite-plugin-api-routes"]
-  }
-}
-```
 
 ### Step 7: Run the Server
 
