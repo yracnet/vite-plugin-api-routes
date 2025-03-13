@@ -1,13 +1,13 @@
 import path from "slash-path";
 import { PluginOption, ResolvedConfig, build } from "vite";
-import { PluginConfig } from "../model";
+import { ApiConfig } from "../model";
 const ENTRY_NONE = "____.html";
 
 const simplePath = (filePath: string) =>
   filePath.replace(path.extname(filePath), "");
 
 const doBuildServer = async (
-  apiConfig: PluginConfig,
+  apiConfig: ApiConfig,
   viteConfig: ResolvedConfig
 ) => {
   const {
@@ -86,7 +86,7 @@ const doBuildServer = async (
   await build(viteServer);
 };
 const doBuildClient = async (
-  apiConfig: PluginConfig,
+  apiConfig: ApiConfig,
   viteConfig: ResolvedConfig
 ) => {
   const { root, clientOutDir, clientMinify, clientBuild } = apiConfig;
@@ -122,7 +122,7 @@ const doBuildClient = async (
   await build(viteClient);
 };
 
-export const apiRoutesBuild = (apiConfig: PluginConfig): PluginOption => {
+export const apiRoutesBuild = (apiConfig: ApiConfig): PluginOption => {
   if (apiConfig.disableBuild) {
     return null;
   }

@@ -1,8 +1,8 @@
 import path from "slash-path";
 import { Plugin } from "vite";
-import { PluginConfig } from "../model";
+import { ApiConfig } from "../model";
 
-export const apiRoutesServe = (config: PluginConfig): Plugin => {
+export const apiRoutesServe = (config: ApiConfig): Plugin => {
   return {
     name: "vite-plugin-api-routes:serve",
     enforce: "pre",

@@ -1,6 +1,7 @@
 import db from "../../db";
 
-const GET_LIST_USERS = (req, res, next) => {
+const GET_USERS = (req, res, next) => {
+  console.log("LOG: GET_USERS");
   db.users.find({}, (err, users) => {
     if (err) {
       return res.status(500).json({ error: "Error obteniendo los usuarios" });
@@ -9,4 +10,4 @@ const GET_LIST_USERS = (req, res, next) => {
   });
 };
 
-export default GET_LIST_USERS;
+export default GET_USERS;

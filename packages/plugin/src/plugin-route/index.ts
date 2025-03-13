@@ -1,12 +1,12 @@
 import path from "slash-path";
 import { Plugin } from "vite";
-import { PluginConfig } from "../model";
+import { ApiConfig } from "../model";
 import { writeRoutersFile } from "./routersFile";
 
-export const apiRoutesRoute = (config: PluginConfig): Plugin => {
+export const apiRoutesRoute = (apiConfig: ApiConfig): Plugin => {
   const isReload = (file: string) => {
     file = path.slash(file);
-    return config.watcherList.find((it) => file.startsWith(it));
+    return apiConfig.watcherList.find((it) => file.startsWith(it));
   };
   return {
     name: "vite-plugin-api-routes:route",
@@ -15,17 +15,17 @@ export const apiRoutesRoute = (config: PluginConfig): Plugin => {
       return {
         resolve: {
           alias: {
-            [`${config.moduleId}/root`]: config.root,
-            [`${config.moduleId}/server`]: config.serverFile,
-            [`${config.moduleId}/handler`]: config.handlerFile,
-            [`${config.moduleId}/routers`]: config.routersFile,
-            [`${config.moduleId}/configure`]: config.configureFile,
+            [`${apiConfig.moduleId}/root`]: apiConfig.root,
+            [`${apiConfig.moduleId}/server`]: apiConfig.serverFile,
+            [`${apiConfig.moduleId}/handler`]: apiConfig.handlerFile,
+            [`${apiConfig.moduleId}/routers`]: apiConfig.routersFile,
+            [`${apiConfig.moduleId}/configure`]: apiConfig.configureFile,
           },
         },
       };
     },
     configResolved: (viteConfig) => {
-      writeRoutersFile(config, viteConfig);
+      writeRoutersFile(apiConfig, viteConfig);
     },
     handleHotUpdate: async (data) => {
       if (isReload(data.file)) {
@@ -41,7 +41,7 @@ export const apiRoutesRoute = (config: PluginConfig): Plugin => {
       } = devServer;
       const onReload = (file: string) => {
         if (isReload(file)) {
-          writeRoutersFile(config, viteConfig);
+          writeRoutersFile(apiConfig, viteConfig);
           watcher.off("add", onReload);
           watcher.off("change", onReload);
           restart(true);

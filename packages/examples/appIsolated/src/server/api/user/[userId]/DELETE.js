@@ -1,9 +1,9 @@
 import db from "../../../db";
 
 const DELETE_USER = (req, res, next) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
-  db.users.remove({ _id: id }, {}, (err, numRemoved) => {
+  db.users.remove({ _id: userId }, {}, (err, numRemoved) => {
     if (err) {
       return res.status(500).json({ error: "Error eliminando el usuario" });
     }

@@ -10,6 +10,12 @@ export default defineConfig({
     apiRoutes({
       mode: "isolated",
       configure: "src/server/configure.js",
+      mapper: {
+        XXXXX: {
+          method: "use",
+          priority: 0,
+        },
+      },
       dirs: [
         {
           dir: "src/server/api",

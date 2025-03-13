@@ -37,6 +37,8 @@ See the [tutorial](./tutorial.md)
 
 ### Example Structure:
 
+Legacy
+
 ```bash
 > tree src/api/
 src/api/:
@@ -63,7 +65,6 @@ The directory tree is exported as router rules tree:
 
 ```bash
 GET     /api/site/
-GET     /api/routers
 USE     /api/admin/user
 GET     /api/admin/user
 GET     /api/admin/user/
@@ -129,6 +130,7 @@ import { pluginAPIRoutes } from "vite-plugin-api-routes";
 export default defineConfig({
   plugins: [
     pluginAPIRoutes({
+      // mode: "legacy",
       // moduleId: "@api",
       // cacheDir: ".api",
       // server: "[cacheDir]/server.js",
@@ -153,6 +155,7 @@ export default defineConfig({
 
 ### Parameters
 
+- **mode**: Mode generate router files, LEGACY: is the first version, ISOLATED: is the split definition.
 - **moduleId**: Name of the virtual module, default @api (used for imports, change if conflicts occur).
 - **server**: The main file to build as the server app. [See default file.](./example/src/custom-server-example/server.ts)
 - **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./example/src/custom-server-example/handler.ts)
@@ -173,25 +176,26 @@ export default defineConfig({
 
 > **Note:** When building the project, the server entry will be built first, before the client is compiled.
 
-## Mapper
+## Default Mapper
 
 **Default Value**
 
 ```js
 mapper: {
-  //[Export Name]: [Http Verbose]
-  default: "use",
-  GET: "get",
-  POST: "post",
-  PUT: "put",
-  PATCH: "patch",
-  DELETE: "delete",
+  //[Export Name]: { method: [Http Verbose], priority: number }
+  default: { method: "use", priority: 0 },
+  USE: { method: "use", priority: 10 },
+  GET: { method: "get", priority: 20 },
+  POST: { method: "post", priority: 30 },
+  PATCH: { method: "patch", priority: 40 },
+  PUT: { method: "put", priority: 50 },
+  DELETE: { method: "delete", priority: 60 },
   // Overwrite
   ...mapper,
 };
 ```
 
-### Custom Mapping
+## Legacy Custom Mapping
 
 **/vite.config.js**
 
@@ -201,15 +205,19 @@ export default defineConfig({
     pluginAPIRoutes({
       mapper: {
         /**
-         * export const PING = ()=>{...}
-         * Will be mapped to express method
-         * app.get('/path/dir', PING)
+         * Legacy Mapper
+         *   export const PING = ()=>{...}
+         *   Will be mapped to express method
+         *   import { PING, ... } from "path/to/file"
+         *   app.post2('/path/dir', PING)
          */
         PING: "get",
         /**
-         * export const OTHER_POST = ()=>{...}
-         * Will be mapped to possible method
-         * app.post2('/path/dir', OTHER_POST)
+         * Legacy Mapper
+         *   export const OTHER_POST = ()=>{...}
+         *   Will be mapped to possible method
+         *   import { OTHER_POST } from "path/to/file"
+         *   app.post2('/path/dir', OTHER_POST)
          */
         OTHER_POST: "post2",
         /**
@@ -238,6 +246,108 @@ export const PATCH = (req, res, next) => {
 };
 ```
 
+## Isolated Mapped
+
+This is a new configuration for ISOLATED model, allow split the definition GET, POST, PUT in a single file, for apply the single responsability and aloow create a help files into the same directorio
+
+```bash
+> tree src/api/
+src/api/:
+├───admin
+│   ├───auth
+│   │   ├───login
+│   │   │   └───POST.js
+│   │   └───status
+│   │       └───GET.ts
+│   └───user
+│       ├───GET.js
+│       ├───POST.js
+│       └───[userId]         //Remix Format
+│           ├───USE.js
+│           ├───PUT.js
+│           ├───validated.js // Will be ignored in the mapped if not defined in mapper config
+│           ├───PUSH.js
+│           └───DELETE.js
+├───site
+│   ├───USE.js
+│   ├───article
+│   │   ├───$articleId    //NextJS Format
+│   │   │   └───GET.js
+│   │   └───new
+│   │       ├───USE.js
+│   │       └───GET.js
+│   └───page
+│       ├───$pageId
+│       │   └───GET.ts
+│       └───new
+│           ├───USE.ts
+│           └───GET.js
+└───ping
+    └───GET.js
+```
+
+The directory tree is exported as router rules tree:
+
+```bash
+GET     /api/ping
+POST    /api/admin/auth/login/
+GET     /api/admin/auth/status/
+GET     /api/admin/user/
+POST    /api/admin/user/
+USE     /api/site/
+USE     /api/site/article/new/
+GET     /api/site/article/new/
+USE     /api/site/page/new/
+GET     /api/site/page/new/
+USE     /api/admin/user/:userId/
+PUT     /api/admin/user/:userId/
+PUSH    /api/admin/user/:userId/
+DELETE  /api/admin/user/:userId/
+GET     /api/site/article/:articleId/
+GET     /api/site/page/:pageId/
+```
+
+### Isolated Custom Mapping
+
+**/vite.config.js**
+
+```js
+export default defineConfig({
+  plugins: [
+    pluginAPIRoutes({
+      mode: "isolated",
+      mapper: {
+        /**
+         * Isolated Mapper
+         *   //file: PING.js or PING.ts
+         *   export default ()=>{...}         *
+         *   Will be mapped to express method
+         *   import PING from "path/to/PING.ts"
+         *   app.get('/path/dir', PING)
+         */
+        PING: "get",
+        /**
+         * Isolated Mapper
+         *   //file: OTHER_POST.js or OTHER_POST.ts
+         *   export default ()=>{...}
+         *   Will be mapped to possible method
+         *   import OTHER_POST from "path/to/OTHER_POST.js"
+         *   app.post2('/path/dir', OTHER_POST)
+         */
+        OTHER_POST: { method: "post2", priority: 29 },
+        /**
+         * export const PATCH = ()=>{...}
+         * Will not be mapped
+         */
+        PATCH: false,
+      },
+    }),
+  ],
+});
+```
+
+## Handler File
+
 **/src/handler.js** or see [handler.js](./example/src/custom-server-example/handler.ts)
 
 ```typescript
@@ -265,6 +375,8 @@ applyRouters((props) => {
 configure.handlerAfter?.(handler);
 ```
 
+## Server File
+
 **/src/server.ts** or see [server.ts](./example/src/custom-server-example/server.ts)
 
 ```typescript
@@ -289,6 +401,8 @@ server.on("listening", () => {
 });
 server.listen(PORT);
 ```
+
+## Configure File
 
 **/src/configure.ts** or see [configure.ts](./example/src/custom-server-example/configure.ts)
 

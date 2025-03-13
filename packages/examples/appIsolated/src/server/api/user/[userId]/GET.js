@@ -1,9 +1,9 @@
 import db from "../../../db";
 
 const GET_USER = (req, res, next) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
-  db.users.findOne({ _id: id }, (err, user) => {
+  db.users.findOne({ _id: userId }, (err, user) => {
     if (err) {
       return res.status(500).json({ error: "Error obteniendo el usuario" });
     }

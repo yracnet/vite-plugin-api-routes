@@ -1,17 +1,17 @@
 import fs from "fs";
 import { join } from "slash-path";
-import { PluginConfig } from "src/model";
+import { ApiConfig } from "src/model";
 import { ResolvedConfig } from "vite";
 import { getFileRouters, getMethodRouters, MethodRouter } from "./common";
 
 export const writeRoutersFile = (
-  config: PluginConfig,
+  apiConfig: ApiConfig,
   vite: ResolvedConfig
 ) => {
-  const { moduleId, cacheDir, routersFile } = config;
+  const { moduleId, cacheDir, routersFile } = apiConfig;
   if (routersFile.startsWith(cacheDir)) {
-    const fileRouters = getFileRouters(config);
-    const methodRouters = getMethodRouters(config);
+    const fileRouters = getFileRouters(apiConfig);
+    const methodRouters = getMethodRouters(fileRouters, apiConfig);
     const writeRouter = (c: MethodRouter) => {
       return `  ${c.cb} && {
         source     : "${c.source}",
@@ -32,7 +32,7 @@ export const writeRoutersFile = (
 ${importFiles}
 import * as configure from "${moduleId}/configure";
 
-export const routeBase = "${config.routeBase}";
+export const routeBase = "${apiConfig.routeBase}";
 
 const internal  = [
 ${internalRouter}

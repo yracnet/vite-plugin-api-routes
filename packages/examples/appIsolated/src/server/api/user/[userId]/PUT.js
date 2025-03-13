@@ -1,11 +1,11 @@
 import db from "../../../db";
 
 const UPDATE_USER = (req, res, next) => {
-  const { id } = req.params;
+  const { userId } = req.params;
   const { name, email } = req.body;
-  const data = { _id: id, name, email };
+  const data = { _id: userId, name, email };
   db.users.update(
-    { _id: id },
+    { _id: userId },
     { $set: { name, email } },
     {},
     (err, numReplaced) => {

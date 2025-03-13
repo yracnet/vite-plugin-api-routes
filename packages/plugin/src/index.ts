@@ -1,15 +1,10 @@
-import { UserConfig } from "./model";
+import { ApiOpts, assertConfig } from "./model";
 import { apiRoutesBuild } from "./plugin-build";
 import { apiRoutesRoute } from "./plugin-route";
 import { apiRoutesServe } from "./plugin-serve";
-import {
-  assertConfig,
-  cleanDirectory,
-  copyFilesDirectory,
-  findDirPlugin,
-} from "./utils";
+import { cleanDirectory, copyFilesDirectory, findDirPlugin } from "./utils";
 
-export const pluginAPIRoutes = (opts: UserConfig = {}) => {
+export const pluginAPIRoutes = (opts: ApiOpts = {}) => {
   const apiConfig = assertConfig(opts);
   const apiDir = findDirPlugin(".api");
   cleanDirectory(apiConfig.cacheDir);
