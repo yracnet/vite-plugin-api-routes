@@ -19,6 +19,9 @@ A Vite plugin that enhances API routing by leveraging directory structure to aut
   - [NPM Package](https://www.npmjs.com/package/vite-plugin-api-routes)
   - [GitHub Repository](https://github.com/yracnet/vite-plugin-api-routes)
   - [Dev.to Article: Enhancing API Routing in Vite.js](https://dev.to/yracnet/enhancing-api-routing-in-vitejs-with-vite-plugin-api-p39)
-  - [Tutorial](./packages/plugin/tutorial.md)
+  - [Dev.to Article: CRUD User API + GUI in ViteJS](https://dev.to/yracnet/crud-user-api-gui-in-vitejs-df8)
+  - [Tutorial Legacy](./packages/plugin/tutorial-legacy.md)
+  - [Tutorial Isolated](./packages/plugin/tutorial-isolated.md)
+  - [Tutorial CRUD](./packages/plugin/tutorial-crud.md)
 
 ---

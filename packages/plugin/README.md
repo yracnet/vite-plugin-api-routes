@@ -22,7 +22,10 @@ For more detailed information and resources related to `vite-plugin-api-routes`,
 - **npm Package**: [vite-plugin-api-routes](https://www.npmjs.com/package/vite-plugin-api-routes)
 - **GitHub Repository**: [yracnet/vite-plugin-api-routes](https://github.com/yracnet/vite-plugin-api-routes)
 - **Dev.to Article**: [Enhancing API Routing in Vite.js with vite-plugin-api](https://dev.to/yracnet/enhancing-api-routing-in-vitejs-with-vite-plugin-api-p39)
-- **Tutorial**: [Tutorial on vite-plugin-api-routes](./tutorial.md)
+  - [Dev.to Article: CRUD User API + GUI in ViteJS](https://dev.to/yracnet/crud-user-api-gui-in-vitejs-df8)
+- **Tutorial Legacy**: [Tutorial Legacy on vite-plugin-api-routes](./tutorial-legacy.md)
+- **Tutorial Isolated**: [Tutorial Isolated on vite-plugin-api-routes](./tutorial-isolated.md)
+- **Tutorial CRUD**: [Tutorial Isolated on vite-plugin-api-routes](./tutorial-crud.md)
 
 ## Vision
 
@@ -232,6 +235,7 @@ export default defineConfig({
 ```
 
 You can disable a method by setting its value to false. In the example `PATCH: false`, the PATCH method is disabled.
+
 **/src/api/index.js**
 
 ```javascript
@@ -248,7 +252,7 @@ export const PATCH = (req, res, next) => {
 
 ## Isolated Mapped
 
-This is a new configuration for ISOLATED model, allow split the definition GET, POST, PUT in a single file, for apply the single responsability and aloow create a help files into the same directorio
+This is a new configuration for ISOLATED mode, allow split the definition GET, POST, PUT in a single file, for apply the single responsability and allow create a help files into the same directorio
 
 ```bash
 > tree src/api/
@@ -324,6 +328,8 @@ export default defineConfig({
          *   Will be mapped to express method
          *   import PING from "path/to/PING.ts"
          *   app.get('/path/dir', PING)
+         *
+         *   Will be mapped after all methods
          */
         PING: "get",
         /**
@@ -333,6 +339,8 @@ export default defineConfig({
          *   Will be mapped to possible method
          *   import OTHER_POST from "path/to/OTHER_POST.js"
          *   app.post2('/path/dir', OTHER_POST)
+         *
+         *   Will be mapped before the POST
          */
         OTHER_POST: { method: "post2", priority: 29 },
         /**
@@ -346,7 +354,25 @@ export default defineConfig({
 });
 ```
 
-## Handler File
+**/src/api/path/to/PING.js**
+
+```js
+export default (req, res) => {
+  res.send("Ping Service");
+};
+```
+
+**/src/api/path/to/OTHER_POST.js**
+
+```js
+export default (req, res) => {
+  res.send("Other Post Service");
+};
+```
+
+## Custom File
+
+### Handler File
 
 **/src/handler.js** or see [handler.js](./example/src/custom-server-example/handler.ts)
 
@@ -375,7 +401,7 @@ applyRouters((props) => {
 configure.handlerAfter?.(handler);
 ```
 
-## Server File
+### Server File
 
 **/src/server.ts** or see [server.ts](./example/src/custom-server-example/server.ts)
 
@@ -402,7 +428,7 @@ server.on("listening", () => {
 server.listen(PORT);
 ```
 
-## Configure File
+### Configure File
 
 **/src/configure.ts** or see [configure.ts](./example/src/custom-server-example/configure.ts)
 
@@ -427,3 +453,48 @@ export const handlerAfter: HandlerHook = (handler) => {};
 export const viteServerBefore: ViteServerHook = (server) => {};
 export const viteServerAfter: ViteServerHook = (server) => {};
 ```
+
+## Development Mode
+
+In development mode, the plugin will serve API routes via the **Vite server**. This allows you to quickly test and iterate on your API routes without having to build or restart the server manually.
+
+You can run the development server with:
+
+```bash
+yarn dev
+```
+
+This will launch a Vite development server and automatically handle hot module replacement (HMR) for both the frontend and backend.
+
+## Production Mode
+
+For production, you can bundle and build your application as usual with Vite. The plugin will ensure that the API routes are correctly compiled and ready to be served.
+
+To build the project, simply run:
+
+```bash
+yarn build
+```
+
+Then, deploy the generated output to your production environment.
+
+## Contribution
+
+If you'd like to contribute to the project, please follow these steps:
+
+1. Fork the repository.
+2. Clone your fork to your local machine.
+3. Install dependencies by running `yarn install`.
+4. Make your changes and test them locally.
+5. Submit a pull request with a detailed description of your changes.
+
+Please make sure your code follows the style guidelines and is well-tested before submitting a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- Thanks to [Vite.js](https://vitejs.dev/) for providing a powerful development framework.
+- Special thanks to the open-source contributors and community for your feedback and contributions!

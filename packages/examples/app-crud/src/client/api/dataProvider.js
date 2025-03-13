@@ -10,7 +10,6 @@ const getQuery = (params = {}) => {
 };
 
 export const createDataProvider = ({
-  //options
   url = "/api",
   resource = "",
   assertHeaders = NOP,
@@ -27,7 +26,7 @@ export const createDataProvider = ({
       const { data, error = "", message = "" } = await response.json();
       return { data, error, message };
     } catch (error) {
-      return { error: error.message || "Error al obtener la lista" };
+      return { error: error.message || "Error fetching the list" };
     }
   };
   const getOne = async (id, params = {}) => {
@@ -44,7 +43,7 @@ export const createDataProvider = ({
       const { data, error = "", message = "" } = await response.json();
       return { data, error, message };
     } catch (error) {
-      return { error: error.message || "Error al obtener el recurso" };
+      return { error: error.message || "Error fetching the resource" };
     }
   };
   const createOne = async (data) => {
@@ -62,9 +61,10 @@ export const createDataProvider = ({
       const { data, error = "", message = "" } = await response.json();
       return { data, error, message };
     } catch (error) {
-      return { error: error.message || "Error al crear el recurso" };
+      return { error: error.message || "Error creating the resource" };
     }
   };
+
   const updateOne = async (id, data) => {
     const headers = assertHeaders({
       Accept: "application/json",
@@ -80,48 +80,26 @@ export const createDataProvider = ({
       const { data, error = "", message = "" } = await response.json();
       return { data, error, message };
     } catch (error) {
-      return { error: error.message || "Error al actualizar el recurso" };
+      return { error: error.message || "Error updating the resource" };
     }
   };
-  const patchOne = async (id, data) => {
-    const headers = assertHeaders({
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    });
-    const options = assertOptions({
-      headers,
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
-    try {
-      const response = await fetch(`${url}/${resource}/${id}`, options);
-      const { data, error = "", message = "" } = await response.json();
-      return { data, error, message };
-    } catch (error) {
-      return {
-        error: error.message || "Error al actualizar parcialmente el recurso",
-      };
-    }
-  };
+
   const deleteOne = async (id) => {
     const headers = assertHeaders({
       Accept: "application/json",
     });
-    const options = assertOptions({ headers, method: "DELETE" });
+    const options = assertOptions({
+      headers,
+      method: "DELETE",
+    });
     try {
       const response = await fetch(`${url}/${resource}/${id}`, options);
       const { data, error = "", message = "" } = await response.json();
       return { data, error, message };
     } catch (error) {
-      return { error: error.message || "Error al eliminar el recurso" };
+      return { error: error.message || "Error deleting the resource" };
     }
   };
-  return {
-    getList,
-    getOne,
-    createOne,
-    updateOne,
-    patchOne,
-    deleteOne,
-  };
+
+  return { getList, getOne, createOne, updateOne, deleteOne };
 };
