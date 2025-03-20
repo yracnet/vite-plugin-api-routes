@@ -5,6 +5,7 @@ export type DirRoute = {
   dir: string;
   route: string;
   exclude?: string[];
+  skip?: "development" | "production" | string | boolean;
 };
 
 export type Mapper = {
@@ -69,13 +70,13 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     handler = path.join(cacheDir, "handler.js"),
     configure = path.join(cacheDir, "configure.js"),
     routeBase = "api",
-    dirs = [{ dir: "src/api", route: "", exclude: [] }],
+    dirs = [{ dir: "src/api", route: "", exclude: [], skip: false }],
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
     mapper = {},
-    disableBuild = true,
+    disableBuild = false,
     clientOutDir = "dist/client",
-    clientMinify = true,
+    clientMinify = false,
     clientBuild = (config: InlineConfig) => config,
     serverOutDir = "dist",
     serverMinify = false,

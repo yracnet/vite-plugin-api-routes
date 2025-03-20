@@ -56,42 +56,50 @@ export type FileRouter = {
 };
 
 export const getFileRouters = (apiConfig: ApiConfig): FileRouter[] => {
-  let { dirs, include, exclude, mode } = apiConfig;
-  return dirs.flatMap((it, ix) => {
-    it.exclude = it.exclude || [];
-    const ignore = [...exclude, ...it.exclude];
-    const files: string[] = fg.sync(include, {
-      ignore,
-      onlyDirectories: false,
-      dot: true,
-      unique: true,
-      cwd: it.dir,
-    });
-    return files
-      .map((file, jx) => {
-        const route = createFileRoute(it.route, file);
-        const pathName = path.join("/", apiConfig.routeBase, route);
-        file = path.join(it.dir, file);
-        file = path.relative(apiConfig.root, file);
-        const key = createFileKey(pathName, apiConfig);
-        return {
-          order: jx,
-          name: `__DIR_${ix}_FILE_${jx}__`,
-          file,
-          path: pathName,
-          route,
-          key,
-        };
-      })
-      .sort((a, b) => {
-        return a.key.localeCompare(b.key);
-      })
-      .map((it, ix) => {
-        it.order = ix + 1;
-        it.name = `__API_${ix + 1}__`;
-        return it;
+  let { dirs, include, exclude } = apiConfig;
+  const currentMode = process.env.NODE_ENV;
+  return dirs
+    .filter((dir) => {
+      if (dir.skip === true || dir.skip === currentMode) {
+        return false;
+      }
+      return true;
+    })
+    .flatMap((it, ix) => {
+      it.exclude = it.exclude || [];
+      const ignore = [...exclude, ...it.exclude];
+      const files: string[] = fg.sync(include, {
+        ignore,
+        onlyDirectories: false,
+        dot: true,
+        unique: true,
+        cwd: it.dir,
       });
-  });
+      return files
+        .map((file, jx) => {
+          const route = createFileRoute(it.route, file);
+          const pathName = path.join("/", apiConfig.routeBase, route);
+          file = path.join(it.dir, file);
+          file = path.relative(apiConfig.root, file);
+          const key = createFileKey(pathName, apiConfig);
+          return {
+            order: jx,
+            name: `__DIR_${ix}_FILE_${jx}__`,
+            file,
+            path: pathName,
+            route,
+            key,
+          };
+        })
+        .sort((a, b) => {
+          return a.key.localeCompare(b.key);
+        })
+        .map((it, jx) => {
+          it.order = jx + 1;
+          it.name = `__API_${ix + 1}_${jx + 1}__`;
+          return it;
+        });
+    });
 };
 
 export type MethodRouter = {

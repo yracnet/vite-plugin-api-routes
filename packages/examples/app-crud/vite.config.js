@@ -1,6 +1,7 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-import apiRoutes from "vite-plugin-api-routes";
+//import apiRoutes from "vite-plugin-api-routes";
+import apiRoutes from "../../plugin/src";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,6 +14,17 @@ export default defineConfig({
         {
           dir: "src/server/api", // Path to the APIs
           route: "",
+        },
+        //PROD AND DEV SWITCH
+        {
+          dir: "src/server/api-dev",
+          route: "admin",
+          skip: "production",
+        },
+        {
+          dir: "src/server/api-prod",
+          route: "admin",
+          skip: "development",
         },
       ],
     }),

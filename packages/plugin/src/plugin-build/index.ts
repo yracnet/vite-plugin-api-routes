@@ -4,7 +4,10 @@ import { ApiConfig } from "../model";
 const ENTRY_NONE = "____.html";
 
 const simplePath = (filePath: string) =>
-  filePath.replace(path.extname(filePath), "");
+  filePath
+    .replace(/(\.[^\.]+)$/, "")
+    .replace(/^[\/\\]/gi, "")
+    .replace(/[\/\\]$/, "");
 
 const doBuildServer = async (
   apiConfig: ApiConfig,
