@@ -2,60 +2,62 @@ import fg from "fast-glob";
 import path from "slash-path";
 import { ApiConfig } from "../model";
 
-type PathString = string | null | undefined;
+type Key = { key: string };
+const byKey = (a: Key, b: Key) => a.key.localeCompare(b.key);
 
-const byOrder = (a: any, b: any) => {
-  if (a.order > b.order) {
-    return 1;
-  }
-  if (a.order < b.order) {
-    return -1;
-  }
-  return 0;
+const isParam = (name: string) => /:|\[|\$/.test(name);
+
+export const createKeyRoute = (route: string, apiConfig: ApiConfig) => {
+  return route
+    .split("/")
+    .filter((it) => it)
+    .map((n) => {
+      //const s = "_" + n.padEnd(6, "_");
+      const s = "_" + n;
+      const p = apiConfig.mapperList.find((r) => r.name === n);
+      if (p) {
+        return p.priority + s;
+      } else if (isParam(n)) {
+        return apiConfig.paramPriority + s;
+      }
+      return apiConfig.filePriority + s;
+    })
+    .join("_");
 };
 
-const createFileKey = (route: string, apiConfig: ApiConfig) => {
-  const { mode, mapperList } = apiConfig;
-  let key = route;
-  if (mode === "isolated") {
-    mapperList.forEach((m) => {
-      key = key.replace(`/${m.name}`, `/${m.priority}`);
-    });
-  }
-  key = key
-    .replace(/\//g, "/a_")
-    .replace(/\/a_(\$|\[|\:)/g, "/z_$1")
-    .replace(/a_index.(.*)$/, "");
-  return key;
-};
-
-export const createFileRoute = (...names: PathString[]) => {
+export const parseFileToRoute = (names: string) => {
   const route = names
-    .map((name) => name?.replace(/^\//, "").replace(/\/$/, ""))
-    //Remix
-    .map((name) => name?.replaceAll("$", ":"))
-    //NextJS
-    .map((name) => name?.replaceAll("[", ":").replaceAll("]", ""))
-    //Remove Extension
-    .map((name) => name?.replace(/\.[^.]+$/, ""))
-    //Remove Index
-    .map((name) => name?.replaceAll(/index$/gi, ""))
-    .map((name) => name?.replaceAll(/_index$/gi, ""))
-    .filter((name) => name)
+    .split("/")
+    .map((name) => {
+      name = name
+        // Param Remix
+        .replaceAll("$", ":")
+        // Param NextJS
+        .replaceAll("[", ":")
+        .replaceAll("]", "");
+      return name;
+    })
     .join("/");
-  return path.join("/", route);
+  return (
+    route
+      // Remove Extension
+      .replace(/\.[^.]+$/, "")
+      // Remove Index
+      .replaceAll(/index$/gi, "")
+      // Remove Index
+      .replaceAll(/_index$/gi, "")
+  );
 };
 
 export type FileRouter = {
+  varName: string;
   name: string;
   file: string;
-  path: string;
   route: string;
-  order: number;
   key: string;
 };
 
-export const getFileRouters = (apiConfig: ApiConfig): FileRouter[] => {
+export const getAllFileRouters = (apiConfig: ApiConfig): FileRouter[] => {
   let { dirs, include, exclude } = apiConfig;
   const currentMode = process.env.NODE_ENV;
   return dirs
@@ -65,7 +67,7 @@ export const getFileRouters = (apiConfig: ApiConfig): FileRouter[] => {
       }
       return true;
     })
-    .flatMap((it, ix) => {
+    .flatMap((it) => {
       it.exclude = it.exclude || [];
       const ignore = [...exclude, ...it.exclude];
       const files: string[] = fg.sync(include, {
@@ -75,43 +77,45 @@ export const getFileRouters = (apiConfig: ApiConfig): FileRouter[] => {
         unique: true,
         cwd: it.dir,
       });
-      return files
-        .map((file, jx) => {
-          const route = createFileRoute(it.route, file);
-          const pathName = path.join("/", apiConfig.routeBase, route);
-          file = path.join(it.dir, file);
-          file = path.relative(apiConfig.root, file);
-          const key = createFileKey(pathName, apiConfig);
-          return {
-            order: jx,
-            name: `__DIR_${ix}_FILE_${jx}__`,
-            file,
-            path: pathName,
-            route,
-            key,
-          };
-        })
-        .sort((a, b) => {
-          return a.key.localeCompare(b.key);
-        })
-        .map((it, jx) => {
-          it.order = jx + 1;
-          it.name = `__API_${ix + 1}_${jx + 1}__`;
-          return it;
-        });
+      return files.map((file) => {
+        const routeFile = path.join(apiConfig.routeBase, it.route, file);
+        const route = parseFileToRoute(routeFile);
+        const key = createKeyRoute(route, apiConfig);
+        const relativeFile = path.relative(
+          apiConfig.root,
+          path.join(it.dir, file)
+        );
+        return {
+          name: path.basename(routeFile),
+          file: relativeFile,
+          route,
+          key,
+        };
+      });
+    })
+    .map((it) => ({
+      varName: "API_",
+      name: it.name,
+      file: it.file,
+      route: it.route,
+      key: it.key,
+    }))
+    .sort(byKey)
+    .map((it, ix) => {
+      it.varName = "API_" + ix.toString().padStart(3, "0");
+      return it;
     });
 };
 
 export type MethodRouter = {
-  order: number;
+  key: string;
   source: string;
   method: string;
   route: string;
-  path: string;
   cb: string;
 };
 
-export const getMethodRouters = (
+export const parseMethodRouters = (
   fileRoutes: FileRouter[],
   apiConfig: ApiConfig
 ): MethodRouter[] => {
@@ -125,34 +129,40 @@ export const getMethodRouters = (
           return null;
         }
         const re = new RegExp(`${m.name}$`);
-        return <MethodRouter>{
-          order: r.order,
+        return {
+          key: r.key,
           source: r.file,
           method: m.method,
-          path: r.path.replace(re, ""),
           route: r.route.replace(re, ""),
-          cb: r.name + ".default",
+          cb: r.varName + ".default",
         };
       })
-      .filter((r) => !!r)
-      .sort(byOrder);
+      .filter((r) => !!r);
   }
 
   return fileRoutes
-    .flatMap((r) =>
-      apiConfig.mapperList.map((m) => {
-        let cb = r.name + "." + m.name;
-        let source = r.file + "?fn=" + m.name;
-        source = path.relative(apiConfig.root, source);
+    .flatMap((it) => {
+      return apiConfig.mapperList.map((m) => {
+        const route = path.join(it.route, m.name);
+        const key = createKeyRoute(route, apiConfig);
         return {
-          order: r.order,
-          source,
+          ...it,
+          key,
+          name: m.name,
           method: m.method,
-          path: r.path,
-          route: r.route,
-          cb,
         };
-      })
-    )
-    .sort(byOrder);
+      });
+    })
+    .sort(byKey)
+    .map((it) => {
+      let cb = it.varName + "." + it.name;
+      const source = it.file + "?fn=" + it.name;
+      return {
+        key: it.key,
+        source,
+        method: it.method,
+        route: it.route,
+        cb,
+      };
+    });
 };

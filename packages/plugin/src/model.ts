@@ -14,7 +14,7 @@ export type Mapper = {
   method: string;
 };
 
-type MethodConfig = { name: string; method: string; priority: number };
+type MethodConfig = { name: string; method: string; priority: string };
 
 export type ApiConfig = {
   moduleId: string;
@@ -29,10 +29,9 @@ export type ApiConfig = {
   dirs: DirRoute[];
   include: string[];
   exclude: string[];
-  mapper: {
-    [k: string]: false | string | { method: string; priority: number };
-  };
   mapperList: MethodConfig[];
+  filePriority: string;
+  paramPriority: string;
   watcherList: string[];
   routeBase: string;
   root: string;
@@ -46,19 +45,31 @@ export type ApiConfig = {
   serverBuild: (config: InlineConfig) => InlineConfig;
 };
 
-export type ApiOpts = Partial<
-  Omit<
-    ApiConfig,
-    | "serverFile"
-    | "handlerFile"
-    | "configureFile"
-    | "routersFile"
-    | "mapperList"
-    | "watcherList"
-    | "config"
-    | "routers"
-  >
->;
+export type ApiOpts = {
+  moduleId?: string;
+  mode?: "legacy" | "isolated";
+  server?: string;
+  handler?: string;
+  configure?: string;
+  dirs?: DirRoute[];
+  include?: string[];
+  exclude?: string[];
+  mapper?: {
+    [k: string]: false | string | { method: string; priority: number };
+  };
+  filePriority?: number;
+  paramPriority?: number;
+  routeBase?: string;
+  root?: string;
+  cacheDir?: string;
+  disableBuild?: boolean;
+  clientOutDir?: string;
+  clientMinify?: boolean | "terser" | "esbuild";
+  clientBuild?: (config: InlineConfig) => InlineConfig;
+  serverOutDir?: string;
+  serverMinify?: boolean | "terser" | "esbuild";
+  serverBuild?: (config: InlineConfig) => InlineConfig;
+};
 
 export const assertConfig = (opts: ApiOpts): ApiConfig => {
   let {
@@ -74,6 +85,8 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     include = ["**/*.ts", "**/*.js"],
     exclude = [],
     mapper = {},
+    filePriority = 100,
+    paramPriority = 110,
     disableBuild = false,
     clientOutDir = "dist/client",
     clientMinify = false,
@@ -96,19 +109,20 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
   });
 
   mapper = {
-    default: { method: "use", priority: 0 },
-    USE: { method: "use", priority: 10 },
-    GET: { method: "get", priority: 20 },
-    POST: { method: "post", priority: 30 },
-    PATCH: { method: "patch", priority: 40 },
-    PUT: { method: "put", priority: 50 },
-    DELETE: { method: "delete", priority: 60 },
+    default: { method: "use", priority: 10 },
+    USE: { method: "use", priority: 20 },
+    GET: { method: "get", priority: 30 },
+    POST: { method: "post", priority: 40 },
+    PATCH: { method: "patch", priority: 50 },
+    PUT: { method: "put", priority: 60 },
+    DELETE: { method: "delete", priority: 70 },
     // Overwrite
     ...mapper,
   };
   if (mode === "isolated") {
     delete mapper.default;
   }
+
   routeBase = path.join("/", routeBase);
   clientOutDir = path.join(root, clientOutDir);
   serverOutDir = path.join(root, serverOutDir);
@@ -116,27 +130,26 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
   const handlerFile = path.join(root, handler);
   const routersFile = path.join(cacheDir, "routers.js");
   const configureFile = path.join(root, configure);
-
   const mapperList: MethodConfig[] = Object.entries(mapper)
-    .map(([name, value], ix) => {
+    .map(([name, value]) => {
       if (value === false) {
         return {
           name,
           method: "",
-          priority: 0,
+          priority: "000",
         };
       }
       if (typeof value === "string") {
         return {
           name,
           method: value,
-          priority: ix + 1,
+          priority: "010",
         };
       }
       return {
         name,
         method: value.method,
-        priority: value.priority,
+        priority: value.priority.toString().padStart(3, "0"),
       };
     })
     .filter((it) => it.method !== "");
@@ -158,12 +171,13 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     serverFile,
     handlerFile,
     routersFile,
+    filePriority: filePriority.toString().padStart(3, "0"),
+    paramPriority: paramPriority.toString().padStart(3, "0"),
     configureFile,
     routeBase,
     dirs,
     include,
     exclude,
-    mapper,
     mapperList,
     watcherList,
     cacheDir,

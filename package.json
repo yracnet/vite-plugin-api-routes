@@ -9,6 +9,7 @@
     "packages/plugin",
     "packages/examples/app",
     "packages/examples/appIsolated",
+    "packages/examples/dual",
     "packages/examples/basic"
   ]
 }

@@ -27,6 +27,10 @@ For more detailed information and resources related to `vite-plugin-api-routes`,
 - **Tutorial Isolated**: [Tutorial Isolated on vite-plugin-api-routes](./tutorial-isolated.md)
 - **Tutorial CRUD**: [Tutorial Isolated on vite-plugin-api-routes](./tutorial-crud.md)
 
+### OLD Document
+
+- **README 1.0**: [Readme on vite-plugin-api-routes](./README_1.0.md)
+
 ## Vision
 
 Enhance API routing in ViteJS based on directory structure for improved visibility and project structure in Node.js and Express.
@@ -38,71 +42,165 @@ See the [tutorial](./tutorial.md)
 - Simplify project configuration.
 - Convert the directory tree into route rules.
 
-### Example Structure:
+### LEGACY: Example Structure
 
-Legacy
-
-```bash
-> tree src/api/
-src/api/:
-├───admin
-│   ├───auth
-│   │   ├───login.js
-│   │   └───status.js
-│   └───user
-│       ├───index.js
-│       └───[userId]        //Remix Format
-│           ├───index.js
-│           └───detail.js
-├───site
-│   ├───article
-│   │   ├───$articleId.js   //NextJS Format
-│   │   └───new.js
-│   └───page
-│       ├───$pageId.js
-│       └───new.js
-└───index.js
-```
-
-The directory tree is exported as router rules tree:
+Based in the file system structure
 
 ```bash
-GET     /api/site/
-USE     /api/admin/user
-GET     /api/admin/user
-GET     /api/admin/user/
-POST    /api/admin/user/
-GET     /api/admin/auth/login
-POST    /api/admin/auth/login
-GET     /api/site/article/new
-GET     /api/admin/auth/status
-POST    /api/admin/auth/status
-GET     /api/site/page/:pageId
-GET     /api/admin/user/:userId/
-PUT     /api/admin/user/:userId/
-DELETE  /api/admin/user/:userId/
-GET     /api/site/article/:articleId
-GET     /api/admin/user/:userId/detail
+$ tree src/api-legacy
+src/api-legacy
+├── index.js
+└── user
+    ├── [id]
+    │   └── index.js
+    ├── confirm.js
+    └── index.js
 ```
 
-For example, the `src/api/admin/user/$userId.js` file exports allowed request methods:
+The directory tree will be export to posibleth methods
 
-```js
-//file:src/api/admin/user/$userId.js
-export const DELETE = (req, res, next) => {
-  res.send("DELETE REQUEST");
-};
-export const PUT = async (req, res, next) => {
-  res.send("PUT REQUEST");
-};
-// Support default, GET, HEAD, POST, PUT, DELETE by default
-// For CONNECT, OPTIONS, TRACE, PATCH, and others, you need to add the mapping to the mapper attribute config
-
-// If you need middlewares for a route, simply export an array containing all middlewares as the default
-export default [authMiddleware, secondMiddleware /* ... */];
+```bash
+USE     /api/                src/api-legacy/index.js?fn=default
+GET     /api/                src/api-legacy/index.js?fn=GET
+POST    /api/                src/api-legacy/index.js?fn=POST
+PATCH   /api/                src/api-legacy/index.js?fn=PATCH
+PUT     /api/                src/api-legacy/index.js?fn=PUT
+DELETE  /api/                src/api-legacy/index.js?fn=DELETE
+USE     /api/user/           src/api-legacy/user/index.js?fn=USE
+GET     /api/user/           src/api-legacy/user/index.js?fn=GET
+POST    /api/user/           src/api-legacy/user/index.js?fn=POST
+PATCH   /api/user/           src/api-legacy/user/index.js?fn=PATCH
+PUT     /api/user/           src/api-legacy/user/index.js?fn=PUT
+DELETE  /api/user/           src/api-legacy/user/index.js?fn=DELETE
+USE     /api/user/confirm    src/api-legacy/user/confirm.js?fn=default
+GET     /api/user/confirm    src/api-legacy/user/confirm.js?fn=GET
+POST    /api/user/confirm    src/api-legacy/user/confirm.js?fn=POST
+PATCH   /api/user/confirm    src/api-legacy/user/confirm.js?fn=PATCH
+PUT     /api/user/confirm    src/api-legacy/user/confirm.js?fn=PUT
+DELETE  /api/user/confirm    src/api-legacy/user/confirm.js?fn=DELETE
+USE     /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=default
+GET     /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=GET
+POST    /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=POST
+PATCH   /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=PATCH
+PUT     /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=PUT
+DELETE  /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=DELETE
 ```
 
-Similarly, the `[userId].js` or `$userId.js` file name is exported as a request parameter `/user/:userId`, following the Next.js/Remix framework.
+The legacy mapping are simple in the file system, but hiden the real structure route
+
+### ISOLATED: Example Structure
+
+Based in the file system structure
+
+```bash
+$ tree src/api-isolated
+src/api-isolated
+├── GET.js
+├── USE.js
+└── user
+    ├── [id]
+    │   ├── DELETE.js
+    │   ├── PATCH.js
+    │   ├── PUT.js
+    │   └── USE.js
+    ├── confirm
+    │   └── POST.js
+    ├── GET.js
+    └── POST.js
+```
+
+The directory tree will be export to specifict methods
+
+```log
+USE     /api/                 src/api-isolated/USE.js
+GET     /api/                 src/api-isolated/GET.js
+GET     /api/user/            src/api-isolated/user/GET.js
+POST    /api/user/            src/api-isolated/user/POST.js
+POST    /api/user/confirm/    src/api-isolated/user/confirm/POST.js
+USE     /api/user/:id/        src/api-isolated/user/[id]/USE.js
+PATCH   /api/user/:id/        src/api-isolated/user/[id]/PATCH.js
+PUT     /api/user/:id/        src/api-isolated/user/[id]/PUT.js
+DELETE  /api/user/:id/        src/api-isolated/user/[id]/DELETE.js
+```
+
+The isolated mapping are more comprensible mapping from file system
+
+### Order Mapping
+
+All method will be route-mapping with priority defined by mapper atribute
+
+```
+import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "vite";
+import api from "vite-plugin-api-routes";
+
+export default defineConfig({
+  plugins: [
+    react(),
+    api({
+      mapper: {
+        // Default Mapping
+        default: { method: "use",    priority: 10 },
+        USE:     { method: "use",    priority: 20 },
+        GET:     { method: "get",    priority: 30 },
+        POST:    { method: "post",   priority: 40 },
+        PATCH:   { method: "patch",  priority: 50 },
+        PUT:     { method: "put",    priority: 60 },
+        DELETE:  { method: "delete", priority: 70 },
+        // You can attach new ALIAS for LEGACY and ISOLATED
+        AUTH:    { method: "use",    priority: 11  },  // Will be mapping after to default and before USE
+        ERROR:   { method: "use",    priority: 120 },  // Will be mapping after DELETE, FILES and PARAMS
+        LOGGER:  { method: "use",    priority: 31  },  // Will be mapping after GET and before POST
+      },
+      filePriority = 100, // Default value for file PATH
+      paramPriority = 110,// Default value for param PATH
+    }),
+  ],
+});
+```
+
+Based in the file system structure
+
+```bash
+$ tree src/api-isolated/
+src/api-isolated/
+├── AUTH.js
+├── ERROR.js
+├── GET.js
+├── USE.js
+└── user
+    ├── [id]
+    │   ├── DELETE.js
+    │   ├── PATCH.js
+    │   ├── PUT.js
+    │   └── USE.js
+    ├── confirm
+    │   └── POST.js
+    ├── ERROR.js
+    ├── GET.js
+    ├── LOGGER.js
+    └── POST.js
+```
+
+The directory tree will be export to specifict methods
+
+```log
+USE     /api/                 src/api-isolated/AUTH.js
+USE     /api/                 src/api-isolated/USE.js
+GET     /api/                 src/api-isolated/GET.js
+GET     /api/user/            src/api-isolated/user/GET.js
+USE     /api/user/            src/api-isolated/user/LOGGER.js
+POST    /api/user/            src/api-isolated/user/POST.js
+POST    /api/user/confirm/    src/api-isolated/user/confirm/POST.js
+USE     /api/user/:id/        src/api-isolated/user/[id]/USE.js
+PATCH   /api/user/:id/        src/api-isolated/user/[id]/PATCH.js
+PUT     /api/user/:id/        src/api-isolated/user/[id]/PUT.js
+DELETE  /api/user/:id/        src/api-isolated/user/[id]/DELETE.js
+USE     /api/user/            src/api-isolated/user/ERROR.js
+USE     /api/                 src/api-isolated/ERROR.js
+```
+
+The directory tree will be export to specifict methods
 
 ## How to Use
 
@@ -128,246 +226,11 @@ In `vite.config.ts`:
 
 ```js
 import { defineConfig } from "vite";
-import { pluginAPIRoutes } from "vite-plugin-api-routes";
+import api from "vite-plugin-api-routes";
 
 export default defineConfig({
-  plugins: [
-    pluginAPIRoutes({
-      // mode: "legacy",
-      // moduleId: "@api",
-      // cacheDir: ".api",
-      // server: "[cacheDir]/server.js",
-      // handler: "[cacheDir]/handler.js",
-      // configure: "[cacheDir]/configure.js",
-      // routeBase: "api",
-      // dirs: [{ dir: "src/api"; route: "", exclude?: ["*.txt", ".csv", "data/*.*"], skip: false }],
-      // include: ["**/*.js", "**/*.ts"],
-      // exclude: ["node_modules", ".git"],
-      // mapper: { default: "use", GET: "get", ... },
-      // disableBuild: false,
-      // clientOutDir = "dist/client",
-      // clientMinify = false,
-      // clientBuild = (config: InlineConfig) => config,
-      // serverOutDir = "dist",
-      // serverMinify = false,
-      // serverBuild = (config: InlineConfig) => config,
-    }),
-  ],
+  plugins: [api()],
 });
-```
-
-### Parameters
-
-- **mode**: Mode generate router files, LEGACY: is the first version, ISOLATED: is the split definition.
-- **moduleId**: Name of the virtual module, default @api (used for imports, change if conflicts occur).
-- **server**: The main file to build as the server app. [See default file.](./example/src/custom-server-example/server.ts)
-- **handler**: The main file to register the API. It is called in viteServer and is the default entry. [See default file.](./example/src/custom-server-example/handler.ts)
-- **configure**: The configureFile centralizes server configuration for both development (viteServer) and production (express). This file is invoked in various lifecycle hooks of the server. [See default file.](./example/src/custom-server-example/configure.ts)
-- **routeBase**: Base name route for all routes. The default value is **api**.
-- **dirs**: List of directories to be scanned. The default value is **[ { dir: 'src/api', route: '', exclude: []} ]**.
-- **include**: Files and directories to include in the scan process. The default value is **["\\*\\*/_.js", "\\*\\*/_.ts"]**.
-- **exclude**: Files and directories to exclude from the scan process. The default value is **["node_modules", ".git"]**.
-- **mapper**: Mapping rules from exported functions to server instance methods.
-- **cacheDir**: Cache Directory target to write temp files.
-- **disableBuild**: Disabled the build process in the plugin, allowing other plugins, such as vite-plugin-builder, to handle the build process instead.
-- **clientOutDir**: Client out directory
-- **clientMinify**: Client minify output
-- **clientBuild**: Client prev vite configuration
-- **serverOutDir**: Server out directory
-- **serverMinify**: Server minify output
-- **serverBuild**: Server prev vite configuration
-
-> **Note:** When building the project, the server entry will be built first, before the client is compiled.
-
-## Default Mapper
-
-**Default Value**
-
-```js
-mapper: {
-  //[Export Name]: { method: [Http Verbose], priority: number }
-  default: { method: "use", priority: 0 },
-  USE: { method: "use", priority: 10 },
-  GET: { method: "get", priority: 20 },
-  POST: { method: "post", priority: 30 },
-  PATCH: { method: "patch", priority: 40 },
-  PUT: { method: "put", priority: 50 },
-  DELETE: { method: "delete", priority: 60 },
-  // Overwrite
-  ...mapper,
-};
-```
-
-## Legacy Custom Mapping
-
-**/vite.config.js**
-
-```js
-export default defineConfig({
-  plugins: [
-    pluginAPIRoutes({
-      mapper: {
-        /**
-         * Legacy Mapper
-         *   export const PING = ()=>{...}
-         *   Will be mapped to express method
-         *   import { PING, ... } from "path/to/file"
-         *   app.post2('/path/dir', PING)
-         */
-        PING: "get",
-        /**
-         * Legacy Mapper
-         *   export const OTHER_POST = ()=>{...}
-         *   Will be mapped to possible method
-         *   import { OTHER_POST } from "path/to/file"
-         *   app.post2('/path/dir', OTHER_POST)
-         */
-        OTHER_POST: "post2",
-        /**
-         * export const PATCH = ()=>{...}
-         * Will not be mapped
-         */
-        PATCH: false,
-      },
-    }),
-  ],
-});
-```
-
-You can disable a method by setting its value to false. In the example `PATCH: false`, the PATCH method is disabled.
-
-**/src/api/index.js**
-
-```javascript
-export const PING = (req, res, next) => {
-  res.send({ name: "Ping Service" });
-};
-export const OTHER_POST = (req, res, next) => {
-  res.send({ name: "Other Service" });
-};
-export const PATCH = (req, res, next) => {
-  res.send({ name: "Path Service" });
-};
-```
-
-## Isolated Mapped
-
-This is a new configuration for ISOLATED mode, allow split the definition GET, POST, PUT in a single file, for apply the single responsability and allow create a help files into the same directorio
-
-```bash
-> tree src/api/
-src/api/:
-├───admin
-│   ├───auth
-│   │   ├───login
-│   │   │   └───POST.js
-│   │   └───status
-│   │       └───GET.ts
-│   └───user
-│       ├───GET.js
-│       ├───POST.js
-│       └───[userId]         //Remix Format
-│           ├───USE.js
-│           ├───PUT.js
-│           ├───validated.js // Will be ignored in the mapped if not defined in mapper config
-│           ├───PUSH.js
-│           └───DELETE.js
-├───site
-│   ├───USE.js
-│   ├───article
-│   │   ├───$articleId    //NextJS Format
-│   │   │   └───GET.js
-│   │   └───new
-│   │       ├───USE.js
-│   │       └───GET.js
-│   └───page
-│       ├───$pageId
-│       │   └───GET.ts
-│       └───new
-│           ├───USE.ts
-│           └───GET.js
-└───ping
-    └───GET.js
-```
-
-The directory tree is exported as router rules tree:
-
-```bash
-GET     /api/ping
-POST    /api/admin/auth/login/
-GET     /api/admin/auth/status/
-GET     /api/admin/user/
-POST    /api/admin/user/
-USE     /api/site/
-USE     /api/site/article/new/
-GET     /api/site/article/new/
-USE     /api/site/page/new/
-GET     /api/site/page/new/
-USE     /api/admin/user/:userId/
-PUT     /api/admin/user/:userId/
-PUSH    /api/admin/user/:userId/
-DELETE  /api/admin/user/:userId/
-GET     /api/site/article/:articleId/
-GET     /api/site/page/:pageId/
-```
-
-### Isolated Custom Mapping
-
-**/vite.config.js**
-
-```js
-export default defineConfig({
-  plugins: [
-    pluginAPIRoutes({
-      mode: "isolated",
-      mapper: {
-        /**
-         * Isolated Mapper
-         *   //file: PING.js or PING.ts
-         *   export default ()=>{...}         *
-         *   Will be mapped to express method
-         *   import PING from "path/to/PING.ts"
-         *   app.get('/path/dir', PING)
-         *
-         *   Will be mapped after all methods
-         */
-        PING: "get",
-        /**
-         * Isolated Mapper
-         *   //file: OTHER_POST.js or OTHER_POST.ts
-         *   export default ()=>{...}
-         *   Will be mapped to possible method
-         *   import OTHER_POST from "path/to/OTHER_POST.js"
-         *   app.post2('/path/dir', OTHER_POST)
-         *
-         *   Will be mapped before the POST
-         */
-        OTHER_POST: { method: "post2", priority: 29 },
-        /**
-         * export const PATCH = ()=>{...}
-         * Will not be mapped
-         */
-        PATCH: false,
-      },
-    }),
-  ],
-});
-```
-
-**/src/api/path/to/PING.js**
-
-```js
-export default (req, res) => {
-  res.send("Ping Service");
-};
-```
-
-**/src/api/path/to/OTHER_POST.js**
-
-```js
-export default (req, res) => {
-  res.send("Other Post Service");
-};
 ```
 
 ## Custom File
@@ -376,83 +239,19 @@ export default (req, res) => {
 
 **/src/handler.js** or see [handler.js](./example/src/custom-server-example/handler.ts)
 
-```typescript
-import express from "express";
-import { applyRouters } from "@api/routers";
-import * as configure from "@api/configure";
-
-export const handler = express();
-
-configure.handlerBefore?.(handler);
-
-applyRouters((props) => {
-  const { method, route, path, cb } = props;
-  if (handler[method]) {
-    if (Array.isArray(cb)) {
-      handler[method](route, ...cb);
-    } else {
-      handler[method](route, cb);
-    }
-  } else {
-    console.log("Not Support", method, "for", route, "in", handler);
-  }
-});
-
-configure.handlerAfter?.(handler);
-```
+If you see the default handler file, see the cache file in `.api/handler.js`
 
 ### Server File
 
 **/src/server.ts** or see [server.ts](./example/src/custom-server-example/server.ts)
 
-```typescript
-import { handler } from "@api/handler";
-import { endpoints } from "@api/routers";
-import * as configure from "@api/configure";
-import express from "express";
-
-const server = express();
-configure.serverBefore?.(server);
-const { PORT = 3000, PUBLIC_DIR = "import.meta.env.PUBLIC_DIR" } = process.env;
-server.use("import.meta.env.BASE", express.static(PUBLIC_DIR));
-server.use("import.meta.env.BASE_API", handler);
-configure.serverAfter?.(server);
-server.on("error", (error) => {
-  console.error(`Error at http://localhost:${PORT}`, error);
-  configure.serverError?.(server, error);
-});
-server.on("listening", () => {
-  console.log(`Ready at http://localhost:${PORT}`);
-  configure.serverListening?.(server, endpoints);
-});
-server.listen(PORT);
-```
+If you see the default server file, see the cache file in `.api/server.js`
 
 ### Configure File
 
 **/src/configure.ts** or see [configure.ts](./example/src/custom-server-example/configure.ts)
 
-```typescript
-import express from "express";
-import {
-  CallbackHook,
-  StatusHook,
-  ServerHook,
-  HandlerHook,
-  ViteServerHook,
-} from "vite-plugin-api-routes/configure";
-// import { ApplyRouter, ApplyRouters } from "vite-plugin-api-routes/routes"
-// import { Callback, RouteInfo, RouteModule } from "vite-plugin-api-routes/handler"
-
-export const serverBefore: ServerHook = (server) => {};
-export const serverAfter: ServerHook = (server) => {};
-export const serverListening: StatusHook = (server, endpoints) => {};
-export const serverError: StatusHook = (server, error) => {};
-export const handlerBefore: HandlerHook = (handler) => {};
-export const handlerAfter: HandlerHook = (handler) => {};
-export const viteServerBefore: ViteServerHook = (server) => {};
-export const viteServerAfter: ViteServerHook = (server) => {};
-```
+If you see the default configure file, see the cache file in `.api/configure.js`
 
 ## Development Mode
 

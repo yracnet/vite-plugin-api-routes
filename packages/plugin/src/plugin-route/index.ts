@@ -1,9 +1,9 @@
 import path from "slash-path";
-import { Plugin } from "vite";
+import { PluginOption } from "vite";
 import { ApiConfig } from "../model";
 import { writeRoutersFile } from "./routersFile";
 
-export const apiRoutesRoute = (apiConfig: ApiConfig): Plugin => {
+export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
   const isReload = (file: string) => {
     file = path.slash(file);
     return apiConfig.watcherList.find((it) => file.startsWith(it));
