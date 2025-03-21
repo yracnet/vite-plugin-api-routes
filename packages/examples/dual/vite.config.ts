@@ -1,15 +1,18 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 //import apiRoutes from "vite-plugin-api-routes";
-import apiRoutes from "../../plugin/src/index";
+import apiRoutes from "../../plugin/src";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/myapp",
   plugins: [
     react(),
     apiRoutes({
       mode: "legacy",
-      cacheDir: ".api1",
+      cacheDir: ".api-legacy",
+      disableBuild: true,
+      serverMinify: true,
       mapper: {
         AUTH: {
           method: "use",
@@ -33,7 +36,8 @@ export default defineConfig({
     }),
     apiRoutes({
       mode: "isolated",
-      cacheDir: ".api2",
+      cacheDir: ".api-isolated",
+      serverMinify: true,
       mapper: {
         AUTH: {
           method: "use",

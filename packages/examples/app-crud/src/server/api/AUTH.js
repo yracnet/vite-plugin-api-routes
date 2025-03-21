@@ -1,4 +1,4 @@
-export default (_, _, next) => {
-  console.log("AUTH HANDLER!!!!!!");
-  next(error);
+export default (req, res, next) => {
+  req.data = "AUTH HANDLER";
+  next();
 };

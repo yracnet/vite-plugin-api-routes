@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .api1
 .api2
+.api-legacy
+.api-isolated

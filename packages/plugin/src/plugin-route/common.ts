@@ -78,7 +78,7 @@ export const getAllFileRouters = (apiConfig: ApiConfig): FileRouter[] => {
         cwd: it.dir,
       });
       return files.map((file) => {
-        const routeFile = path.join(apiConfig.routeBase, it.route, file);
+        const routeFile = path.join("/", it.route, file);
         const route = parseFileToRoute(routeFile);
         const key = createKeyRoute(route, apiConfig);
         const relativeFile = path.relative(
@@ -112,6 +112,7 @@ export type MethodRouter = {
   source: string;
   method: string;
   route: string;
+  url: string;
   cb: string;
 };
 
@@ -129,11 +130,13 @@ export const parseMethodRouters = (
           return null;
         }
         const re = new RegExp(`${m.name}$`);
+        const route = r.route.replace(re, "");
         return {
           key: r.key,
           source: r.file,
           method: m.method,
-          route: r.route.replace(re, ""),
+          route,
+          url: path.join("/", apiConfig.routeBase, route),
           cb: r.varName + ".default",
         };
       })
@@ -157,11 +160,13 @@ export const parseMethodRouters = (
     .map((it) => {
       let cb = it.varName + "." + it.name;
       const source = it.file + "?fn=" + it.name;
+      const route = it.route;
       return {
         key: it.key,
         source,
         method: it.method,
-        route: it.route,
+        route,
+        url: path.join("/", apiConfig.routeBase, route),
         cb,
       };
     });

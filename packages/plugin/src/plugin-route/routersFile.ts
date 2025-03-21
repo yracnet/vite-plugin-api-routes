@@ -1,7 +1,7 @@
 import fs from "fs";
-import { join } from "slash-path";
-import { ApiConfig } from "src/model";
+import path from "slash-path";
 import { ResolvedConfig } from "vite";
+import { ApiConfig } from "../model";
 import { getAllFileRouters, MethodRouter, parseMethodRouters } from "./common";
 
 export const writeRoutersFile = (
@@ -12,35 +12,54 @@ export const writeRoutersFile = (
   if (routersFile.startsWith(cacheDir)) {
     const fileRouters = getAllFileRouters(apiConfig);
     const methodRouters = parseMethodRouters(fileRouters, apiConfig);
-    const max = methodRouters.reduce(
-      (max: any, it) => {
-        const x1 = it.method.length;
-        const x2 = it.route.length;
-        max.s1 = x1 > max.s1 ? x1 : max.s1;
-        max.s2 = x2 > max.s2 ? x2 : max.s2;
-        return max;
-      },
-      { s1: 0, s2: 0 }
-    );
+    const max = methodRouters
+      .map((it) => {
+        it.url = path.join("/", vite.base, apiConfig.routeBase, it.route);
+        return it;
+      })
+      .reduce(
+        (max: any, it) => {
+          const cb = it.cb.length;
+          const url = it.url.length;
+          const route = it.route.length;
+          const method = it.method.length;
+          const source = it.source.length;
+          max.cb = cb > max.cb ? cb : max.cb;
+          max.url = url > max.url ? url : max.url;
+          max.route = route > max.route ? route : max.route;
+          max.method = method > max.method ? method : max.method;
+          max.source = source > max.source ? source : max.source;
+          return max;
+        },
+        { cb: 0, method: 0, route: 0, url: 0, source: 0 }
+      );
     const debug = methodRouters
       .map(
         (it) =>
           "// " +
-          it.method.toUpperCase().padEnd(max.s1 + 2, " ") +
-          it.route.padEnd(max.s2 + 4, " ") +
+          it.method.toUpperCase().padEnd(max.method + 1, " ") +
+          it.url.padEnd(max.url + 4, " ") +
           it.source
       )
       .join("\n")
       .trim();
 
     const writeRouter = (c: MethodRouter) => {
-      return `  ${c.cb} && {
-        source     : "${c.source}",
-        method     : "${c.method}",
-        route      : "${c.route}",
-        url        : "${join(vite.base, c.route)}",
-        cb         : ${c.cb},
-      }`;
+      return [
+        "  ",
+        `${c.cb}`.padEnd(max.cb + 1, " "),
+        ` && { cb: `,
+        `${c.cb}`.padEnd(max.cb + 1, " "),
+        ", method: ",
+        `"${c.method}"`.padEnd(max.method + 3, " "),
+        `, route: `,
+        `"${c.route}"`.padEnd(max.route + 3, " "),
+        ", url: ",
+        `"${c.url}"`.padEnd(max.url + 3, " "),
+        ", source: ",
+        `"${c.source}"`.padEnd(max.source + 3, " "),
+        "}",
+      ].join("");
     };
 
     const importFiles = fileRouters

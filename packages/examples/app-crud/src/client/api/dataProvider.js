@@ -10,7 +10,7 @@ const getQuery = (params = {}) => {
 };
 
 export const createDataProvider = ({
-  url = "/api",
+  url = "/myapp/api",
   resource = "",
   assertHeaders = NOP,
   assertOptions = NOP,

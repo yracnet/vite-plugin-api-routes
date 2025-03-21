@@ -5,6 +5,7 @@ import apiRoutes from "../../plugin/src/index";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "myapp",
   plugins: [
     react(),
     apiRoutes({

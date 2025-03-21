@@ -54,7 +54,11 @@ const UserTable = () => {
   };
 
   const handleSearch = async () => {
-    const { data, message, error } = await userDP.getList({ q: searchQuery });
+    const {
+      data = [],
+      message,
+      error,
+    } = await userDP.getList({ q: searchQuery });
     setData(data);
     setError(error);
     setMessage(message);
@@ -137,6 +141,7 @@ const UserForm = () => {
     setError(error);
     setMessage(message);
     setUser(data);
+    setSelectedKey(data._id);
     setShouldReload(true);
   };
 

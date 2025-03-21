@@ -1,7 +1,7 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-import apiRoutes from "vite-plugin-api-routes";
 import { chunkSplitPlugin } from "vite-plugin-chunk-split";
+import api from "../../plugin/src";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [
     react(),
     //@ts-ignore
-    apiRoutes({
+    api({
       disableBuild: false,
       server: "src/custom-server-example/server.ts",
       //handler: "src/custom-server-example/handler.ts",

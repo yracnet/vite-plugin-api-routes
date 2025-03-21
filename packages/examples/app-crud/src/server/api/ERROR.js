@@ -1,4 +1,4 @@
-export default (error, _, res, next) => {
+const ERROR = (error, _, res, next) => {
   if (error instanceof Error) {
     res
       .status(403)
@@ -7,3 +7,4 @@ export default (error, _, res, next) => {
     next(error);
   }
 };
+export default ERROR;
