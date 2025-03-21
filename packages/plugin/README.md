@@ -44,7 +44,7 @@ See the [tutorial](./tutorial.md)
 
 ### LEGACY: Example Structure
 
-Based in the file system structure
+Based on the file system structure.
 
 ```bash
 $ tree src/api-legacy
@@ -57,7 +57,7 @@ src/api-legacy
     └── index.js
 ```
 
-The directory tree will be export to posibleth methods
+The directory tree will be exported to possible methods because the file will have different methods exported.
 
 ```bash
 USE     /api/                src/api-legacy/index.js?fn=default
@@ -86,11 +86,11 @@ PUT     /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=PUT
 DELETE  /api/user/:id/       src/api-legacy/user/[id]/index.js?fn=DELETE
 ```
 
-The legacy mapping are simple in the file system, but hiden the real structure route
+The legacy mapping is simple in the file system, but it hides the real route structure.
 
 ### ISOLATED: Example Structure
 
-Based in the file system structure
+Based on the file system structure
 
 ```bash
 $ tree src/api-isolated
@@ -109,7 +109,7 @@ src/api-isolated
     └── POST.js
 ```
 
-The directory tree will be export to specifict methods
+The directory tree will be mapped to specific methods.
 
 ```log
 USE     /api/                 src/api-isolated/USE.js
@@ -123,13 +123,13 @@ PUT     /api/user/:id/        src/api-isolated/user/[id]/PUT.js
 DELETE  /api/user/:id/        src/api-isolated/user/[id]/DELETE.js
 ```
 
-The isolated mapping are more comprensible mapping from file system
+The isolated mapping is a more comprehensible mapping of the file system.
 
-### Order Mapping
+## Order Mapping
 
-All method will be route-mapping with priority defined by mapper atribute
+All methods will be mapped to routes with priority defined by the mapper attribute.
 
-```
+```js
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import api from "vite-plugin-api-routes";
@@ -148,18 +148,23 @@ export default defineConfig({
         PUT:     { method: "put",    priority: 60 },
         DELETE:  { method: "delete", priority: 70 },
         // You can attach new ALIAS for LEGACY and ISOLATED
-        AUTH:    { method: "use",    priority: 11  },  // Will be mapping after to default and before USE
-        ERROR:   { method: "use",    priority: 120 },  // Will be mapping after DELETE, FILES and PARAMS
-        LOGGER:  { method: "use",    priority: 31  },  // Will be mapping after GET and before POST
+        // It will be mapped after default and before USE.
+        AUTH:    { method: "use",    priority: 11  },
+        // It will be mapped after DELETE, FILES, and PARAMS.
+        ERROR:   { method: "use",    priority: 120 },
+        // It will be mapped after GET and before POST.
+        LOGGER:  { method: "use",    priority: 31  },
       },
-      filePriority = 100, // Default value for file PATH
-      paramPriority = 110,// Default value for param PATH
+      // Default value for file
+      filePriority = 100,
+      // Default value for param
+      paramPriority = 110,
     }),
   ],
 });
 ```
 
-Based in the file system structure
+Based on the file system structure
 
 ```bash
 $ tree src/api-isolated/
@@ -182,25 +187,25 @@ src/api-isolated/
     └── POST.js
 ```
 
-The directory tree will be export to specifict methods
+The directory tree will be exported to specific methods, with new declared methods, respecting the priority value.
 
-```log
-USE     /api/                 src/api-isolated/AUTH.js
+```js
+USE     /api/                 src/api-isolated/AUTH.js          //after default and before USE.
 USE     /api/                 src/api-isolated/USE.js
 GET     /api/                 src/api-isolated/GET.js
 GET     /api/user/            src/api-isolated/user/GET.js
-USE     /api/user/            src/api-isolated/user/LOGGER.js
+USE     /api/user/            src/api-isolated/user/LOGGER.js   // after GET and before POST.
 POST    /api/user/            src/api-isolated/user/POST.js
 POST    /api/user/confirm/    src/api-isolated/user/confirm/POST.js
 USE     /api/user/:id/        src/api-isolated/user/[id]/USE.js
 PATCH   /api/user/:id/        src/api-isolated/user/[id]/PATCH.js
 PUT     /api/user/:id/        src/api-isolated/user/[id]/PUT.js
 DELETE  /api/user/:id/        src/api-isolated/user/[id]/DELETE.js
-USE     /api/user/            src/api-isolated/user/ERROR.js
-USE     /api/                 src/api-isolated/ERROR.js
+USE     /api/user/            src/api-isolated/user/ERROR.js   // after DELETE, FILES, and PARAMS.
+USE     /api/                 src/api-isolated/ERROR.js        // after DELETE, FILES, and PARAMS.
 ```
 
-The directory tree will be export to specifict methods
+The directory tree will be exported to specific methods.
 
 ## How to Use
 
@@ -216,7 +221,7 @@ In order to have proper access to the plugin's alias definitions, you need to in
 
 In your `src/vite-env.d.ts`, add the following line:
 
-```typescript
+```ts
 /// <reference path="../.api/env.d.ts" />
 ```
 
@@ -229,7 +234,9 @@ import { defineConfig } from "vite";
 import api from "vite-plugin-api-routes";
 
 export default defineConfig({
-  plugins: [api()],
+  plugins: [
+    api(), // with default configurations
+  ],
 });
 ```
 
