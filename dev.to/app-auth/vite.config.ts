@@ -1,11 +1,9 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-//import apiRoutes from "vite-plugin-api-routes";
-import apiRoutes from "../../plugin/src/index";
+import apiRoutes from "vite-plugin-api-routes";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "myapp",
   plugins: [
     react(),
     apiRoutes({
@@ -15,6 +13,10 @@ export default defineConfig({
         AUTH: {
           method: "use",
           priority: 11,
+        },
+        CRUD: {
+          method: "use",
+          priority: 12,
         },
         ERROR: {
           method: "use",
