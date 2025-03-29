@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies and publish package
         run: |
           cd packages/plugin
-          npm install
+          npm install --force
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
