@@ -44,7 +44,9 @@ export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
           writeRoutersFile(apiConfig, viteConfig);
           watcher.off("add", onReload);
           watcher.off("change", onReload);
-          restart(true);
+          if (apiConfig.forceRestart) {
+            restart(true);
+          }
         }
       };
       watcher.on("add", onReload);

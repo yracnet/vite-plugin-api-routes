@@ -1,44 +1,25 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-import apiRoutes from "vite-plugin-api-routes";
+import api from "vite-plugin-api-routes";
+import ts from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    ts(),
     react(),
-    apiRoutes({
+    api({
       mode: "isolated",
-      configure: "src/server/configure.js", // Path to the configuration file
+      //configure: "src/server/configure.js",
       mapper: {
-        AUTH: {
-          method: "use",
-          priority: 11,
-        },
-        CRUD: {
-          method: "use",
-          priority: 12,
-        },
-        ERROR: {
-          method: "use",
-          priority: 110,
-        },
+        AUTH: { method: "use", priority: 11 },
+        CRUD: { method: "use", priority: 12 },
+        ERROR: { method: "use", priority: 110 },
       },
       dirs: [
-        {
-          dir: "src/server/api", // Path to the APIs
-          route: "",
-        },
-        //PROD AND DEV SWITCH
-        {
-          dir: "src/server/api-dev",
-          route: "admin",
-          skip: "production",
-        },
-        {
-          dir: "src/server/api-prod",
-          route: "admin",
-          skip: "development",
-        },
+        { dir: "src/server/api-admin", route: "admin" },
+        { dir: "src/server/api-auth", route: "auth" },
+        { dir: "src/server/api-dev", route: "_", skip: "production" },
       ],
     }),
   ],

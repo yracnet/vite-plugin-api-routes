@@ -18,13 +18,25 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",
+    "dotenv-local": "^1.0.2",
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "express": "^4.21.2",
     "globals": "^15.15.0",
+    "jwt-decode": "^4.0.0",
+    "ra-core": "^5.6.4",
+    "ra-data-simple-rest": "^5.6.4",
+    "react-hook-form": "^7.54.2",
+    "react-router": "^7.4.0",
+    "react-router-dom": "^7.4.0",
+    "sequelize": "^6.37.6",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
-    "vite": "^6.2.0",
-    "vite-plugin-api-routes": "^1.2.3-beta"
+    "vite": "^6.2.2",
+    "vite-plugin-api-routes": "^1.2.3-beta",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

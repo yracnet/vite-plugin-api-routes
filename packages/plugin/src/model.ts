@@ -36,6 +36,7 @@ export type ApiConfig = {
   routeBase: string;
   root: string;
   cacheDir: string;
+  forceRestart: boolean;
   disableBuild: boolean;
   clientOutDir: string;
   clientMinify: boolean | "terser" | "esbuild";
@@ -62,6 +63,7 @@ export type ApiOpts = {
   routeBase?: string;
   root?: string;
   cacheDir?: string;
+  forceRestart?: boolean;
   disableBuild?: boolean;
   clientOutDir?: string;
   clientMinify?: boolean | "terser" | "esbuild";
@@ -87,6 +89,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     mapper = {},
     filePriority = 100,
     paramPriority = 110,
+    forceRestart = false,
     disableBuild = false,
     clientOutDir = "dist/client",
     clientMinify = false,
@@ -181,6 +184,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     mapperList,
     watcherList,
     cacheDir,
+    forceRestart,
     disableBuild,
     clientOutDir,
     clientMinify,
