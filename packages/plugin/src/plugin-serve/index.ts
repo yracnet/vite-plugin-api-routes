@@ -1,3 +1,4 @@
+import express from "express";
 import path from "slash-path";
 import { PluginOption } from "vite";
 import { ApiConfig } from "../model";
@@ -22,10 +23,12 @@ export const apiRoutesServe = (config: ApiConfig): PluginOption => {
           fixStacktrace: true,
         }
       );
+
+      var appServer = express();
       //@ts-ignore
-      viteServerBefore?.(devServer.middlewares, devServer, vite);
+      viteServerBefore?.(appServer, devServer, vite);
       // Register Proxy After Vite Inicialize
-      middlewares.use(baseApi, async (req, res, next) => {
+      appServer.use("/", async (req, res, next) => {
         try {
           const { handler } = await ssrLoadModule(config.handler, {
             fixStacktrace: true,
@@ -38,7 +41,8 @@ export const apiRoutesServe = (config: ApiConfig): PluginOption => {
         }
       });
       //@ts-ignore
-      viteServerAfter?.(devServer.middlewares, devServer, vite);
+      viteServerAfter?.(appServer, devServer, vite);
+      middlewares.use(baseApi, appServer);
     },
   };
 };

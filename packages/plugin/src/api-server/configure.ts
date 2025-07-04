@@ -1,9 +1,7 @@
-import { HandleFunction } from "connect";
 import express, { ErrorRequestHandler, Express, Handler } from "express";
-import { Connect } from "vite";
 import { Callback, RouteInfo } from "vite-plugin-api-routes/handler";
 
-export type ViteServerHook = (server: Connect.Server, viteServer: any) => void;
+export type ViteServerHook = (server: Express, viteServer: any) => void;
 
 export type ServerHook = (server: Express) => void;
 
@@ -13,20 +11,20 @@ export type CallbackHook = (callback: Callback, route: RouteInfo) => Callback;
 
 export type StatusHook = (server: Express, status: any) => void;
 
+const errorHandler: ErrorRequestHandler = (error, _, res, next) => {
+  if (error instanceof Error) {
+    res.status(403).json({ error: error.message });
+  } else {
+    next(error);
+  }
+};
+
 export const viteServerBefore: ViteServerHook = (server) => {
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
 };
 
 export const viteServerAfter: ViteServerHook = (server) => {
-  const errorHandler: HandleFunction = (err, _, res, next) => {
-    if (err instanceof Error) {
-      res.writeHead(403, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: err.message }));
-    } else {
-      next(err);
-    }
-  };
   server.use(errorHandler);
 };
 
@@ -36,13 +34,6 @@ export const serverBefore: ServerHook = (server) => {
 };
 
 export const serverAfter: ServerHook = (server) => {
-  const errorHandler: ErrorRequestHandler = (error, _, res, next) => {
-    if (error instanceof Error) {
-      res.status(403).json({ error: error.message });
-    } else {
-      next(error);
-    }
-  };
   server.use(errorHandler);
 };
 
