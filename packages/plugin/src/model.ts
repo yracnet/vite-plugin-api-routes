@@ -98,11 +98,11 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     clientOutDir = "dist/client",
     clientMinify = false,
     clientBuild = (config: InlineConfig) => config,
-    clientSkip = !!process.argv.find(it => it === 'client-skip'),
+    clientSkip = false,
     serverOutDir = "dist",
     serverMinify = false,
     serverBuild = (config: InlineConfig) => config,
-    serverSkip = !!process.argv.find(it => it === 'server-skip'),
+    serverSkip = false,
   } = opts;
   if (moduleId !== "@api") {
     console.warn("The moduleId will be remove in the next release");
