@@ -120,20 +120,26 @@ export default defineConfig({
     api({
       mapper: {
         // Default Mapping
-        default: { method: "use",    priority: 10 },
-        USE:     { method: "use",    priority: 20 },
-        GET:     { method: "get",    priority: 30 },
-        POST:    { method: "post",   priority: 40 },
-        PATCH:   { method: "patch",  priority: 50 },
-        PUT:     { method: "put",    priority: 60 },
-        DELETE:  { method: "delete", priority: 70 },
+        // default: { method: "use",    priority:  10 },
+        // USE:     { method: "use",    priority:  20 },
+        // GET:     { method: "get",    priority:  30 },
+        // POST:    { method: "post",   priority:  40 },
+        // PATCH:   { method: "patch",  priority:  50 },
+        // PUT:     { method: "put",    priority:  60 },
+        // DELETE:  { method: "delete", priority:  70 },
+        // New Default Mapping from 1.2.6
+        // AUTH:    { method: "use",    priority:  11 },
+        // CRUD:    { method: "use",    priority:  12 },
+        // PING:    { method: "get",    priority:  21 },
+        // ACTION:  { method: "post",   priority:  41 },
+        // ERROR:   { method: "use",    priority: 120 },
         // Custom aliases
-        AUTH:    { method: "use", priority: 11  }, // After default and before USE
+        AUTH:    { method: "use", priority:  11 }, // After default and before USE
         ERROR:   { method: "use", priority: 120 }, // After DELETE, FILES, and PARAMS
-        LOGGER:  { method: "use", priority: 31  }, // After GET and before POST
+        LOGGER:  { method: "use", priority:  31 }, // After GET and before POST
       },
-      filePriority:  100, // Default value for files
-      paramPriority: 110, // Default value for parameters
+      filePriority:  100, // Default priority for files
+      paramPriority: 110, // Default priority for PATH with parameters
     }),
   ],
 });
@@ -231,11 +237,24 @@ yarn dev
 
 ### Production Mode
 
-For production, build your application normally:
+To build your application for production, run:
 
 ```bash
 yarn build
 ```
+
+To skip building the **server**, use:
+
+```bash
+yarn build --server-skip
+```
+
+To skip building the **client**, use:
+
+```bash
+yarn build --client-skip
+```
+
 
 ## Additional Resources
 

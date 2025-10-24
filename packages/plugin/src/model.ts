@@ -41,9 +41,11 @@ export type ApiConfig = {
   clientOutDir: string;
   clientMinify: boolean | "terser" | "esbuild";
   clientBuild: (config: InlineConfig) => InlineConfig;
+  clientSkip: boolean;
   serverOutDir: string;
   serverMinify: boolean | "terser" | "esbuild";
   serverBuild: (config: InlineConfig) => InlineConfig;
+  serverSkip: boolean;
 };
 
 export type ApiOpts = {
@@ -68,9 +70,11 @@ export type ApiOpts = {
   clientOutDir?: string;
   clientMinify?: boolean | "terser" | "esbuild";
   clientBuild?: (config: InlineConfig) => InlineConfig;
+  clientSkip?: boolean;
   serverOutDir?: string;
   serverMinify?: boolean | "terser" | "esbuild";
   serverBuild?: (config: InlineConfig) => InlineConfig;
+  serverSkip?: boolean;
 };
 
 export const assertConfig = (opts: ApiOpts): ApiConfig => {
@@ -94,9 +98,11 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     clientOutDir = "dist/client",
     clientMinify = false,
     clientBuild = (config: InlineConfig) => config,
+    clientSkip = !!process.argv.find(it => it === 'client-skip'),
     serverOutDir = "dist",
     serverMinify = false,
     serverBuild = (config: InlineConfig) => config,
+    serverSkip = !!process.argv.find(it => it === 'server-skip'),
   } = opts;
   if (moduleId !== "@api") {
     console.warn("The moduleId will be remove in the next release");
@@ -113,12 +119,17 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
 
   mapper = {
     default: { method: "use", priority: 10 },
+    AUTH: { method: "use", priority: 11, },
+    CRUD: { method: "use", priority: 12, },
     USE: { method: "use", priority: 20 },
+    PING: { method: "get", priority: 21, },
     GET: { method: "get", priority: 30 },
     POST: { method: "post", priority: 40 },
+    ACTION: { method: "post", priority: 41, },
     PATCH: { method: "patch", priority: 50 },
     PUT: { method: "put", priority: 60 },
     DELETE: { method: "delete", priority: 70 },
+    ERROR: { method: "use", priority: 120, },
     // Overwrite
     ...mapper,
   };
@@ -189,8 +200,10 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     clientOutDir,
     clientMinify,
     clientBuild,
+    clientSkip,
     serverOutDir,
     serverMinify,
     serverBuild,
+    serverSkip,
   };
 };

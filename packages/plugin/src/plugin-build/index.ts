@@ -169,12 +169,21 @@ export const apiRoutesBuild = (apiConfig: ApiConfig): PluginOption => {
       if (process.env.IS_API_ROUTES_BUILD) return;
       process.env.IS_API_ROUTES_BUILD = "true";
       viteConfig.logger.info("");
-      viteConfig.logger.info("\x1b[1m\x1b[31mSERVER BUILD\x1b[0m");
-      await doBuildServer(apiConfig, viteConfig);
+      if (apiConfig.serverSkip) {
+        viteConfig.logger.info("\x1b[1m\x1b[90mSERVER BUILD SKIPPED\x1b[0m");
+      } else {
+        viteConfig.logger.info("\x1b[1m\x1b[31mSERVER BUILD\x1b[0m");
+        await doBuildServer(apiConfig, viteConfig);
+      }
       viteConfig.logger.info("");
-      viteConfig.logger.info("\x1b[1m\x1b[31mCLIENT BUILD\x1b[0m");
-      await doBuildClient(apiConfig, viteConfig);
+      if (apiConfig.clientSkip) {
+        viteConfig.logger.info("\x1b[1m\x1b[90mCLIENT BUILD SKIPPED\x1b[0m");
+      } else {
+        viteConfig.logger.info("\x1b[1m\x1b[31mCLIENT BUILD\x1b[0m");
+        await doBuildClient(apiConfig, viteConfig);
+      }
       viteConfig.logger.info("");
+      process.exit(0);
     },
   };
 };
