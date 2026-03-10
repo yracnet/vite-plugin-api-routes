@@ -263,12 +263,11 @@ yarn build --client-skip
   - [Enhancing API Routing in Vite.js with vite-plugin-api](https://dev.to/yracnet/enhancing-api-routing-in-vitejs-with-vite-plugin-api-p39)
   - [CRUD User API + GUI in ViteJS](https://dev.to/yracnet/crud-user-api-gui-in-vitejs-df8)
 - **Tutorials**:
-  - [Tutorial Legacy](./docs/tutorial-legacy.md)
-  - [Tutorial Isolated](./docs/tutorial-isolated.md)
-  - [Tutorial CRUD](./docs/tutorial-crud.md)
+  - [Tutorial Legacy](./tutorial-legacy.md)
+  - [Tutorial Isolated](./tutorial-isolated.md)
+  - [Tutorial CRUD](./tutorial-crud.md)
 - **Previous Documentation**:
-  - [README 1.0](./docs/README_1.0.md)
-  - [README 1.1](./docs/README_1.1.md)
+  - [README 1.0](./README_1.0.md)
 
 ## License
 

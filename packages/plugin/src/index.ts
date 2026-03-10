@@ -10,14 +10,23 @@ export const pluginAPIRoutes = (opts: ApiOpts = {}): PluginOption => {
   const apiDir = findDirPlugin(".api");
   cleanDirectory(apiConfig.cacheDir);
   copyFilesDirectory(apiDir, apiConfig.cacheDir, {
-    files: ["configure.js", "handler.js", "server.js"],
-    oldId: "vite-plugin-api-routes",
-    newId: apiConfig.moduleId,
+    files: ["configure.js", "configure-impl.js", "handler.js", "server.js"],
+    alias: [
+      {
+        oldId: "vite-plugin-api-routes",
+        newId: apiConfig.moduleId,
+      }
+    ]
+
   });
   copyFilesDirectory(apiDir, apiConfig.cacheDir, {
     files: ["env.d.ts"],
-    oldId: "@api",
-    newId: apiConfig.moduleId,
+    alias: [
+      {
+        oldId: "@api",
+        newId: apiConfig.moduleId,
+      }
+    ]
   });
   return [
     //

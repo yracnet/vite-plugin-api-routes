@@ -37,23 +37,26 @@ export const copyFilesDirectory = (
   target: string,
   {
     files = [],
-    oldId = "",
-    newId = "",
+    alias = [],
   }: {
     files: string[];
-    oldId: string;
-    newId: string;
+    alias: {
+      oldId: string;
+      newId: string;
+    }[]
   }
 ) => {
   files.forEach((file) => {
     const sourceFilePath = path.join(origin, file);
     const targetFilePath = path.join(target, file);
-    if (oldId !== newId) {
-      let fileContent = fs.readFileSync(sourceFilePath, "utf-8");
-      fileContent = fileContent.replace(new RegExp(oldId, "g"), newId);
-      fs.writeFileSync(targetFilePath, fileContent, "utf-8");
-    } else {
-      fs.copySync(sourceFilePath, targetFilePath, { overwrite: true });
-    }
+    alias.forEach(({ oldId, newId }) => {
+      if (oldId !== newId) {
+        let fileContent = fs.readFileSync(sourceFilePath, "utf-8");
+        fileContent = fileContent.replace(new RegExp(oldId, "g"), newId);
+        fs.writeFileSync(targetFilePath, fileContent, "utf-8");
+      } else {
+        fs.copySync(sourceFilePath, targetFilePath, { overwrite: true });
+      }
+    })
   });
 };
