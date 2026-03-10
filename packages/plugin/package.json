@@ -47,8 +47,8 @@
     "./handler": {
       "types": "./.api/handler.d.ts"
     },
-    "./routers": {
-      "types": "./.api/routers.d.ts"
+    "./router": {
+      "types": "./.api/router.d.ts"
     }
   },
   "homepage": "https://github.com/yracnet/vite-plugin-api-routes",

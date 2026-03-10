@@ -1,12 +1,5 @@
-import express, { ErrorRequestHandler, Express, Handler } from "express";
-
-export type ViteServerHook = (server: Express, viteServer: any) => void;
-
-export type ServerHook = (server: Express) => void;
-
-export type HandlerHook = (handler: Handler) => void;
-
-export type StatusHook = (server: Express, status: any) => void;
+import express, { ErrorRequestHandler } from "express";
+import { HandlerHook, ServerHook, StatusHook, ViteServerHook } from "./configure";
 
 const errorHandler: ErrorRequestHandler = (error, _, res, next) => {
   if (error instanceof Error) {
@@ -38,8 +31,8 @@ export const handlerBefore: HandlerHook = () => { };
 
 export const handlerAfter: HandlerHook = () => { };
 
-export const serverListening: StatusHook = () => {
-  console.log(`Server Running`);
+export const serverListening: StatusHook = (_, status) => {
+  console.log(`Server Running:`, status);
 };
 
 export const serverError: StatusHook = (_, error) => {

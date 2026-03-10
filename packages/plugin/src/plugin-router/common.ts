@@ -82,7 +82,7 @@ export const getAllFileRouters = (apiConfig: ApiConfig): FileRouter[] => {
         const route = parseFileToRoute(routeFile);
         const key = createKeyRoute(route, apiConfig);
         const relativeFile = path.relative(
-          apiConfig.root,
+          apiConfig.cacheDir,
           path.join(it.dir, file)
         );
         return {
@@ -137,7 +137,7 @@ export const parseMethodRouters = (
           method: m.method,
           route,
           url: path.join("/", apiConfig.routeBase, route),
-          cb: r.varName + ".default",
+          cb: r.varName,
         };
       })
       .filter((r) => !!r);

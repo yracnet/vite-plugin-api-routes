@@ -13,6 +13,7 @@ export default defineConfig([
   },
   {
     entry: [
+      "src/api-server/configure-impl.ts",
       "src/api-server/configure.ts",
       "src/api-server/handler.ts",
       "src/api-server/routers.ts",

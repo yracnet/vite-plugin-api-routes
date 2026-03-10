@@ -1,7 +1,7 @@
 import { PluginOption } from "vite";
 import { ApiOpts, assertConfig } from "./model";
 import { apiRoutesBuild } from "./plugin-build";
-import { apiRoutesRoute } from "./plugin-route";
+import { apiRoutesRoute } from "./plugin-router";
 import { apiRoutesServe } from "./plugin-serve";
 import { cleanDirectory, copyFilesDirectory, findDirPlugin } from "./utils";
 

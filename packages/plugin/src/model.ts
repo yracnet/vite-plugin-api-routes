@@ -24,7 +24,7 @@ export type ApiConfig = {
   configure: string;
   serverFile: string;
   handlerFile: string;
-  routersFile: string;
+  routerFile: string;
   configureFile: string;
   dirs: DirRoute[];
   include: string[];
@@ -142,7 +142,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
   serverOutDir = path.join(root, serverOutDir);
   const serverFile = path.join(root, server);
   const handlerFile = path.join(root, handler);
-  const routersFile = path.join(cacheDir, "routers.js");
+  const routerFile = path.join(cacheDir, "routers.js");
   const configureFile = path.join(root, configure);
   const mapperList: MethodConfig[] = Object.entries(mapper)
     .map(([name, value]) => {
@@ -171,7 +171,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     include = mapperList.map((it) => `**/${it.name}.{js,ts}`);
   }
   const watcherList = dirs.map((it) => it.dir);
-  //watcherList.push(routersFile);
+  //watcherList.push(routerFile);
   watcherList.push(configureFile);
   watcherList.push(handlerFile);
 
@@ -184,7 +184,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     root,
     serverFile,
     handlerFile,
-    routersFile,
+    routerFile,
     filePriority: filePriority.toString().padStart(3, "0"),
     paramPriority: paramPriority.toString().padStart(3, "0"),
     configureFile,

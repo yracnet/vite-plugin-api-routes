@@ -4,12 +4,12 @@ import { ResolvedConfig } from "vite";
 import { ApiConfig } from "../model";
 import { getAllFileRouters, MethodRouter, parseMethodRouters } from "./common";
 
-export const writeRoutersFile = (
+export const writerouterFile = (
   apiConfig: ApiConfig,
   vite: ResolvedConfig
 ) => {
-  const { moduleId, cacheDir, routersFile } = apiConfig;
-  if (routersFile.startsWith(cacheDir)) {
+  const { moduleId, cacheDir, routerFile } = apiConfig;
+  if (routerFile.startsWith(cacheDir)) {
     const fileRouters = getAllFileRouters(apiConfig);
     const methodRouters = parseMethodRouters(fileRouters, apiConfig);
     const max = methodRouters
@@ -98,6 +98,6 @@ export const applyRouters = (applyRouter) => {
 };
 
 `;
-    fs.writeFileSync(routersFile, code);
+    fs.writeFileSync(routerFile, code);
   }
 };

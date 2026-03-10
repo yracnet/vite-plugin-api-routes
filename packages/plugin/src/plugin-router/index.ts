@@ -1,7 +1,7 @@
 import path from "slash-path";
 import { PluginOption } from "vite";
 import { ApiConfig } from "../model";
-import { writeRoutersFile } from "./routersFile";
+import { writeHandlerFile } from "./writeHandlerFile";
 
 export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
   const isReload = (file: string) => {
@@ -9,7 +9,7 @@ export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
     return apiConfig.watcherList.find((it) => file.startsWith(it));
   };
   return {
-    name: "vite-plugin-api-routes:route",
+    name: "vite-plugin-api-routes:router",
     enforce: "pre",
     config: () => {
       return {
@@ -18,14 +18,13 @@ export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
             [`${apiConfig.moduleId}/root`]: apiConfig.root,
             [`${apiConfig.moduleId}/server`]: apiConfig.serverFile,
             [`${apiConfig.moduleId}/handler`]: apiConfig.handlerFile,
-            [`${apiConfig.moduleId}/routers`]: apiConfig.routersFile,
             [`${apiConfig.moduleId}/configure`]: apiConfig.configureFile,
           },
         },
       };
     },
     configResolved: (viteConfig) => {
-      writeRoutersFile(apiConfig, viteConfig);
+      writeHandlerFile(apiConfig, viteConfig);
     },
     handleHotUpdate: async (data) => {
       if (isReload(data.file)) {
@@ -41,7 +40,7 @@ export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
       } = devServer;
       const onReload = (file: string) => {
         if (isReload(file)) {
-          writeRoutersFile(apiConfig, viteConfig);
+          writeHandlerFile(apiConfig, viteConfig);
           watcher.off("add", onReload);
           watcher.off("change", onReload);
           if (apiConfig.forceRestart) {
