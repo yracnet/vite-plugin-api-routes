@@ -15,7 +15,6 @@ export default defineConfig([
     entry: [
       "src/api-server/configure.ts",
       "src/api-server/handler.ts",
-      "src/api-server/routers.ts",
       "src/api-server/server.ts",
       "src/api-server/env.ts",
     ],
@@ -28,7 +27,6 @@ export default defineConfig([
       "slash-path",
       "vite-plugin-api-routes/configure",
       "vite-plugin-api-routes/handler",
-      "vite-plugin-api-routes/routers",
       "vite-plugin-api-routes/server",
     ],
     dts: true,

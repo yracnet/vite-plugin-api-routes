@@ -1,7 +1,7 @@
 import { PluginOption } from "vite";
 import { ApiOpts, assertConfig } from "./model";
 import { apiRoutesBuild } from "./plugin-build";
-import { apiRoutesRoute } from "./plugin-route";
+import { apiRoutesRoute } from "./plugin-router";
 import { apiRoutesServe } from "./plugin-serve";
 import { cleanDirectory, copyFilesDirectory, findDirPlugin } from "./utils";
 
@@ -11,13 +11,22 @@ export const pluginAPIRoutes = (opts: ApiOpts = {}): PluginOption => {
   cleanDirectory(apiConfig.cacheDir);
   copyFilesDirectory(apiDir, apiConfig.cacheDir, {
     files: ["configure.js", "handler.js", "server.js"],
-    oldId: "vite-plugin-api-routes",
-    newId: apiConfig.moduleId,
+    alias: [
+      {
+        oldId: "vite-plugin-api-routes",
+        newId: apiConfig.moduleId,
+      }
+    ]
+
   });
   copyFilesDirectory(apiDir, apiConfig.cacheDir, {
     files: ["env.d.ts"],
+    alias: [
+      {
     oldId: "@api",
     newId: apiConfig.moduleId,
+      }
+    ]
   });
   return [
     //

@@ -22,8 +22,8 @@
       "vite-plugin-api-routes/handler": [
         "src/api-server/handler.ts"
       ],
-      "vite-plugin-api-routes/routers": [
-        "src/api-server/routers.ts"
+      "vite-plugin-api-routes/router": [
+        "src/api-server/router.ts"
       ]
     }
   },

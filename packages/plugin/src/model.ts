@@ -24,7 +24,7 @@ export type ApiConfig = {
   configure: string;
   serverFile: string;
   handlerFile: string;
-  routersFile: string;
+  openapiFile: string;
   configureFile: string;
   dirs: DirRoute[];
   include: string[];
@@ -54,6 +54,7 @@ export type ApiOpts = {
   server?: string;
   handler?: string;
   configure?: string;
+  openapi?: string;
   dirs?: DirRoute[];
   include?: string[];
   exclude?: string[];
@@ -86,6 +87,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     server = path.join(cacheDir, "server.js"),
     handler = path.join(cacheDir, "handler.js"),
     configure = path.join(cacheDir, "configure.js"),
+    openapi = path.join(cacheDir, "openapi.yml"),
     routeBase = "api",
     dirs = [{ dir: "src/api", route: "", exclude: [], skip: false }],
     include = ["**/*.ts", "**/*.js"],
@@ -142,7 +144,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
   serverOutDir = path.join(root, serverOutDir);
   const serverFile = path.join(root, server);
   const handlerFile = path.join(root, handler);
-  const routersFile = path.join(cacheDir, "routers.js");
+  const openapiFile = path.join(root, openapi);
   const configureFile = path.join(root, configure);
   const mapperList: MethodConfig[] = Object.entries(mapper)
     .map(([name, value]) => {
@@ -171,7 +173,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     include = mapperList.map((it) => `**/${it.name}.{js,ts}`);
   }
   const watcherList = dirs.map((it) => it.dir);
-  //watcherList.push(routersFile);
+  //watcherList.push(routerFile);
   watcherList.push(configureFile);
   watcherList.push(handlerFile);
 
@@ -184,7 +186,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
     root,
     serverFile,
     handlerFile,
-    routersFile,
+    openapiFile,
     filePriority: filePriority.toString().padStart(3, "0"),
     paramPriority: paramPriority.toString().padStart(3, "0"),
     configureFile,

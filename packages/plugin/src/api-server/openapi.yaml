@@ -1,0 +1,22 @@
+swagger: "2.0"
+info:
+  title: Simple Open API
+  description: Cloud Endpoints with a Cloud Run backend
+  version: 1.0.0
+host: ${HOST}
+schemes:
+  - https
+produces:
+  - application/json
+
+# paths:
+#   /api/v1/health-admin:
+#     get:
+#       summary: This is an Health Check endpoint
+#       description: Returns service health status and collection count
+#       operationId: healthCheckAdmin
+#       responses:
+#         '200':
+#           description: A successful response
+#           schema:
+#             type: object

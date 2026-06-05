@@ -23,10 +23,10 @@ const doBuildServer = async (
     serverFile,
     configureFile,
     handlerFile,
-    routersFile,
+    routerFile,
     cacheDir,
   } = apiConfig;
-  const binFiles = [configureFile, handlerFile, routersFile];
+  const binFiles = [configureFile, handlerFile, routerFile];
   const clientDir = path.relative(serverOutDir, clientOutDir);
   const viteServer = await serverBuild({
     appType: "custom",

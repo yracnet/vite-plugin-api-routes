@@ -1,13 +1,10 @@
 import express, { ErrorRequestHandler, Express, Handler } from "express";
-import { Callback, RouteInfo } from "vite-plugin-api-routes/handler";
 
 export type ViteServerHook = (server: Express, viteServer: any) => void;
 
 export type ServerHook = (server: Express) => void;
 
 export type HandlerHook = (handler: Handler) => void;
-
-export type CallbackHook = (callback: Callback, route: RouteInfo) => Callback;
 
 export type StatusHook = (server: Express, status: any) => void;
 
@@ -40,10 +37,6 @@ export const serverAfter: ServerHook = (server) => {
 export const handlerBefore: HandlerHook = () => {};
 
 export const handlerAfter: HandlerHook = () => {};
-
-export const callbackBefore: CallbackHook = (callback) => {
-  return callback;
-};
 
 export const serverListening: StatusHook = () => {
   console.log(`Server Running`);

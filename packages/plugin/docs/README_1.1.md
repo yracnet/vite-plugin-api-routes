@@ -16,52 +16,6 @@
 
 The plugin offers two approaches to define API routes:
 
-### ISOLATED Mode
-
-In this approach, **each HTTP method is defined in a separate file,** which improves the visibility of available routes.
-
-**Example structure:**
-
-```bash
-$ tree src/api-isolated
-src/api-isolated
-├── GET.js
-├── USE.js
-└── user
-    ├── [id]
-    │   ├── DELETE.js
-    │   ├── PATCH.js
-    │   ├── PUT.js
-    │   └── USE.js
-    ├── confirm
-    │   └── POST.js
-    ├── GET.js
-    └── POST.js
-```
-
-**Generated mapping:**
-
-```log
-USE     /api/                 src/api-isolated/USE.js
-GET     /api/                 src/api-isolated/GET.js
-GET     /api/user/            src/api-isolated/user/GET.js
-POST    /api/user/            src/api-isolated/user/POST.js
-POST    /api/user/confirm/    src/api-isolated/user/confirm/POST.js
-USE     /api/user/:id/        src/api-isolated/user/[id]/USE.js
-PATCH   /api/user/:id/        src/api-isolated/user/[id]/PATCH.js
-PUT     /api/user/:id/        src/api-isolated/user/[id]/PUT.js
-DELETE  /api/user/:id/        src/api-isolated/user/[id]/DELETE.js
-```
-
-**ISOLATED mode features:**
-
-- More explicit and understandable mapping
-- One file per HTTP method
-- Clear visibility of available endpoints
-- Better organization for complex APIs
-- Easier long-term maintenance
-- OpenAPI docs: in this version you can add GET.yml as documentation of a service, from summary and description content
-
 ### LEGACY Mode
 
 In this approach, **a single file can handle multiple HTTP methods** through named exports.
@@ -105,6 +59,51 @@ GET     /api/user/confirm    src/api-legacy/user/confirm.js?fn=GET
 - One file handles multiple HTTP methods
 - Hides the actual route structure
 - Ideal for APIs with few endpoints or small projects
+
+### ISOLATED Mode
+
+In this approach, **each HTTP method is defined in a separate file**, which improves the visibility of available routes.
+
+**Example structure:**
+
+```bash
+$ tree src/api-isolated
+src/api-isolated
+├── GET.js
+├── USE.js
+└── user
+    ├── [id]
+    │   ├── DELETE.js
+    │   ├── PATCH.js
+    │   ├── PUT.js
+    │   └── USE.js
+    ├── confirm
+    │   └── POST.js
+    ├── GET.js
+    └── POST.js
+```
+
+**Generated mapping:**
+
+```log
+USE     /api/                 src/api-isolated/USE.js
+GET     /api/                 src/api-isolated/GET.js
+GET     /api/user/            src/api-isolated/user/GET.js
+POST    /api/user/            src/api-isolated/user/POST.js
+POST    /api/user/confirm/    src/api-isolated/user/confirm/POST.js
+USE     /api/user/:id/        src/api-isolated/user/[id]/USE.js
+PATCH   /api/user/:id/        src/api-isolated/user/[id]/PATCH.js
+PUT     /api/user/:id/        src/api-isolated/user/[id]/PUT.js
+DELETE  /api/user/:id/        src/api-isolated/user/[id]/DELETE.js
+```
+
+**ISOLATED mode features:**
+
+- More explicit and understandable mapping
+- One file per HTTP method
+- Clear visibility of available endpoints
+- Better organization for complex APIs
+- Easier long-term maintenance
 
 ## Priority Mapping System
 
@@ -264,12 +263,11 @@ yarn build --client-skip
   - [Enhancing API Routing in Vite.js with vite-plugin-api](https://dev.to/yracnet/enhancing-api-routing-in-vitejs-with-vite-plugin-api-p39)
   - [CRUD User API + GUI in ViteJS](https://dev.to/yracnet/crud-user-api-gui-in-vitejs-df8)
 - **Tutorials**:
-  - [Tutorial Legacy](./docs/tutorial-legacy.md)
-  - [Tutorial Isolated](./docs/tutorial-isolated.md)
-  - [Tutorial CRUD](./docs/tutorial-crud.md)
+  - [Tutorial Legacy](./tutorial-legacy.md)
+  - [Tutorial Isolated](./tutorial-isolated.md)
+  - [Tutorial CRUD](./tutorial-crud.md)
 - **Previous Documentation**:
-  - [README 1.0](./docs/README_1.0.md)
-  - [README 1.1](./docs/README_1.1.md)
+  - [README 1.0](./README_1.0.md)
 
 ## License
 
