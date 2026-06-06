@@ -14,13 +14,6 @@ export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
     enforce: "pre",
     config: () => {
       return {
-        build: {
-          watch: {
-            exclude: [
-              apiConfig.cacheDir
-            ]
-          }
-        },
         resolve: {
           alias: {
             [`${apiConfig.moduleId}/server`]: apiConfig.serverFile,
