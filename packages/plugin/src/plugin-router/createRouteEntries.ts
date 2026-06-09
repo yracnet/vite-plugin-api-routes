@@ -1,14 +1,13 @@
 import fg from "fast-glob";
 import path from "slash-path";
 import { ApiConfig } from "src/model";
-
+import { assertOrder, assertRoute, sortByOrder } from "./createUtils";
 
 export type RouteFiles = {
     dir: string;
     route: string;
     files: string[];
 };
-
 
 export const parseRouteFiles = (apiConfig: ApiConfig): RouteFiles[] => {
     let { dirs, include, exclude } = apiConfig;
@@ -38,9 +37,6 @@ export const parseRouteFiles = (apiConfig: ApiConfig): RouteFiles[] => {
         });
 };
 
-
-
-
 export type ImportEntry = {
     varName: string;
     importFile: string;
@@ -55,26 +51,6 @@ export type RouteEntry = {
     routeFile: string;
     routeName: string;
     routePriority: string;
-};
-
-
-
-const createOrderRoute = ({ route, routePriority }: RouteEntry, { paramPriority, filePriority }: ApiConfig) => {
-    const parts = route
-        .split("/")
-        .filter(Boolean);
-    if (parts.length === 0) {
-        return routePriority;
-    }
-    const priorities = parts.map((part) => {
-        const s = "_" + part;
-        if (/:|\[|\$/.test(part)) {
-            return paramPriority + s;
-        }
-        return filePriority + s;
-    });
-    priorities.push(routePriority);
-    return priorities.join("_");
 };
 
 export const parseRouteEntry = (routeFiles: RouteFiles[], apiConfig: ApiConfig): RouteEntry[] => {
@@ -129,19 +105,11 @@ export const parseRouteEntry = (routeFiles: RouteFiles[], apiConfig: ApiConfig):
         })
         .flatMap(parseEntry)
         .map((it) => {
-            const order = createOrderRoute(it, apiConfig);
-            const route = it.route
-                //NextJS
-                .replaceAll('[]', '*')
-                .replaceAll('[...', '*')
-                .replaceAll('[', ':')
-                .replaceAll(']', '')
-                //Remix
-                .replaceAll('$$', '*')
-                .replaceAll('$', ':')
+            const order = assertOrder(it, apiConfig);
+            const route = assertRoute(it.route);
             return { ...it, order, route }
         })
-        .sort((a, b) => a.order.localeCompare(b.order))
+        .sort(sortByOrder)
         .map((it, ix) => {
             const varName = "API_" + ix.toString().padStart(3, "0");
             return { ...it, varName }

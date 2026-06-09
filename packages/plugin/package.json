@@ -1,15 +1,15 @@
 {
   "name": "vite-plugin-api-routes",
-  "version": "1.3.0-beta3",
+  "version": "1.3.0-beta4",
   "type": "module",
   "description": "A Vite.js plugin that creates API routes by mapping the directory structure, similar to Next.js API Routes. This plugin enhances the functionality for backend development using Vite.",
   "keywords": [
     "vite",
     "api",
     "api-router",
-    "api-routers",
+    "api-routes",
     "vite-plugin-api",
-    "vite-plugin-rest-api",
+    "vite-plugin-api-routes",
     "express",
     "express-router",
     "server",
@@ -52,10 +52,9 @@
   "bugs": "https://github.com/yracnet/vite-plugin-api-routes/issues",
   "scripts": {
     "build": "tsup",
-    "test:generate": "node tests/run-generate-test.mjs",
-    "test:integration": "node tests/integration-test.mjs",
-    "prepublish": "yarn build",
-    "prepack": "yarn build"
+    "test:router": "bun tests/router-test.ts",
+    "prepublish": "yarn build && yarn test:router",
+    "prepack": "yarn build && yarn test:router"
   },
   "dependencies": {
     "dotenv-local": "^1.0.2",
