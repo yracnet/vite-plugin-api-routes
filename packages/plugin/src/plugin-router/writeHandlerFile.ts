@@ -16,12 +16,22 @@ export const writeHandlerFile = (apiConfig: ApiConfig, vite: ResolvedConfig) => 
   const code = `
 // Files Imports
 import Express from "express";
-${printList(fileRouters, (it) => `import ${it.varName} from "./${it.file}";`)}
+${printList(fileRouters, (it) => {
+    if (apiConfig.mode === 'legacy') {
+      return `import * as ${it.varName} from "./${it.file}";`;
+    }
+    return `import ${it.varName} from "./${it.file}";`;
+  })}
 import * as configure from "${moduleId}/configure";
 
 export const handler = Express();
 configure.handlerBefore?.(handler);
-${printList(methodRouters, (it) => `handler.${it.method}("${it.route}", ${it.cb});`)}
+${printList(methodRouters, (it) => {
+    if (apiConfig.mode === 'legacy') {
+      return `${it.cb} && handler.${it.method}("${it.route}", ${it.cb});`;
+    }
+    return `handler.${it.method}("${it.route}", ${it.cb});`;
+  })}
 configure.handlerAfter?.(handler);
 `;
   fs.writeFileSync(handlerFile, code);

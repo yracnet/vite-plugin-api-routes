@@ -17,7 +17,7 @@ export const createKeyRoute = (route: string, apiConfig: ApiConfig) => {
       const p = apiConfig.mapperList.find((r) => r.name === n);
       if (p) {
         return p.priority + s;
-      } else if (isParam(n)) {
+      } else if (isParam(n) || n === '*') {
         return apiConfig.paramPriority + s;
       }
       return apiConfig.filePriority + s;
@@ -30,6 +30,8 @@ export const parseFileToRoute = (names: string) => {
     .split("/")
     .map((name) => {
       name = name
+        .replaceAll("[]", "*")
+        .replaceAll("$$", "*")
         // Param Remix
         .replaceAll("$", ":")
         // Param NextJS
@@ -46,6 +48,7 @@ export const parseFileToRoute = (names: string) => {
       .replaceAll(/index$/gi, "")
       // Remove Index
       .replaceAll(/_index$/gi, "")
+      .replaceAll(/\*\/$/gi, "*")
   );
 };
 
@@ -130,7 +133,7 @@ export const parseMethodRouters = (
           return null;
         }
         const re = new RegExp(`${m.name}$`);
-        const route = r.route.replace(re, "");
+        const route = r.route.replace(re, "").replace("*/", "*");
         return {
           key: r.key,
           source: r.file,
