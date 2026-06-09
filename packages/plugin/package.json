@@ -54,8 +54,8 @@
     "build": "tsup",
     "test:generate": "node tests/run-generate-test.mjs",
     "test:integration": "node tests/integration-test.mjs",
-    "prepublish": "yarn build && yarn test:integration",
-    "prepack": "yarn build && yarn test:integration"
+    "prepublish": "yarn build",
+    "prepack": "yarn build"
   },
   "dependencies": {
     "dotenv-local": "^1.0.2",

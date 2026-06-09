@@ -4,3 +4,4 @@
 **/.up-force
 **/.fetch-client
 **/node_modules
+packages/plugin/tests/fixture-app
