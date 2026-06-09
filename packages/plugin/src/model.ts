@@ -78,6 +78,21 @@ export type ApiOpts = {
   serverSkip?: boolean;
 };
 
+export const DEFAULT_MAPPER = {
+  default: { method: "use", priority: 10 },
+  AUTH: { method: "use", priority: 11, },
+  CRUD: { method: "use", priority: 12, },
+  USE: { method: "use", priority: 20 },
+  PING: { method: "get", priority: 21, },
+  GET: { method: "get", priority: 30 },
+  POST: { method: "post", priority: 40 },
+  ACTION: { method: "post", priority: 41, },
+  PATCH: { method: "patch", priority: 50 },
+  PUT: { method: "put", priority: 60 },
+  DELETE: { method: "delete", priority: 70 },
+  ERROR: { method: "use", priority: 120, },
+}
+
 export const assertConfig = (opts: ApiOpts): ApiConfig => {
   let {
     moduleId = "@api",
@@ -120,18 +135,7 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
   });
 
   mapper = {
-    default: { method: "use", priority: 10 },
-    AUTH: { method: "use", priority: 11, },
-    CRUD: { method: "use", priority: 12, },
-    USE: { method: "use", priority: 20 },
-    PING: { method: "get", priority: 21, },
-    GET: { method: "get", priority: 30 },
-    POST: { method: "post", priority: 40 },
-    ACTION: { method: "post", priority: 41, },
-    PATCH: { method: "patch", priority: 50 },
-    PUT: { method: "put", priority: 60 },
-    DELETE: { method: "delete", priority: 70 },
-    ERROR: { method: "use", priority: 120, },
+    ...DEFAULT_MAPPER,
     // Overwrite
     ...mapper,
   };

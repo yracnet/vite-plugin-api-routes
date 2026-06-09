@@ -11,16 +11,6 @@ export default defineConfig({
     inspect(),
     apiRoutes({
       configure: "src/server/configure.js",
-      mapper: {
-        AUTH: {
-          method: "use",
-          priority: 10,
-        },
-        ERROR: {
-          method: "use",
-          priority: 110,
-        },
-      },
       dirs: [
         {
           dir: "src/server/api",
