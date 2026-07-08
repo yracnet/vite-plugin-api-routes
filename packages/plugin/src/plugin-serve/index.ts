@@ -44,7 +44,7 @@ export const apiRoutesServe = (apiConfig: ApiConfig): PluginOption => {
         }
       });
       //@ts-ignore
-      appConfig.viteServerAfter?.(appProxy, devServer, vite);
+      appConfig.viteServerAfter?.(appProxy, devServer);
       return () => {
         devServer.middlewares.use(baseApi, appProxy);
       }
