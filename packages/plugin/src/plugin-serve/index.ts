@@ -30,7 +30,7 @@ export const apiRoutesServe = (apiConfig: ApiConfig): PluginOption => {
       );
       const appProxy = express();
       //@ts-ignore
-      appConfig.viteServerBefore?.(appProxy, devServer, vite);
+      appConfig.viteServerBefore?.(appProxy, devServer);
       appProxy.use(async (req, res, next) => {
         try {
           const mod = await devServer.ssrLoadModule(apiConfig.handlerFile, {
