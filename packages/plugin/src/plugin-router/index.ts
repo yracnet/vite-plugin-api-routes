@@ -10,7 +10,7 @@ export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
     return apiConfig.watcherList.find((it) => file.startsWith(it));
   };
   return {
-    name: "vite-plugin-api-routes:router",
+    name: "vite-plugin-api-router:router",
     enforce: "pre",
     config: () => {
       return {
@@ -39,19 +39,17 @@ export const apiRoutesRoute = (apiConfig: ApiConfig): PluginOption => {
         restart,
         config: viteConfig,
       } = devServer;
-      const onReload = (file: string) => {
+      const onReload = (_event: string, file: string) => {
         if (isReload(file)) {
           writeHandlerFile(apiConfig, viteConfig);
           writeOpenapiFile(apiConfig, viteConfig);
-          watcher.off("add", onReload);
-          watcher.off("change", onReload);
           if (apiConfig.forceRestart) {
+            watcher.off("all", onReload);
             restart(true);
           }
         }
       };
-      watcher.on("add", onReload);
-      watcher.on("change", onReload);
+      watcher.on("all", onReload);
     },
   };
 };

@@ -11,30 +11,22 @@ export type RouteFiles = {
 
 export const parseRouteFiles = (apiConfig: ApiConfig): RouteFiles[] => {
     let { dirs, include, exclude } = apiConfig;
-    const currentMode = process.env.NODE_ENV;
-    return dirs
-        .filter((dir) => {
-            if (dir.skip === true || dir.skip === currentMode) {
-                return false;
-            }
-            return true;
-        })
-        .map((it) => {
-            it.exclude = it.exclude || [];
-            const ignore = [...exclude, ...it.exclude];
-            const files = fg.sync(include, {
-                ignore,
-                onlyDirectories: false,
-                dot: true,
-                unique: true,
-                cwd: it.dir,
-            });
-            return {
-                dir: it.dir,
-                route: it.route,
-                files
-            };
+    return dirs.map((it) => {
+        it.exclude = it.exclude || [];
+        const ignore = [...exclude, ...it.exclude];
+        const files = fg.sync(include, {
+            ignore,
+            onlyDirectories: false,
+            dot: true,
+            unique: true,
+            cwd: it.dir,
         });
+        return {
+            dir: it.dir,
+            route: it.route,
+            files
+        };
+    });
 };
 
 export type ImportEntry = {

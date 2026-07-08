@@ -20,7 +20,7 @@ export const writeHandlerFile = (apiConfig: ApiConfig, _vite: ResolvedConfig) =>
   const handlerLine = (it: RouteEntry) =>
     apiConfig.mode === "legacy"
       ? `${it.varName}.${it.routeName} && handler.${it.method}("${it.route}", ${it.varName}.${it.routeName});`
-      : `handler.${it.method}("${it.route}", ${it.varName});`;
+      : `${it.varName} && handler.${it.method}("${it.route}", ${it.varName});`;
 
   const code = `
 // Files Imports

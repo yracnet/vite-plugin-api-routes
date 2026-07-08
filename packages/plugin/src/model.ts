@@ -129,10 +129,18 @@ export const assertConfig = (opts: ApiOpts): ApiConfig => {
   }
   cacheDir = path.join(root, cacheDir);
 
-  dirs = dirs.map((it) => {
-    it.dir = path.join(root, it.dir);
-    return it;
-  });
+  const currentMode = process.env.NODE_ENV;
+  dirs = dirs
+    .map((it) => {
+      it.dir = path.join(root, it.dir);
+      return it;
+    })
+    .filter((dir) => {
+      if (dir.skip === true || dir.skip === currentMode) {
+        return false;
+      }
+      return true;
+    });
 
   mapper = {
     ...DEFAULT_MAPPER,

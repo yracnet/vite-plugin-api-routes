@@ -20,40 +20,34 @@ export const apiRoutesServe = (apiConfig: ApiConfig): PluginOption => {
       };
     },
     configureServer: async (devServer) => {
-      const {
-        //
-        config: vite,
-        middlewares,
-        ssrLoadModule,
-        ssrFixStacktrace,
-      } = devServer;
-      const baseApi = path.join(vite.base, apiConfig.routeBase);
-      const { viteServerBefore, viteServerAfter } = await ssrLoadModule(
+      const baseApi = path.join(devServer.config.base, apiConfig.routeBase);
+      // Execute Once
+      const appConfig = await devServer.ssrLoadModule(
         apiConfig.configureFile,
         {
           fixStacktrace: true,
         }
       );
-
-      var appServer = express();
+      const appProxy = express();
       //@ts-ignore
-      viteServerBefore?.(appServer, devServer, vite);
-      // Register Proxy After Vite Inicialize
-      appServer.use("/", async (req, res, next) => {
+      appConfig.viteServerBefore?.(appProxy, devServer, vite);
+      appProxy.use(async (req, res, next) => {
         try {
-          const { handler } = await ssrLoadModule(apiConfig.handlerFile, {
+          const mod = await devServer.ssrLoadModule(apiConfig.handlerFile, {
             fixStacktrace: true,
           });
-          handler(req, res, next);
+          mod.handler(req, res, next);
         } catch (error) {
-          ssrFixStacktrace(error as Error);
+          devServer.ssrFixStacktrace(error as Error);
           process.exitCode = 1;
           next(error);
         }
       });
       //@ts-ignore
-      viteServerAfter?.(appServer, devServer, vite);
-      middlewares.use(baseApi, appServer);
+      appConfig.viteServerAfter?.(appProxy, devServer, vite);
+      return () => {
+        devServer.middlewares.use(baseApi, appProxy);
+      }
     },
   };
 };
